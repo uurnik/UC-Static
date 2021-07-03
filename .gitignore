@@ -1,3 +1,4 @@
 .env
 nginx/letsencrypt
 scratch.txt
+test.py

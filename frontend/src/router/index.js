@@ -7,6 +7,7 @@ import TroubleShoot from '../components/TroubleShoot.vue'
 import Login from '../components/Login.vue'
 import SingleDevice from '../components/SingleDevice.vue'
 import Topology from '../components/Topology.vue'
+import PageNotFound from '../components/PageNotFound.vue'
 
 
 Vue.use(VueRouter)
@@ -39,7 +40,10 @@ const routes = [{
         path: '/host/:name',
         name: 'SingleDevice',
         props: true,
-        component: SingleDevice
+        component: SingleDevice,
+        meta: {
+            requiresLogin: true
+        }
     },
     {
         path: '/topology',
@@ -65,6 +69,14 @@ const routes = [{
             hidenavbar: true
         }
     },
+
+    {
+        path: "*",
+        component: PageNotFound,
+        meta: {
+            hidenavbar: true
+        }
+    }
 ]
 
 const router = new VueRouter({

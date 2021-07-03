@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dependencies &amp; Housekeeping &mdash; Uurnik Connect v0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Uurnik Connect
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uc-defaults.html">Defaults</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Uuc_api_doc.html">Uurnik Connect API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">API Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="known_issues.html">Known Issues</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Uurnik Connect</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Dependencies &amp; Housekeeping</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/dependecies.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dependencies-housekeeping">
+<h1>Dependencies &amp; Housekeeping<a class="headerlink" href="#dependencies-housekeeping" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="project-management">
+<h2>Project Management<a class="headerlink" href="#project-management" title="Permalink to this headline">¶</a></h2>
+<p>Poetry is used for managing the UC API package.
+Poetry provides a custom installer that will install poetry isolated from the rest of your system by vendorizing its dependencies</p>
+<div class="section" id="dependecy-file-for-uc-api">
+<h3>Dependecy file for UC API<a class="headerlink" href="#dependecy-file-for-uc-api" title="Permalink to this headline">¶</a></h3>
+<p><strong>pyproject.toml</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">poetry</span><span class="p">]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;uurnik_connect_api&quot;</span>
+<span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span>
+<span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">authors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Uurnik Systems &lt;talha.javaid@uurnik.com&gt;&quot;</span><span class="p">]</span>
+
+<span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">poetry</span><span class="o">.</span><span class="n">dependencies</span><span class="p">]</span>
+<span class="n">python</span> <span class="o">=</span> <span class="s2">&quot;^3.6&quot;</span>
+<span class="n">djangorestframework</span> <span class="o">=</span> <span class="s2">&quot;3.11.0&quot;</span>
+<span class="n">netmiko</span> <span class="o">=</span> <span class="s2">&quot;2.4.2&quot;</span>
+<span class="n">nornir</span> <span class="o">=</span> <span class="s2">&quot;2.4&quot;</span>
+<span class="n">django</span><span class="o">-</span><span class="n">cors</span><span class="o">-</span><span class="n">headers</span> <span class="o">=</span> <span class="s2">&quot;^3.4.0&quot;</span>
+<span class="n">django</span><span class="o">-</span><span class="n">rest</span><span class="o">-</span><span class="n">knox</span> <span class="o">=</span> <span class="s2">&quot;^4.1.0&quot;</span>
+<span class="n">pyarmor</span> <span class="o">=</span> <span class="s2">&quot;^6.3.7&quot;</span>
+<span class="n">gunicorn</span> <span class="o">=</span> <span class="s2">&quot;^20.0.4&quot;</span>
+
+<span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">poetry</span><span class="o">.</span><span class="n">dev</span><span class="o">-</span><span class="n">dependencies</span><span class="p">]</span>
+
+<span class="p">[</span><span class="n">build</span><span class="o">-</span><span class="n">system</span><span class="p">]</span>
+<span class="n">requires</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;poetry&gt;=0.12&quot;</span><span class="p">]</span>
+<span class="n">build</span><span class="o">-</span><span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;poetry.masonry.api&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="licences-for-uc-dependencies">
+<h2>Licences for UC dependencies<a class="headerlink" href="#licences-for-uc-dependencies" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Package Name</th>
+<th>License</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nornir</td>
+<td>Apache License 2.0</td>
+</tr>
+<tr>
+<td>Netmiko</td>
+<td>MIT License</td>
+</tr>
+<tr>
+<td>Napalm</td>
+<td>Apache License 2.0</td>
+</tr>
+<tr>
+<td>Django REST framework</td>
+<td>https://github.com/encode/django-rest-framework/blob/master/LICENSE.md</td>
+</tr>
+<tr>
+<td>django-rest-knox</td>
+<td>MIT License</td>
+</tr>
+<tr>
+<td>django-cors-headers</td>
+<td>MIT License</td>
+</tr>
+<tr>
+<td>pyarmor</td>
+<td>https://github.com/dashingsoft/pyarmor/blob/master/LICENSE</td>
+</tr>
+<tr>
+<td>gunicorn</td>
+<td>https://github.com/benoitc/gunicorn/blob/master/LICENSE</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Uurnik Systems
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

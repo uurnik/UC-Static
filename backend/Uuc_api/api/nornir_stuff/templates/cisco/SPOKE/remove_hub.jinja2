@@ -1,0 +1,12 @@
+int tunnel {{ host.tunnel_int }}
+no ip nhrp map {{ hub_tunnel_ip }} {{ hub_nbma }}
+no ip nhrp map multicast {{ hub_nbma }}
+no ip nhrp nhs {{ hub_tunnel_ip }}
+exit
+router bgp 65{{ host.tunnel_int }}
+{% if option != 3 %}
+no neighbor {{ hub_tunnel_ip }} remote-as 65{{ host.tunnel_int }}
+{% else %}
+address-family ipv4 vrf LAN
+no neighbor {{ hub_tunnel_ip }} remote-as 65{{ host.tunnel_int }}
+{% endif %}

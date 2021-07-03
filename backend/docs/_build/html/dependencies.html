@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Dependencies &amp; Housekeeping &mdash; Uurnik Connect v0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Deploy Uurnik Connect in Test Environment" href="deployement.html" />
+    <link rel="prev" title="Known Issues" href="known_issues.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Uurnik Connect
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uc-defaults.html">Defaults</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Uuc_api_doc.html">Uurnik Connect API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">API Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="known_issues.html">Known Issues</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dependencies &amp; Housekeeping</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#project-management">Project Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependency-file-for-uc-api">Dependency file for UC API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#licences-for-uc-dependencies">Licences for UC dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deployement.html">Deploy Uurnik Connect in Test Environment</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Uurnik Connect</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Dependencies &amp; Housekeeping</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/dependencies.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dependencies-housekeeping">
+<h1>Dependencies &amp; Housekeeping<a class="headerlink" href="#dependencies-housekeeping" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="project-management">
+<h2>Project Management<a class="headerlink" href="#project-management" title="Permalink to this headline">¶</a></h2>
+<p>Poetry is used for managing the UC API package.
+Poetry provides a custom installer that will install poetry isolated from the rest of your system by vendorizing its dependencies</p>
+</div>
+<div class="section" id="dependency-file-for-uc-api">
+<h2>Dependency file for UC API<a class="headerlink" href="#dependency-file-for-uc-api" title="Permalink to this headline">¶</a></h2>
+<p><strong>pyproject.toml</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">poetry</span><span class="p">]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;uurnik_connect_api&quot;</span>
+<span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span>
+<span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">authors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Uurnik Systems &lt;talha.javaid@uurnik.com&gt;&quot;</span><span class="p">]</span>
+
+<span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">poetry</span><span class="o">.</span><span class="n">dependencies</span><span class="p">]</span>
+<span class="n">python</span> <span class="o">=</span> <span class="s2">&quot;^3.8&quot;</span>
+<span class="n">nornir</span> <span class="o">=</span> <span class="s2">&quot;2.5&quot;</span>
+<span class="n">ttp</span> <span class="o">=</span> <span class="s2">&quot;^0.6.0&quot;</span>
+<span class="n">djangorestframework</span> <span class="o">=</span> <span class="s2">&quot;3.11.0&quot;</span>
+<span class="n">django</span><span class="o">-</span><span class="n">cors</span><span class="o">-</span><span class="n">headers</span> <span class="o">=</span> <span class="s2">&quot;^3.6.0&quot;</span>
+<span class="n">django</span><span class="o">-</span><span class="n">rest</span><span class="o">-</span><span class="n">knox</span> <span class="o">=</span> <span class="s2">&quot;^4.1.0&quot;</span>
+<span class="n">dnspython</span> <span class="o">=</span> <span class="s2">&quot;^2.0.0&quot;</span>
+<span class="n">pysnmp</span> <span class="o">=</span> <span class="s2">&quot;^4.4.12&quot;</span>
+<span class="n">beautifulsoup4</span> <span class="o">=</span> <span class="s2">&quot;^4.9.3&quot;</span>
+<span class="n">requests</span><span class="o">-</span><span class="n">ntlm2</span> <span class="o">=</span> <span class="s2">&quot;^6.2.8&quot;</span>
+<span class="n">mysqlclient</span> <span class="o">=</span> <span class="s2">&quot;^2.0.3&quot;</span>
+<span class="n">requests</span> <span class="o">=</span> <span class="s2">&quot;^2.25.1&quot;</span>
+<span class="n">nornir</span><span class="o">-</span><span class="n">scrapli</span> <span class="o">=</span> <span class="s2">&quot;2020.7.12&quot;</span>
+<span class="n">scrapli</span> <span class="o">=</span> <span class="p">{</span><span class="n">extras</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;textfsm&quot;</span><span class="p">],</span> <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;^2020.12.31&quot;</span><span class="p">}</span>
+<span class="n">scrapli</span><span class="o">-</span><span class="n">ssh2</span> <span class="o">=</span> <span class="s2">&quot;^2020.10.24&quot;</span>
+
+
+<span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">poetry</span><span class="o">.</span><span class="n">dev</span><span class="o">-</span><span class="n">dependencies</span><span class="p">]</span>
+<span class="n">pylint</span> <span class="o">=</span> <span class="s2">&quot;^2.6.0&quot;</span>
+<span class="n">sphinx</span> <span class="o">=</span> <span class="s2">&quot;^3.2.1&quot;</span>
+<span class="n">sphinx</span><span class="o">-</span><span class="n">rtd</span><span class="o">-</span><span class="n">theme</span> <span class="o">=</span> <span class="s2">&quot;^0.5.0&quot;</span>
+<span class="n">recommonmark</span> <span class="o">=</span> <span class="s2">&quot;^0.6.0&quot;</span>
+<span class="n">sphinx_markdown_tables</span> <span class="o">=</span> <span class="s2">&quot;^0.0.15&quot;</span>
+<span class="n">rst2pdf</span> <span class="o">=</span> <span class="s2">&quot;^0.97&quot;</span>
+
+<span class="p">[</span><span class="n">build</span><span class="o">-</span><span class="n">system</span><span class="p">]</span>
+<span class="n">requires</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;poetry&gt;=0.12&quot;</span><span class="p">]</span>
+<span class="n">build</span><span class="o">-</span><span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;poetry.masonry.api&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="licences-for-uc-dependencies">
+<h2>Licences for UC dependencies<a class="headerlink" href="#licences-for-uc-dependencies" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Package Name</th>
+<th>License</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nornir</td>
+<td>Apache License 2.0</td>
+</tr>
+<tr>
+<td>Netmiko</td>
+<td>MIT License</td>
+</tr>
+<tr>
+<td>Napalm</td>
+<td>Apache License 2.0</td>
+</tr>
+<tr>
+<td>Django REST framework</td>
+<td><a href="https://github.com/encode/django-rest-framework/blob/master/LICENSE.md">https://github.com/encode/django-rest-framework/blob/master/LICENSE.md</a></td>
+</tr>
+<tr>
+<td>django-rest-knox</td>
+<td>MIT License</td>
+</tr>
+<tr>
+<td>django-cors-headers</td>
+<td>MIT License</td>
+</tr>
+<tr>
+<td>pyarmor</td>
+<td><a href="https://github.com/dashingsoft/pyarmor/blob/master/LICENSE">https://github.com/dashingsoft/pyarmor/blob/master/LICENSE</a></td>
+</tr>
+<tr>
+<td>gunicorn</td>
+<td><a href="https://github.com/benoitc/gunicorn/blob/master/LICENSE">https://github.com/benoitc/gunicorn/blob/master/LICENSE</a></td>
+</tr>
+<tr>
+<td>ttp</td>
+<td>MIT License</td>
+</tr>
+<tr>
+<td>dnspython</td>
+<td><a href="https://github.com/rthalley/dnspython/blob/master/LICENSE">https://github.com/rthalley/dnspython/blob/master/LICENSE</a></td>
+</tr>
+<tr>
+<td>scrapli</td>
+<td>MIT License</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="deployement.html" class="btn btn-neutral float-right" title="Deploy Uurnik Connect in Test Environment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="known_issues.html" class="btn btn-neutral float-left" title="Known Issues" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Uurnik Systems.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

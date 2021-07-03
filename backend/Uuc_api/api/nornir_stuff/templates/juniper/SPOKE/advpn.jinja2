@@ -1,0 +1,52 @@
+set system domain-name uurnik.local
+set system name-server 192.168.100.63 source-address {{ host.hostname }}
+
+
+set interfaces st0 unit 1 multipoint
+set interfaces st0 unit 1 family inet address {{ host.data['tunnel_ip'] }}/16
+{% set address=host.data['loop_back'].split(' ') %}
+set interfaces lo0 unit 0 family inet address {{ address[0] }}/{{ address[1] | convert_to_cidr }}
+
+set security ike proposal IKE_PROP authentication-method rsa-signatures
+set security ike proposal IKE_PROP dh-group group5
+set security ike proposal IKE_PROP authentication-algorithm sha-256
+set security ike proposal IKE_PROP encryption-algorithm aes-256-cbc
+
+set security ike policy IKE_POL mode main proposals IKE_PROP certificate local-certificate {{ host.name }}
+
+set security ike gateway {{ host.name }}_GW ike-policy IKE_POL address {{ host.nhs_nbma[1] }}
+set security ike gateway {{ host.name }}_GW ike-policy IKE_POL local-identity distinguished-name
+set security ike gateway {{ host.name }}_GW ike-policy IKE_POL remote-identity distinguished-name container OU=IT
+set security ike gateway {{ host.name }}_GW ike-policy IKE_POL local-address {{ host.hostname }}
+set security ike gateway {{ host.name }}_GW ike-policy IKE_POL external-interface {{ host.data['wan_int'] }}
+set security ike gateway {{ host.name }}_GW ike-policy IKE_POL advpn suggester disable
+set security ike gateway {{ host.name }}_GW ike-policy IKE_POL advpn partner 
+set security ike gateway {{ host.name }}_GW ike-policy IKE_POL version v2-only
+
+set security ipsec policy IPSEC_POL perfect-forward-secrecy keys group5
+set security ipsec policy IPSEC_POL proposal-set suiteb-gcm-256
+
+set security ipsec vpn PARTNER_VPN bind-interface st0.1 ike gateway {{ host.name }}_GW ipsec-policy IPSEC_POL
+set security ipsec vpn PARTNER_VPN establish-tunnels immediately 
+
+set security zones security-zone trust tcp-rst host-inbound-traffic system-services all
+set security zones security-zone trust tcp-rst host-inbound-traffic protocols all
+set security zones security-zone trust interfaces st0.1 host-inbound-traffic protocols ospf
+set security zones security-zone trust interfaces lo0.0
+{% for lan_interface in lan_interfaces %}
+set security zones security-zone trust interfaces {{ lan_interface }} host-inbound-traffic system-services all
+{% endfor %}
+set security zones security-zone untrust screen untrust-screen
+set security zones security-zone untrust host-inbound-traffic system-services all
+set security zones security-zone untrust host-inbound-traffic protocols all
+set security zones security-zone untrust interfaces {{ host.data['wan_int'] }}
+
+
+set routing-options router-id {{ host.data['tunnel_ip'] }}
+set protocols ospf area 0.0.0.0 interface st0.1 interface-type p2mp metric 15 retransmit-interval 1 dead-interval 40 demand-circuit dynamic-neighbors
+{% for interface in lan_interfaces %}
+set protocols ospf area 0.0.0.0 interface {{ interface }}
+{% endfor %}
+set protocols ospf area 0.0.0.0 interface lo0.0
+set protocols ospf graceful-restart restart-duration 300 notify-duration 300 no-strict-lsa-checking
+commit

@@ -1,0 +1,390 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Nornir-end &mdash; Uurnik Connect v0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Users" href="api.users.html" />
+    <link rel="prev" title="Helpers" href="api.helpers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Uurnik Connect
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uc-defaults.html">Defaults</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Uuc_api_doc.html">Uurnik Connect API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Docs</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="api.html">API Reference</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="api.helpers.html">Helpers</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Nornir-end</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-api.nornir_stuff.configure_nodes">api.nornir_stuff.configure_nodes module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.users.html">Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.admin">api.admin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.apps">api.apps module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.models">api.models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.serializers">api.serializers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.urls">api.urls module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.views">api.views module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies &amp; Housekeeping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployement_todos.html">Tasks before Deployement</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Uurnik Connect</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="api.html">API Docs</a> &raquo;</li>
+        
+      <li>Nornir-end</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/api.nornir_stuff.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="nornir-end">
+<h1>Nornir-end<a class="headerlink" href="#nornir-end" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-api.nornir_stuff.configure_nodes">
+<span id="api-nornir-stuff-configure-nodes-module"></span><h2>api.nornir_stuff.configure_nodes module<a class="headerlink" href="#module-api.nornir_stuff.configure_nodes" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.change_ipsec_keys">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">change_ipsec_keys</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="n">new_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#change_ipsec_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.change_ipsec_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>function for changing IPsec keys (Cisco)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.change_on_spoke">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">change_on_spoke</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="n">option</span></em>, <em class="sig-param"><span class="n">hub_tunnel_ip</span></em>, <em class="sig-param"><span class="n">hub_nbma</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#change_on_spoke"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.change_on_spoke" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to add static hub mapping &amp; BGP neighborship</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.conf_dmvpn">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">conf_dmvpn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="n">nr</span></em>, <em class="sig-param"><span class="n">dia</span></em>, <em class="sig-param"><span class="n">other_services</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dns</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#conf_dmvpn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.conf_dmvpn" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>function is performing the following tasks</dt><dd><ol class="arabic simple">
+<li><p>Create configuration backup on control node, configurations are saved to api/backup_configs</p></li>
+<li><p>Enable archive feature to create a backup of running-config of Host locally</p></li>
+<li><p>Extract WAN interface name from given IP</p></li>
+<li><p>Get WAN interface subnet &amp; nexthop from default route</p></li>
+<li><p>Update inventory</p></li>
+<li><p>Build configuration template for both HUBS &amp; SPOKES</p></li>
+<li><p>Push configs to devices</p></li>
+<li><p>Get SNMP interface Index of Tunnel414</p></li>
+<li><p>Update DNS</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.conf_ip_sla">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">conf_ip_sla</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="n">track_ip</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#conf_ip_sla"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.conf_ip_sla" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to configure ip sla and hsrp tracking</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">params</dt>
+<dd class="field-odd"><p>track_ip: ip to track for sla</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.configure_copp">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">configure_copp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#configure_copp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.configure_copp" title="Permalink to this definition">¶</a></dt>
+<dd><p>function parses the COPP template and push commands to hosts</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.configure_logging">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">configure_logging</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="n">logging_host</span></em>, <em class="sig-param"><span class="n">logging_level</span></em>, <em class="sig-param"><span class="n">facility</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#configure_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.configure_logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>function for configuring logging on cisco devices</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.device_harderning">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">device_harderning</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#device_harderning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.device_harderning" title="Permalink to this definition">¶</a></dt>
+<dd><p>function for building &amp; pushing device hardening commands to hosts</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.facts">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">facts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#facts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.facts" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to gather the facts about devices
+1. Check the device Platform and update Hosts table
+2. Gather hostname,interfaces,model,serial_no,os_version ,vendor</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.fetch_cdp_data">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">fetch_cdp_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#fetch_cdp_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.fetch_cdp_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to get CDP Neighbors information
+by exec “show cdp neighbors”</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.fetch_interface_info">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">fetch_interface_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#fetch_interface_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.fetch_interface_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>function return the ‘Show ip interface brief’ output</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.fortigate_neighbors">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">fortigate_neighbors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#fortigate_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.fortigate_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.get_routes">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">get_routes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#get_routes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.get_routes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>( Cisco devices)</dt><dd><ol class="arabic simple">
+<li><p>Get ‘Show run | sec interface’ output</p></li>
+<li><p>Get ‘Show run | inc ip route’ output</p></li>
+</ol>
+</dd>
+<dt>(Fortigate devices)</dt><dd><ol class="arabic simple">
+<li><p>Get “get system interface”</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.get_routing_table_cisco">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">get_routing_table_cisco</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#get_routing_table_cisco"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.get_routing_table_cisco" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.juniper_neighbors">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">juniper_neighbors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#juniper_neighbors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.juniper_neighbors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.netmiko_direct">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">netmiko_direct</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="n">cmd</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#netmiko_direct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.netmiko_direct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manually create Netmiko connection, to handle prompts
+clear ip nat translations</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.remove_hosts">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">remove_hosts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#remove_hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.remove_hosts" title="Permalink to this definition">¶</a></dt>
+<dd><p>function for defining the method to remove configuration on Hosts</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.remove_hub_from_spoke">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">remove_hub_from_spoke</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="n">option</span></em>, <em class="sig-param"><span class="n">hub_tunnel_ip</span></em>, <em class="sig-param"><span class="n">hub_nbma</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#remove_hub_from_spoke"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.remove_hub_from_spoke" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to remove static hub mapping &amp; BGP neighborship</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.resolve_host">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">resolve_host</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="n">dns</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#resolve_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.resolve_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for resolving host fqdn from Uurnik DNS</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.scp_file_transfer">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">scp_file_transfer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#scp_file_transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.scp_file_transfer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="api.nornir_stuff.configure_nodes.send_tcl">
+<code class="sig-prename descclassname">api.nornir_stuff.configure_nodes.</code><code class="sig-name descname">send_tcl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/nornir_stuff/configure_nodes.html#send_tcl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.nornir_stuff.configure_nodes.send_tcl" title="Permalink to this definition">¶</a></dt>
+<dd><p>function for transfering the tcl script to schedule ip assignment</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="api.users.html" class="btn btn-neutral float-right" title="Users" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api.helpers.html" class="btn btn-neutral float-left" title="Helpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Uurnik Systems.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

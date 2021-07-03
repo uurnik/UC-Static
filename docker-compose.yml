@@ -1,0 +1,98 @@
+version: "3.3"
+
+services:
+
+  db:
+    image: mysql:8.0.25
+    restart: always
+    container_name: db
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD:  "${MYSQL_USER_PASS}"
+      MYSQL_ROOT_PASSWORD:  "${MYSQL_USER_PASS}"
+      MYSQL_DATABASE:  "${MY_SQL_DATABASE}"
+
+    volumes:
+      - mysql_db:/usr/lib/mysql
+    networks:
+      uuc:
+        ipv4_address: '172.20.1.4'
+    
+    
+
+  dns:
+    image: store/internetsystemsconsortium/bind9:9.11
+    restart: always
+    container_name: dns
+    volumes:
+      -  dns:/var/lib/bind/
+      - ./backend/dns/forward.uurnikconnect.com:/var/lib/bind/forward.uurnikconnect.com
+      - ./backend/dns/named.conf:/etc/bind/named.conf
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+    network_mode: host
+    
+
+
+  api:
+    build: ./backend/
+    env_file: .env
+    image: uuc_api
+    container_name: uuc_api
+    restart: always
+    image: uuc_api
+    # ports:
+    #   - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      uuc:
+        ipv4_address: '172.20.1.5'
+
+
+
+  dnsupdater:
+    build:
+      context: ./backend/dnsupdater
+      dockerfile: Dockerfile-dnsupdater
+    container_name: dnsupdater
+    image: dnsupdater
+    extra_hosts:
+      - "dockerhost:172.20.1.1"
+    restart: always
+    # ports:
+    #   - "8080:8080"
+    networks:
+      uuc:
+        ipv4_address: '172.20.1.6'
+  
+  
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    env_file: .env
+    ports:
+      - 80:8088
+    depends_on:
+      - api
+    container_name: nginx
+    restart: always
+    networks:
+      uuc:
+        ipv4_address: '172.20.1.7'
+
+  
+volumes:
+  dns:
+  mysql_db:
+  
+networks:
+  uuc:
+    ipam:
+      driver: default
+      config:
+        - subnet: '172.20.1.0/24'

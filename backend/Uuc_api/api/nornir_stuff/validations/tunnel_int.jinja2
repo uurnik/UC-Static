@@ -1,0 +1,45 @@
+interface Tunnel414
+ {% if option == 3 and host.groups[0] == "SPOKE" %}
+ ip vrf forwarding LAN
+ {% endif %}
+ ip address {{ host.data["tunnel_ip"] }} 255.255.0.0
+ ip mtu 1400
+ cdp enable
+ ip tcp adjust-mss 1360
+ ip nhrp network-id 1
+ ip nhrp authentication 1234
+
+{% if host.groups[0] == "SPOKE" %}
+ip nhrp shortcut
+ {% for i in host.nhs_server %}
+ {% set server = host.nhs_server[loop.index-1] %}
+ {% set nbma = host.hubs_fqdn[loop.index-1] %}
+ ip nhrp nhs {{ server }} nbma {{ nbma }} multicast
+ {% endfor %}
+
+{% else %}
+ip nhrp redirect
+ip nhrp map multicast dynamic
+{% if option == 2 %}
+ip nat inside
+{% endif %}
+
+{% for i in host.hubs_fqdn %}
+{% set nhs_nbma = host.hubs_fqdn[loop.index-1] %}
+{% set nhs_server = host.nhs_server[loop.index-1] %}
+{% if nhs_nbma == host.hubs_fqdn[0] and nhs_server == host.nhs_server[0] %}
+{% if nhs_nbma != host.hostname and nhs_server != host.data["tunnel_ip"] %}
+ ip nhrp nhs {{ nhs_server }} nbma {{ nhs_nbma }} multicast
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+
+ tunnel source {{ host.data["wan_int"] }}
+ tunnel mode gre multipoint
+ tunnel key 100
+{% if option != 2 and host.groups[0] == "SPOKE" %}
+ tunnel vrf INTERNET
+{% endif %}
+ tunnel protection ipsec profile {{ host.profile_name }}

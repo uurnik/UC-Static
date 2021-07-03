@@ -1,0 +1,6 @@
+{% if option == 3 %}
+ip extcommunity-list standard LAN_TO_INTERNET permit rt 65{{ host.tunnel_int }}:1
+route-map LAN_TO_INTERNET permit 10
+match ip address prefix-list LAN_TO_INTERNET
+match extcommunity LAN_TO_INTERNET
+{% endif %}

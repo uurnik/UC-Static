@@ -1,0 +1,28 @@
+config router bgp
+unset as
+config neighbor-range
+delete 1
+end
+config neighbor-group
+delete advpn
+end
+config network
+delete 1
+end
+end
+
+config firewall policy
+delete 1
+end
+
+config firewall policy
+delete 2
+end
+
+config vpn ipsec phase2-interface
+delete advpn-hub
+end
+
+config vpn ipsec phase1-interface
+delete advpn-hub
+end

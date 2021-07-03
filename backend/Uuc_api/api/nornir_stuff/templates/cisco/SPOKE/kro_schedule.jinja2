@@ -1,0 +1,6 @@
+kron policy-list uurnik
+ cli tclsh nvram:/{{ host.name }}.tcl
+ exit
+kron occurrence uurnik in 1 oneshot 
+ policy-list uurnik
+ exit

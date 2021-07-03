@@ -1,0 +1,643 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>api.helpers.misc &mdash; Uurnik Connect v0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Uurnik Connect
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../workflow.html">Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../uc-defaults.html">Defaults</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Uuc_api_doc.html">Uurnik Connect API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">API Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dependencies.html">Dependencies &amp; Housekeeping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../deployement.html">Deploy Uurnik Connect in Test Environment</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Uurnik Connect</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>api.helpers.misc</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for api.helpers.misc</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">netaddr</span> <span class="kn">import</span> <span class="n">IPAddress</span>
+<span class="kn">from</span> <span class="nn">ttp</span> <span class="kn">import</span> <span class="n">ttp</span>
+<span class="kn">from</span> <span class="nn">scrapli.driver.core</span> <span class="kn">import</span> <span class="n">JunosDriver</span>
+<span class="kn">from</span> <span class="nn">requests_ntlm2</span> <span class="kn">import</span> <span class="n">HttpNtlmAuth</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+
+<span class="kn">import</span> <span class="nn">pysnmp.hlapi.asyncio</span> <span class="k">as</span> <span class="nn">snmp</span>
+<span class="kn">import</span> <span class="nn">pysnmp.hlapi</span> <span class="k">as</span> <span class="nn">snmp_sync</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+
+
+
+<span class="c1">############# Custom filters ###################</span>
+<div class="viewcode-block" id="wildcard_conversion"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.wildcard_conversion">[docs]</a><span class="k">def</span> <span class="nf">wildcard_conversion</span><span class="p">(</span><span class="n">subnet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    filter to convert subnetmask to wildcard</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wildcard</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">subnet</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+        <span class="n">component</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">wildcard</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">component</span><span class="p">))</span>
+    <span class="n">wildcard</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">wildcard</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wildcard</span></div>
+
+
+
+<div class="viewcode-block" id="convert_to_cidr"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.convert_to_cidr">[docs]</a><span class="k">def</span> <span class="nf">convert_to_cidr</span><span class="p">(</span><span class="n">subnet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    filter to convert subnet mask to CIDR</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cidr</span> <span class="o">=</span> <span class="n">IPAddress</span><span class="p">(</span><span class="n">subnet</span><span class="p">)</span><span class="o">.</span><span class="n">netmask_bits</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">cidr</span></div>
+
+
+
+<div class="viewcode-block" id="custom_filters"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.custom_filters">[docs]</a><span class="k">def</span> <span class="nf">custom_filters</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return all available filter to nornir</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;convert_to_wildcard&quot;</span><span class="p">:</span> <span class="n">wildcard_conversion</span><span class="p">,</span>
+            <span class="s2">&quot;convert_to_cidr&quot;</span><span class="p">:</span> <span class="n">convert_to_cidr</span><span class="p">}</span></div>
+<span class="c1">########################################################</span>
+
+
+
+<div class="viewcode-block" id="do_ping"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.do_ping">[docs]</a><span class="k">def</span> <span class="nf">do_ping</span><span class="p">(</span><span class="n">nr</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;function to check reachability of the hosts&#39;&#39;&#39;</span>
+    <span class="n">status</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="n">nr</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">hosts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">host</span> <span class="o">=</span> <span class="n">nr</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">hosts</span><span class="p">[</span><span class="n">device_name</span><span class="p">]</span><span class="o">.</span><span class="n">hostname</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">nr</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">hosts</span><span class="p">[</span><span class="n">device_name</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;timeout&#39;</span><span class="p">,</span><span class="s1">&#39;6&#39;</span><span class="p">,</span><span class="s1">&#39;ping&#39;</span> <span class="p">,</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span><span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="n">host</span><span class="p">],</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+           <span class="n">reach</span> <span class="o">=</span>  <span class="kc">False</span>
+           <span class="n">status</span><span class="o">.</span><span class="n">append</span><span class="p">({</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span> <span class="p">,</span> <span class="s2">&quot;reach&quot;</span><span class="p">:</span><span class="n">reach</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reach</span> <span class="o">=</span>  <span class="kc">True</span>
+            <span class="n">status</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="n">name</span> <span class="p">,</span> <span class="s2">&quot;reach&quot;</span><span class="p">:</span><span class="n">reach</span><span class="p">})</span>
+    
+    <span class="k">return</span> <span class="n">status</span></div>
+
+
+
+<div class="viewcode-block" id="test_ssh_conn"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.test_ssh_conn">[docs]</a><span class="k">def</span> <span class="nf">test_ssh_conn</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    function to test the ssh connectivity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">task</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">platform</span> <span class="o">=</span> <span class="s2">&quot;generic&quot;</span>
+    <span class="n">alive</span><span class="o">=</span> <span class="kc">False</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_connection</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">get_connection</span><span class="p">(</span><span class="s2">&quot;scrapli&quot;</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">nornir</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">alive</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">task</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">close_connection</span><span class="p">(</span><span class="s2">&quot;scrapli&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">alive</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">alive</span><span class="o">=</span><span class="kc">False</span>
+        <span class="k">return</span> <span class="n">alive</span></div>
+
+
+
+<div class="viewcode-block" id="create_response"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.create_response">[docs]</a><span class="k">def</span> <span class="nf">create_response</span><span class="p">(</span><span class="n">nr</span><span class="p">,</span><span class="n">result</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">nr</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">hosts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">nr</span><span class="o">.</span><span class="n">inventory</span><span class="o">.</span><span class="n">hosts</span><span class="p">[</span><span class="n">host</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;changed&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="n">host</span><span class="p">]</span><span class="o">.</span><span class="n">changed</span><span class="p">,</span>
+                                                    <span class="s2">&quot;failed&quot;</span><span class="p">:</span><span class="n">result</span><span class="p">[</span><span class="n">host</span><span class="p">]</span><span class="o">.</span><span class="n">failed</span><span class="p">}})</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+
+
+
+<div class="viewcode-block" id="ParseConfig"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.ParseConfig">[docs]</a><span class="k">class</span> <span class="nc">ParseConfig</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ttp parsers for Cisco</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">interface_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">interface {{ interface }}</span>
+<span class="s2"> ip address {{ address }} {{ mask }}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">default_route_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">ip route 0.0.0.0 0.0.0.0 {{ nexthop }}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="n">get_static_route_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">ip route {{ netid }} {{ mask }} {{ nexthop }}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="n">check_nat_config</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">interface {{ interface }}</span>
+<span class="s2"> ip nat {{ type }}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+    
+<div class="viewcode-block" id="ParseConfig.get_parsed"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.ParseConfig.get_parsed">[docs]</a>    <span class="k">def</span> <span class="nf">get_parsed</span><span class="p">(</span><span class="bp">self</span> <span class="p">,</span><span class="n">temp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">temp</span> <span class="o">==</span> <span class="s2">&quot;interfaces&quot;</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface_template</span>
+        <span class="k">elif</span> <span class="n">temp</span> <span class="o">==</span> <span class="s2">&quot;default_route&quot;</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_route_template</span>
+        <span class="k">elif</span> <span class="n">temp</span> <span class="o">==</span> <span class="s2">&quot;static_routes&quot;</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_static_route_template</span>
+        <span class="k">elif</span> <span class="n">temp</span> <span class="o">==</span> <span class="s2">&quot;nat_check&quot;</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_nat_config</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;pass valid option&quot;</span>
+
+
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">ttp</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">results</span></div></div>
+
+
+
+
+<div class="viewcode-block" id="ForigateParser"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.ForigateParser">[docs]</a><span class="k">class</span> <span class="nc">ForigateParser</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ttp parsers for Fortigate devices</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">system_status_template</span><span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Version: {{ model }} {{ os_version }},{{ build }},{{ num }} {{ a }}</span>
+<span class="s2">Hostname: {{ hostname }}</span>
+<span class="s2">Serial-Number: {{ serial_no }}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">interface_all_template</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">== [ {{ interface }} ]</span>
+<span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">default_next_hop_temp</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">S*    {{ default }} {{ distance }} via {{ next_hop }}, {{ port }}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">interface_attr_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">name: {{ port }}  mode: {{ mode }}   ip: {{ ip }} {{ mask }} status: {{ status }}  {{ extras | _line_ }}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="n">struct_txtfsm_interfaces</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">name: {{ intf }}  mode: {{ mode }}   ip: {{ ipaddr }} {{ mask }} status: {{ status }}  {{ extras | _line_ }}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span> <span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">=</span><span class="n">config</span>
+
+<div class="viewcode-block" id="ForigateParser.get_parsed"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.ForigateParser.get_parsed">[docs]</a>    <span class="k">def</span> <span class="nf">get_parsed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">template</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">template</span> <span class="o">==</span> <span class="s2">&quot;all_interfaces&quot;</span><span class="p">:</span>
+            <span class="n">template</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">interface_all_template</span>
+        <span class="k">elif</span> <span class="n">template</span> <span class="o">==</span> <span class="s2">&quot;system_info&quot;</span><span class="p">:</span>
+            <span class="n">template</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">system_status_template</span>
+        <span class="k">elif</span> <span class="n">template</span> <span class="o">==</span> <span class="s2">&quot;default_next_hop&quot;</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_next_hop_temp</span>
+        <span class="k">elif</span> <span class="n">template</span> <span class="o">==</span> <span class="s2">&quot;interface_attr&quot;</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface_attr_template</span>
+        <span class="k">elif</span> <span class="n">template</span> <span class="o">==</span> <span class="s2">&quot;txtfsm_struct_intf&quot;</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">struct_txtfsm_interfaces</span>
+
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">ttp</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span><span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">results</span></div></div>
+
+    
+<div class="viewcode-block" id="JuniperParser"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.JuniperParser">[docs]</a><span class="k">class</span> <span class="nc">JuniperParser</span><span class="p">():</span>
+    <span class="n">interface_name_template</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">{{ interface | notequal(&#39;Interface&#39;) }} {{ extra | _line_ }}</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+    <span class="n">interface_template</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">{{ interface | notequal(&#39;Interface&#39;) }} {{ admin_status }} {{ link_status }} {{ protocol }} {{ ip | PREFIX }}</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+    <span class="n">interface_front_template</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">{{ interface | notequal(&#39;Interface&#39;) }} {{ status }} {{ extra | _line_ }}</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span> <span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">=</span><span class="n">config</span>
+
+<div class="viewcode-block" id="JuniperParser.get_parsed"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.JuniperParser.get_parsed">[docs]</a>    <span class="k">def</span> <span class="nf">get_parsed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">template</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">template</span> <span class="o">==</span> <span class="s2">&quot;all_interfaces&quot;</span><span class="p">:</span>
+            <span class="n">template</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">interface_template</span>
+        <span class="k">elif</span> <span class="n">template</span> <span class="o">==</span> <span class="s2">&quot;interface_names&quot;</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface_name_template</span>
+        <span class="k">elif</span> <span class="n">template</span> <span class="o">==</span> <span class="s2">&quot;front_intf&quot;</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interface_front_template</span>
+
+
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">ttp</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span><span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">results</span></div></div>
+
+
+
+
+
+
+
+<div class="viewcode-block" id="CoppBWCalculator"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.CoppBWCalculator">[docs]</a><span class="k">class</span> <span class="nc">CoppBWCalculator</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bandwidth caculator for Control Place Policing (Cisco)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ipv6_cp</span> <span class="o">=</span> <span class="mf">0.106</span>
+    <span class="n">undesireable_cp_ipv6</span> <span class="o">=</span> <span class="mf">0.0008</span>
+    <span class="n">undesireable_ip_ipv4</span> <span class="o">=</span> <span class="mf">0.0008</span>
+    <span class="n">routing_cp_ipv4</span> <span class="o">=</span> <span class="mf">0.159</span>
+    <span class="n">routing_cp_ipv6</span> <span class="o">=</span> <span class="mf">0.159</span>
+    <span class="n">management_cp</span> <span class="o">=</span> <span class="mf">0.212</span>
+    <span class="n">normal_cp_ipv4</span> <span class="o">=</span> <span class="mf">0.0795</span>
+    <span class="n">normal_cp_ipv6</span> <span class="o">=</span> <span class="mf">0.0795</span>
+    <span class="n">isakmp_esp_ah_cp</span> <span class="o">=</span> <span class="mf">0.0159</span>
+    <span class="n">catch_all_ipv4</span> <span class="o">=</span> <span class="mf">0.0795</span>
+    <span class="n">catch_all_ipv6</span> <span class="o">=</span> <span class="mf">0.0795</span>
+    <span class="n">class_default</span> <span class="o">=</span> <span class="mf">0.0286</span>
+
+    <span class="n">bw_percent_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ipv6_cp</span><span class="p">,</span><span class="n">undesireable_cp_ipv6</span><span class="p">,</span>
+                <span class="n">undesireable_ip_ipv4</span><span class="p">,</span><span class="n">routing_cp_ipv4</span><span class="p">,</span>
+                <span class="n">routing_cp_ipv6</span><span class="p">,</span><span class="n">management_cp</span><span class="p">,</span>
+                <span class="n">normal_cp_ipv4</span><span class="p">,</span><span class="n">normal_cp_ipv6</span><span class="p">,</span>
+                <span class="n">isakmp_esp_ah_cp</span><span class="p">,</span><span class="n">catch_all_ipv4</span><span class="p">,</span>
+                <span class="n">catch_all_ipv6</span><span class="p">,</span><span class="n">class_default</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span> <span class="p">,</span> <span class="n">bw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bw</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000000</span>
+        <span class="c1"># if router throughput is less than 500mbps then CP BW = 5mbps</span>
+        <span class="c1"># if router throughput is greater than 500mbps and less than 1gig then CP BW = 10mbps</span>
+        <span class="c1"># if router throughput is greater than 1gig then CP BW = 25mbps</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">&lt;</span> <span class="mi">500000000</span><span class="p">:</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">=</span> <span class="mi">5000000</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">&gt;=</span> <span class="mi">500000000</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">&lt;</span> <span class="mi">1000000000</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">=</span> <span class="mi">10000000</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">&gt;=</span> <span class="mi">1000000000</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">=</span> <span class="mi">25000000</span>
+
+    
+<div class="viewcode-block" id="CoppBWCalculator.calculate"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.CoppBWCalculator.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">calculated_results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">bw_class</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw_percent_classes</span><span class="p">:</span>
+            <span class="n">cp_bw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">bw_class</span><span class="p">)</span>
+            <span class="n">cp_bw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bw</span> <span class="o">-</span> <span class="n">cp_bw</span>
+            <span class="k">if</span> <span class="n">cp_bw</span> <span class="o">&lt;</span> <span class="mi">8000</span> <span class="p">:</span>
+                <span class="n">cp_bw</span> <span class="o">=</span> <span class="mi">8000</span>
+                <span class="n">cp_burst</span> <span class="o">=</span> <span class="n">cp_bw</span> <span class="o">/</span> <span class="mi">8</span>
+                <span class="n">cp_exceeded</span> <span class="o">=</span> <span class="n">cp_burst</span>
+                <span class="k">if</span> <span class="n">cp_burst</span> <span class="o">&lt;</span> <span class="mi">1500</span><span class="p">:</span>
+                    <span class="n">cp_burst</span> <span class="o">=</span> <span class="mi">1500</span>
+                    <span class="n">cp_exceeded</span> <span class="o">=</span> <span class="n">cp_burst</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cp_burst</span> <span class="o">=</span> <span class="n">cp_bw</span> <span class="o">/</span> <span class="mi">8</span>
+                <span class="n">cp_exceeded</span> <span class="o">=</span> <span class="n">cp_burst</span>
+                <span class="k">if</span> <span class="n">cp_burst</span> <span class="o">&lt;</span> <span class="mi">1500</span><span class="p">:</span>
+                    <span class="n">cp_burst</span> <span class="o">=</span> <span class="mi">1500</span>
+                    <span class="n">cp_exceeded</span> <span class="o">=</span> <span class="n">cp_burst</span>
+
+            <span class="n">class_all_values</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;cp_bw&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">cp_bw</span><span class="p">),</span>
+                <span class="s2">&quot;cp_burst&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">cp_burst</span><span class="p">),</span>
+                <span class="s2">&quot;cp_exceeded&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">cp_exceeded</span><span class="p">)</span>
+            <span class="p">}</span>
+
+            <span class="n">calculated_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">class_all_values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">calculated_results</span> </div></div>
+
+
+
+
+
+<div class="viewcode-block" id="get_challenge_pass"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.get_challenge_pass">[docs]</a><span class="k">def</span> <span class="nf">get_challenge_pass</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+    <span class="n">auth</span><span class="o">=</span><span class="n">HttpNtlmAuth</span><span class="p">(</span><span class="s1">&#39;u_ndes&#39;</span><span class="p">,</span><span class="s1">&#39;Ccie@2016&#39;</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://192.168.100.63/certsrv/mscep_admin/&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;The enrollment challenge password is: &lt;b&gt; [A-Z0-9]+ &quot;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">soup</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;failed&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">challenge_pass</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&lt;b&gt;&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">challenge_pass</span><span class="p">)</span>
+
+        <span class="n">conn</span> <span class="o">=</span> <span class="n">JunosDriver</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">hostname</span> <span class="p">,</span> <span class="n">auth_username</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                        <span class="n">auth_password</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">password</span><span class="p">,</span> <span class="n">auth_strict_key</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">transport</span><span class="o">=</span><span class="s2">&quot;ssh2&quot;</span><span class="p">,</span> <span class="n">timeout_ops</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">timeout_socket</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">timeout_transport</span><span class="o">=</span><span class="mi">35</span> <span class="p">)</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">()</span>
+
+        <span class="n">pki_commands</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;set security pki ca-profile advpn ca-identity uaada enrollment url http://192.168.100.63/certsrv/mscep/mscep.dll&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;set security pki ca-profile advpn revocation-check disable crl url http://192.168.100.63/CertEnroll/uaadca.crl&quot;</span><span class="p">,</span><span class="s2">&quot;commit&quot;</span><span class="p">]</span>
+
+        <span class="n">conf_pki</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">send_configs</span><span class="p">(</span><span class="n">pki_commands</span><span class="p">)</span><span class="o">.</span><span class="n">result</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">conf_pki</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">send_interactive</span><span class="p">([</span>
+            <span class="p">(</span><span class="s2">&quot;request security pki ca-certificate enroll ca-profile advpn&quot;</span><span class="p">,</span><span class="s2">&quot;Do you want to load the above CA certificate ? [yes,no] (no)&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span><span class="n">prompt</span><span class="p">),</span>
+            <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;request security pki generate-key-pair certificate-id </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">prompt</span><span class="p">),</span>
+            <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;request security pki local-certificate enroll ca-profile advpn certificate-id </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> domain-name </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;dev_name&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">.uurnik.local email info@uurnik.local ip-address </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">hostname</span><span class="si">}</span><span class="s1"> subject DC=uurnik.local,CN=</span><span class="si">{</span> <span class="n">task</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;dev_name&quot;</span><span class="p">]</span> <span class="si">}</span><span class="s1">,OU=IT,O=&quot;uurnik systems&quot;,L=ISB,ST=FED,C=PK challenge-password </span><span class="si">{</span><span class="n">challenge_pass</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">prompt</span><span class="p">)])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">result</span><span class="p">)</span></div>
+
+
+
+
+
+<span class="n">low_usr_cmds</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;show access-list&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show crypto&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show ip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show bgp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show line&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show dhcp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show control-plane&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show clock&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show ntp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show history&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show hosts&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show inventory&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show platform&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show cdp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show lldp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show snmp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show version&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;show nhrp&quot;</span>
+            <span class="p">]</span>
+
+
+
+
+
+<div class="viewcode-block" id="get_interface_index"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.get_interface_index">[docs]</a><span class="k">def</span> <span class="nf">get_interface_index</span><span class="p">(</span><span class="n">host</span><span class="p">,</span><span class="n">community_str</span><span class="p">,</span><span class="n">int_name</span><span class="p">):</span>
+    <span class="n">snmp_engine</span> <span class="o">=</span> <span class="n">snmp_sync</span><span class="o">.</span><span class="n">SnmpEngine</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span><span class="n">snmp_sync</span><span class="o">.</span><span class="n">getCmd</span><span class="p">(</span><span class="n">snmp_engine</span><span class="p">,</span>
+                            <span class="n">snmp_sync</span><span class="o">.</span><span class="n">CommunityData</span><span class="p">(</span><span class="n">community_str</span><span class="p">),</span>
+                            <span class="n">snmp_sync</span><span class="o">.</span><span class="n">UdpTransportTarget</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="mi">161</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                            <span class="n">snmp_sync</span><span class="o">.</span><span class="n">ContextData</span><span class="p">(),</span>
+                            <span class="n">snmp_sync</span><span class="o">.</span><span class="n">ObjectType</span><span class="p">(</span><span class="n">snmp_sync</span><span class="o">.</span><span class="n">ObjectIdentity</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;1.3.6.1.2.1.2.2.1.2.</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)))</span>
+            
+            <span class="n">_errorIndication_out</span><span class="p">,</span> <span class="n">_errorStatus_out</span><span class="p">,</span> <span class="n">_errorIndex_out</span><span class="p">,</span> <span class="n">varBinds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">response</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">int_name</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">varBinds</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="n">n</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">snmp_engine</span><span class="o">.</span><span class="n">transportDispatcher</span><span class="o">.</span><span class="n">closeDispatcher</span><span class="p">()</span></div>
+
+
+
+
+
+<div class="viewcode-block" id="snmp_get"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.snmp_get">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">snmp_get</span><span class="p">(</span><span class="n">host</span><span class="p">,</span><span class="n">community_str</span><span class="p">):</span>
+    <span class="n">oids</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;field&quot;</span><span class="p">:</span><span class="s2">&quot;ciscoMemoryPoolUsed-processor&quot;</span><span class="p">,</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span><span class="s2">&quot;1.3.6.1.4.1.9.9.48.1.1.1.5.1&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;field&quot;</span><span class="p">:</span><span class="s2">&quot;ciscoMemoryPoolFree-processor&quot;</span><span class="p">,</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span><span class="s2">&quot;1.3.6.1.4.1.9.9.48.1.1.1.6.1&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;field&quot;</span><span class="p">:</span><span class="s2">&quot;cpmCPUTotal5minRev&quot;</span><span class="p">,</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span><span class="s2">&quot;1.3.6.1.4.1.9.9.109.1.1.1.1.8.1&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;field&quot;</span><span class="p">:</span><span class="s2">&quot;sysUpTime&quot;</span><span class="p">,</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span><span class="s2">&quot;1.3.6.1.2.1.1.3.0&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;field&quot;</span><span class="p">:</span><span class="s2">&quot;TunnelCounter_in&quot;</span><span class="p">,</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span><span class="s2">&quot;1.3.6.1.2.1.2.2.1.16&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;field&quot;</span><span class="p">:</span><span class="s2">&quot;TunnelCounter_out&quot;</span><span class="p">,</span><span class="s2">&quot;OID&quot;</span><span class="p">:</span><span class="s2">&quot;1.3.6.1.2.1.2.2.1.10&quot;</span><span class="p">}]</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">snmp_engine</span> <span class="o">=</span> <span class="n">snmp</span><span class="o">.</span><span class="n">SnmpEngine</span><span class="p">()</span>
+    <span class="n">host</span><span class="p">[</span><span class="s1">&#39;int_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">oid</span> <span class="ow">in</span> <span class="n">oids</span><span class="p">:</span>
+            <span class="k">if</span>  <span class="s2">&quot;TunnelCounter&quot;</span> <span class="ow">in</span> <span class="n">oid</span><span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">]:</span>
+                <span class="n">oid</span><span class="p">[</span><span class="s1">&#39;OID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">oid</span><span class="p">[</span><span class="s1">&#39;OID&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="o">+</span> <span class="n">host</span><span class="p">[</span><span class="s1">&#39;int_index&#39;</span><span class="p">]</span>
+
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">snmp</span><span class="o">.</span><span class="n">getCmd</span><span class="p">(</span><span class="n">snmp_engine</span><span class="p">,</span>
+                                            <span class="n">snmp</span><span class="o">.</span><span class="n">CommunityData</span><span class="p">(</span><span class="n">community_str</span><span class="p">),</span>
+                                            <span class="n">snmp</span><span class="o">.</span><span class="n">UdpTransportTarget</span><span class="p">((</span><span class="n">host</span><span class="p">[</span><span class="s1">&#39;IP&#39;</span><span class="p">],</span> <span class="mi">161</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                                            <span class="n">snmp</span><span class="o">.</span><span class="n">ContextData</span><span class="p">(),</span>
+                                            <span class="n">snmp</span><span class="o">.</span><span class="n">ObjectType</span><span class="p">(</span><span class="n">snmp</span><span class="o">.</span><span class="n">ObjectIdentity</span><span class="p">(</span><span class="n">oid</span><span class="p">[</span><span class="s1">&#39;OID&#39;</span><span class="p">])))</span>
+
+
+            <span class="n">_errorIndication</span><span class="p">,</span> <span class="n">_errorStatus</span><span class="p">,</span> <span class="n">_errorIndex</span><span class="p">,</span> <span class="n">varBinds</span> <span class="o">=</span> <span class="n">response</span>
+
+            <span class="k">for</span> <span class="n">varBind</span> <span class="ow">in</span> <span class="n">varBinds</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="p">{</span><span class="n">oid</span><span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">]:[</span><span class="n">x</span><span class="o">.</span><span class="n">prettyPrint</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">varBind</span><span class="p">][</span><span class="mi">1</span><span class="p">]}</span>
+                <span class="k">if</span> <span class="s2">&quot;No Such Instance&quot;</span> <span class="ow">in</span> <span class="n">output</span><span class="p">[</span><span class="n">oid</span><span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">]]:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">oid</span><span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">]:[]})</span>
+
+                <span class="k">elif</span> <span class="n">oid</span><span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;sysUpTime&quot;</span><span class="p">:</span>
+                    <span class="n">output</span><span class="p">[</span><span class="n">oid</span><span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s2">&quot;sysUpTime&quot;</span><span class="p">])</span><span class="o">/</span><span class="mi">100</span><span class="p">))</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+            
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="n">host</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span><span class="s2">&quot;result&quot;</span><span class="p">:</span><span class="n">result</span><span class="p">}</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="n">host</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span><span class="s2">&quot;result&quot;</span><span class="p">:[]}</span>
+
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+
+
+<div class="viewcode-block" id="do_poll"><a class="viewcode-back" href="../../../api.helpers.html#api.helpers.misc.do_poll">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">do_poll</span><span class="p">(</span><span class="n">hosts</span><span class="p">,</span><span class="n">community_str</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    function for running snmp_get function Asynchronously against hosts</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">coroutines</span> <span class="o">=</span> <span class="p">[</span><span class="n">snmp_get</span><span class="p">(</span><span class="n">host</span><span class="p">,</span><span class="n">community_str</span><span class="p">)</span> <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">hosts</span><span class="p">]</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">coroutines</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Uurnik Systems.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

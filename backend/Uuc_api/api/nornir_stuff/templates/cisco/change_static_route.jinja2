@@ -1,0 +1,5 @@
+{% for route in routes_to_change %}
+no {{ route }}
+{% set address = route.split(' ') %}
+ip route vrf LAN {{ address[2] }} {{ address[3] }} {{ address[4] }}
+{% endfor %}

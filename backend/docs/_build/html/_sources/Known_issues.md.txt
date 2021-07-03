@@ -1,0 +1,6 @@
+# Caveats & Known Issues
+
+Facing an issue when a Hub is removed from the network but not from the inventory and New Spoke is added to the topology ,Newly added Spoke is configured with the nhrp static mapping & BGP neighborship of that Hub which was removed previously(but remains in the inventory)
+
+
+- As Hubs are added to the inventory the nhs_nbma & nhs_server lists is appended in the Defaults Table and remains there if that Hub is added to the topology or not. When Spokes are configured ,configuration template runs a loop around nhs_nbma and nhs_server list and configure static nhrp mapping around it.

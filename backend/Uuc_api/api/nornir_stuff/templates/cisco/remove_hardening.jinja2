@@ -1,0 +1,27 @@
+no policy-map P3_Protection
+no class-map match-any ICMP_Control
+no class-map match-any ND_Control
+no class-map match-any RA_RS_Control
+
+no ipv6 access-list ND_Control_QoS      
+no ipv6 access-list RA_RS_Control_QoS
+no ipv6 access-list ICMP_Control_QoS 
+no ipv6 access-list DENY_IPV6_MGMT
+
+no scheduler heapcheck process memory processor io
+no scheduler allocate 20000 1000
+no process cpu threshold type total rising 80 interval 5 falling 70 interval 5
+
+no security authentication failure rate 3 log
+no service sequence-numbers
+
+no service tcp-keepalives-in
+no service tcp-keepalives-out
+
+no ip icmp rate-limit unreachable 150
+no ip icmp rate-limit unreachable DF 100
+
+no snmp-server enable traps cpu threshold
+
+no memory free low-watermark processor 32000
+no memory free low-watermark IO 32000

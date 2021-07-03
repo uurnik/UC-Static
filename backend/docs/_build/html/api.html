@@ -1,0 +1,1260 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>API Docs &mdash; Uurnik Connect v0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Helpers" href="api.helpers.html" />
+    <link rel="prev" title="API Reference" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Uurnik Connect
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uc-defaults.html">Defaults</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Uuc_api_doc.html">Uurnik Connect API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Docs</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.nornir_stuff.html">Nornir-end</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.users.html">Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-api.admin">api.admin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-api.apps">api.apps module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-api.models">api.models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-api.serializers">api.serializers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-api.urls">api.urls module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-api.views">api.views module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies &amp; Housekeeping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployement_todos.html">Tasks before Deployement</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Uurnik Connect</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">API Reference</a> &raquo;</li>
+        
+      <li>API Docs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="api-docs">
+<h1>API Docs<a class="headerlink" href="#api-docs" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.helpers.html">Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.helpers.html#module-api.helpers.distribute_tunnel_ip">api.helpers.distribute_tunnel_ip module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.helpers.html#module-api.helpers.get_tunnel_pool_list">api.helpers.get_tunnel_pool_list module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.helpers.html#module-api.helpers.inventory_builder">api.helpers.inventory_builder module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.helpers.html#module-api.helpers.misc">api.helpers.misc module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.nornir_stuff.html">Nornir-end</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.nornir_stuff.html#module-api.nornir_stuff.configure_nodes">api.nornir_stuff.configure_nodes module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.users.html">Users</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.users.html#module-api.users.serializers">api.users.serializers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.users.html#module-api.users.urls">api.users.urls module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.users.html#module-api.users.views">api.users.views module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="module-api.admin">
+<span id="api-admin-module"></span><h2>api.admin module<a class="headerlink" href="#module-api.admin" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-api.apps">
+<span id="api-apps-module"></span><h2>api.apps module<a class="headerlink" href="#module-api.apps" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="api.apps.ApiConfig">
+<em class="property">class </em><code class="sig-prename descclassname">api.apps.</code><code class="sig-name descname">ApiConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app_name</span></em>, <em class="sig-param"><span class="n">app_module</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/apps.html#ApiConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.apps.ApiConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.apps.config.AppConfig</span></code></p>
+<dl class="py attribute">
+<dt id="api.apps.ApiConfig.name">
+<code class="sig-name descname">name</code><em class="property"> = 'api'</em><a class="headerlink" href="#api.apps.ApiConfig.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-api.models">
+<span id="api-models-module"></span><h2>api.models module<a class="headerlink" href="#module-api.models" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="api.models.Account">
+<em class="property">class </em><code class="sig-prename descclassname">api.models.</code><code class="sig-name descname">Account</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="n">date_joined</span></em>, <em class="sig-param"><span class="n">last_login</span></em>, <em class="sig-param"><span class="n">is_admin</span></em>, <em class="sig-param"><span class="n">is_active</span></em>, <em class="sig-param"><span class="n">is_staff</span></em>, <em class="sig-param"><span class="n">is_superuser</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/models.html#Account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.models.Account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.base_user.AbstractBaseUser</span></code></p>
+<dl class="py exception">
+<dt id="api.models.Account.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#api.models.Account.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="api.models.Account.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#api.models.Account.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Account.REQUIRED_FIELDS">
+<code class="sig-name descname">REQUIRED_FIELDS</code><em class="property"> = ['email']</em><a class="headerlink" href="#api.models.Account.REQUIRED_FIELDS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Account.USERNAME_FIELD">
+<code class="sig-name descname">USERNAME_FIELD</code><em class="property"> = 'username'</em><a class="headerlink" href="#api.models.Account.USERNAME_FIELD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Account.auth_token_set">
+<code class="sig-name descname">auth_token_set</code><a class="headerlink" href="#api.models.Account.auth_token_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Account.date_joined">
+<code class="sig-name descname">date_joined</code><a class="headerlink" href="#api.models.Account.date_joined" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Account.email">
+<code class="sig-name descname">email</code><a class="headerlink" href="#api.models.Account.email" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="api.models.Account.get_next_by_date_joined">
+<code class="sig-name descname">get_next_by_date_joined</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: date_joined&gt;</em>, <em class="sig-param">is_next=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#api.models.Account.get_next_by_date_joined" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="api.models.Account.get_next_by_last_login">
+<code class="sig-name descname">get_next_by_last_login</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: last_login&gt;</em>, <em class="sig-param">is_next=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#api.models.Account.get_next_by_last_login" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="api.models.Account.get_previous_by_date_joined">
+<code class="sig-name descname">get_previous_by_date_joined</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: date_joined&gt;</em>, <em class="sig-param">is_next=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#api.models.Account.get_previous_by_date_joined" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="api.models.Account.get_previous_by_last_login">
+<code class="sig-name descname">get_previous_by_last_login</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: last_login&gt;</em>, <em class="sig-param">is_next=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#api.models.Account.get_previous_by_last_login" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="api.models.Account.has_module_perms">
+<code class="sig-name descname">has_module_perms</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app_label</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/models.html#Account.has_module_perms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.models.Account.has_module_perms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="api.models.Account.has_perm">
+<code class="sig-name descname">has_perm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">perm</span></em>, <em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/models.html#Account.has_perm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.models.Account.has_perm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Account.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#api.models.Account.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Account.is_admin">
+<code class="sig-name descname">is_admin</code><a class="headerlink" href="#api.models.Account.is_admin" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Account.is_staff">
+<code class="sig-name descname">is_staff</code><a class="headerlink" href="#api.models.Account.is_staff" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Account.is_superuser">
+<code class="sig-name descname">is_superuser</code><a class="headerlink" href="#api.models.Account.is_superuser" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Account.logentry_set">
+<code class="sig-name descname">logentry_set</code><a class="headerlink" href="#api.models.Account.logentry_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Account.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;api.models.AccountManager object&gt;</em><a class="headerlink" href="#api.models.Account.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Account.username">
+<code class="sig-name descname">username</code><a class="headerlink" href="#api.models.Account.username" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.models.AccountManager">
+<em class="property">class </em><code class="sig-prename descclassname">api.models.</code><code class="sig-name descname">AccountManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/models.html#AccountManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.models.AccountManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.base_user.BaseUserManager</span></code></p>
+<dl class="py method">
+<dt id="api.models.AccountManager.create_superuser">
+<code class="sig-name descname">create_superuser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="n">password</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/models.html#AccountManager.create_superuser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.models.AccountManager.create_superuser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="api.models.AccountManager.create_user">
+<code class="sig-name descname">create_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">email</span></em>, <em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="n">password</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/models.html#AccountManager.create_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.models.AccountManager.create_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.models.CacheTable">
+<em class="property">class </em><code class="sig-prename descclassname">api.models.</code><code class="sig-name descname">CacheTable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ip</span></em>, <em class="sig-param"><span class="n">in_use</span></em>, <em class="sig-param"><span class="n">device_ip</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/models.html#CacheTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.models.CacheTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dl class="py exception">
+<dt id="api.models.CacheTable.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#api.models.CacheTable.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="api.models.CacheTable.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#api.models.CacheTable.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.CacheTable.device_ip">
+<code class="sig-name descname">device_ip</code><a class="headerlink" href="#api.models.CacheTable.device_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.CacheTable.in_use">
+<code class="sig-name descname">in_use</code><a class="headerlink" href="#api.models.CacheTable.in_use" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.CacheTable.ip">
+<code class="sig-name descname">ip</code><a class="headerlink" href="#api.models.CacheTable.ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.CacheTable.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#api.models.CacheTable.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.models.Defaults">
+<em class="property">class </em><code class="sig-prename descclassname">api.models.</code><code class="sig-name descname">Defaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">tunnel_int</span></em>, <em class="sig-param"><span class="n">asn</span></em>, <em class="sig-param"><span class="n">policy_num</span></em>, <em class="sig-param"><span class="n">ipsec_key</span></em>, <em class="sig-param"><span class="n">trans_name</span></em>, <em class="sig-param"><span class="n">profile_name</span></em>, <em class="sig-param"><span class="n">nhs_server</span></em>, <em class="sig-param"><span class="n">nhs_nbma</span></em>, <em class="sig-param"><span class="n">access_type</span></em>, <em class="sig-param"><span class="n">ip_sla_process</span></em>, <em class="sig-param"><span class="n">track_ip</span></em>, <em class="sig-param"><span class="n">is_sla_configured</span></em>, <em class="sig-param"><span class="n">is_device_hardening_configured</span></em>, <em class="sig-param"><span class="n">is_copp_configured</span></em>, <em class="sig-param"><span class="n">hubs_fqds</span></em>, <em class="sig-param"><span class="n">dns</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/models.html#Defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.models.Defaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dl class="py exception">
+<dt id="api.models.Defaults.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#api.models.Defaults.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="api.models.Defaults.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#api.models.Defaults.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.access_type">
+<code class="sig-name descname">access_type</code><a class="headerlink" href="#api.models.Defaults.access_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.asn">
+<code class="sig-name descname">asn</code><a class="headerlink" href="#api.models.Defaults.asn" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.dns">
+<code class="sig-name descname">dns</code><a class="headerlink" href="#api.models.Defaults.dns" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.hubs_fqds">
+<code class="sig-name descname">hubs_fqds</code><a class="headerlink" href="#api.models.Defaults.hubs_fqds" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#api.models.Defaults.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.ip_sla_process">
+<code class="sig-name descname">ip_sla_process</code><a class="headerlink" href="#api.models.Defaults.ip_sla_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.ipsec_key">
+<code class="sig-name descname">ipsec_key</code><a class="headerlink" href="#api.models.Defaults.ipsec_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.is_copp_configured">
+<code class="sig-name descname">is_copp_configured</code><a class="headerlink" href="#api.models.Defaults.is_copp_configured" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.is_device_hardening_configured">
+<code class="sig-name descname">is_device_hardening_configured</code><a class="headerlink" href="#api.models.Defaults.is_device_hardening_configured" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.is_sla_configured">
+<code class="sig-name descname">is_sla_configured</code><a class="headerlink" href="#api.models.Defaults.is_sla_configured" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.nhs_nbma">
+<code class="sig-name descname">nhs_nbma</code><a class="headerlink" href="#api.models.Defaults.nhs_nbma" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.nhs_server">
+<code class="sig-name descname">nhs_server</code><a class="headerlink" href="#api.models.Defaults.nhs_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#api.models.Defaults.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.policy_num">
+<code class="sig-name descname">policy_num</code><a class="headerlink" href="#api.models.Defaults.policy_num" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.profile_name">
+<code class="sig-name descname">profile_name</code><a class="headerlink" href="#api.models.Defaults.profile_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.track_ip">
+<code class="sig-name descname">track_ip</code><a class="headerlink" href="#api.models.Defaults.track_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.trans_name">
+<code class="sig-name descname">trans_name</code><a class="headerlink" href="#api.models.Defaults.trans_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Defaults.tunnel_int">
+<code class="sig-name descname">tunnel_int</code><a class="headerlink" href="#api.models.Defaults.tunnel_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.models.Hosts">
+<em class="property">class </em><code class="sig-prename descclassname">api.models.</code><code class="sig-name descname">Hosts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ip</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">platform</span></em>, <em class="sig-param"><span class="n">group</span></em>, <em class="sig-param"><span class="n">is_configured</span></em>, <em class="sig-param"><span class="n">wan_int</span></em>, <em class="sig-param"><span class="n">wan_subnet</span></em>, <em class="sig-param"><span class="n">next_hop</span></em>, <em class="sig-param"><span class="n">tunnel_ip</span></em>, <em class="sig-param"><span class="n">loop_back</span></em>, <em class="sig-param"><span class="n">vendor</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">os_version</span></em>, <em class="sig-param"><span class="n">serial_no</span></em>, <em class="sig-param"><span class="n">dev_name</span></em>, <em class="sig-param"><span class="n">interfaces</span></em>, <em class="sig-param"><span class="n">fqdn</span></em>, <em class="sig-param"><span class="n">ram_size</span></em>, <em class="sig-param"><span class="n">copp_bw</span></em>, <em class="sig-param"><span class="n">fhrp</span></em>, <em class="sig-param"><span class="n">fhrp_interface</span></em>, <em class="sig-param"><span class="n">primary_router</span></em>, <em class="sig-param"><span class="n">virtual_ip</span></em>, <em class="sig-param"><span class="n">advertised_interfaces</span></em>, <em class="sig-param"><span class="n">advertised_static_routes</span></em>, <em class="sig-param"><span class="n">crypto</span></em>, <em class="sig-param"><span class="n">tunnel_int</span></em>, <em class="sig-param"><span class="n">routing</span></em>, <em class="sig-param"><span class="n">vrfs</span></em>, <em class="sig-param"><span class="n">tcl_scp</span></em>, <em class="sig-param"><span class="n">acl</span></em>, <em class="sig-param"><span class="n">nat</span></em>, <em class="sig-param"><span class="n">route_map_prefix_list</span></em>, <em class="sig-param"><span class="n">snmp_int_index</span></em>, <em class="sig-param"><span class="n">logging_host</span></em>, <em class="sig-param"><span class="n">logging_level</span></em>, <em class="sig-param"><span class="n">logging_facility</span></em>, <em class="sig-param"><span class="n">logging_configured</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/models.html#Hosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.models.Hosts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dl class="py exception">
+<dt id="api.models.Hosts.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#api.models.Hosts.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="api.models.Hosts.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#api.models.Hosts.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.acl">
+<code class="sig-name descname">acl</code><a class="headerlink" href="#api.models.Hosts.acl" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.advertised_interfaces">
+<code class="sig-name descname">advertised_interfaces</code><a class="headerlink" href="#api.models.Hosts.advertised_interfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.advertised_static_routes">
+<code class="sig-name descname">advertised_static_routes</code><a class="headerlink" href="#api.models.Hosts.advertised_static_routes" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.copp_bw">
+<code class="sig-name descname">copp_bw</code><a class="headerlink" href="#api.models.Hosts.copp_bw" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.crypto">
+<code class="sig-name descname">crypto</code><a class="headerlink" href="#api.models.Hosts.crypto" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.dev_name">
+<code class="sig-name descname">dev_name</code><a class="headerlink" href="#api.models.Hosts.dev_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.fhrp">
+<code class="sig-name descname">fhrp</code><a class="headerlink" href="#api.models.Hosts.fhrp" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.fhrp_interface">
+<code class="sig-name descname">fhrp_interface</code><a class="headerlink" href="#api.models.Hosts.fhrp_interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.fqdn">
+<code class="sig-name descname">fqdn</code><a class="headerlink" href="#api.models.Hosts.fqdn" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.group">
+<code class="sig-name descname">group</code><a class="headerlink" href="#api.models.Hosts.group" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.interfaces">
+<code class="sig-name descname">interfaces</code><a class="headerlink" href="#api.models.Hosts.interfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.ip">
+<code class="sig-name descname">ip</code><a class="headerlink" href="#api.models.Hosts.ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.is_configured">
+<code class="sig-name descname">is_configured</code><a class="headerlink" href="#api.models.Hosts.is_configured" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.logging_configured">
+<code class="sig-name descname">logging_configured</code><a class="headerlink" href="#api.models.Hosts.logging_configured" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.logging_facility">
+<code class="sig-name descname">logging_facility</code><a class="headerlink" href="#api.models.Hosts.logging_facility" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.logging_host">
+<code class="sig-name descname">logging_host</code><a class="headerlink" href="#api.models.Hosts.logging_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.logging_level">
+<code class="sig-name descname">logging_level</code><a class="headerlink" href="#api.models.Hosts.logging_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.loop_back">
+<code class="sig-name descname">loop_back</code><a class="headerlink" href="#api.models.Hosts.loop_back" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#api.models.Hosts.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#api.models.Hosts.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.nat">
+<code class="sig-name descname">nat</code><a class="headerlink" href="#api.models.Hosts.nat" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.next_hop">
+<code class="sig-name descname">next_hop</code><a class="headerlink" href="#api.models.Hosts.next_hop" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#api.models.Hosts.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.os_version">
+<code class="sig-name descname">os_version</code><a class="headerlink" href="#api.models.Hosts.os_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.password">
+<code class="sig-name descname">password</code><a class="headerlink" href="#api.models.Hosts.password" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.platform">
+<code class="sig-name descname">platform</code><a class="headerlink" href="#api.models.Hosts.platform" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.primary_router">
+<code class="sig-name descname">primary_router</code><a class="headerlink" href="#api.models.Hosts.primary_router" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.ram_size">
+<code class="sig-name descname">ram_size</code><a class="headerlink" href="#api.models.Hosts.ram_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.route_map_prefix_list">
+<code class="sig-name descname">route_map_prefix_list</code><a class="headerlink" href="#api.models.Hosts.route_map_prefix_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.routes">
+<code class="sig-name descname">routes</code><a class="headerlink" href="#api.models.Hosts.routes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.routing">
+<code class="sig-name descname">routing</code><a class="headerlink" href="#api.models.Hosts.routing" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.serial_no">
+<code class="sig-name descname">serial_no</code><a class="headerlink" href="#api.models.Hosts.serial_no" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.snmp_int_index">
+<code class="sig-name descname">snmp_int_index</code><a class="headerlink" href="#api.models.Hosts.snmp_int_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.tcl_scp">
+<code class="sig-name descname">tcl_scp</code><a class="headerlink" href="#api.models.Hosts.tcl_scp" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.tunnel_int">
+<code class="sig-name descname">tunnel_int</code><a class="headerlink" href="#api.models.Hosts.tunnel_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.tunnel_ip">
+<code class="sig-name descname">tunnel_ip</code><a class="headerlink" href="#api.models.Hosts.tunnel_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.username">
+<code class="sig-name descname">username</code><a class="headerlink" href="#api.models.Hosts.username" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.vendor">
+<code class="sig-name descname">vendor</code><a class="headerlink" href="#api.models.Hosts.vendor" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.virtual_ip">
+<code class="sig-name descname">virtual_ip</code><a class="headerlink" href="#api.models.Hosts.virtual_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.vrfs">
+<code class="sig-name descname">vrfs</code><a class="headerlink" href="#api.models.Hosts.vrfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.wan_int">
+<code class="sig-name descname">wan_int</code><a class="headerlink" href="#api.models.Hosts.wan_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Hosts.wan_subnet">
+<code class="sig-name descname">wan_subnet</code><a class="headerlink" href="#api.models.Hosts.wan_subnet" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.models.Routes">
+<em class="property">class </em><code class="sig-prename descclassname">api.models.</code><code class="sig-name descname">Routes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span></em>, <em class="sig-param"><span class="n">route</span></em>, <em class="sig-param"><span class="n">lan_routes</span></em>, <em class="sig-param"><span class="n">custom_route</span></em>, <em class="sig-param"><span class="n">advertised</span></em>, <em class="sig-param"><span class="n">protocol</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/models.html#Routes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.models.Routes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dl class="py exception">
+<dt id="api.models.Routes.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#api.models.Routes.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="api.models.Routes.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#api.models.Routes.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Routes.advertised">
+<code class="sig-name descname">advertised</code><a class="headerlink" href="#api.models.Routes.advertised" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Routes.custom_route">
+<code class="sig-name descname">custom_route</code><a class="headerlink" href="#api.models.Routes.custom_route" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Routes.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#api.models.Routes.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Routes.lan_routes">
+<code class="sig-name descname">lan_routes</code><a class="headerlink" href="#api.models.Routes.lan_routes" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Routes.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#api.models.Routes.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Routes.protocol">
+<code class="sig-name descname">protocol</code><a class="headerlink" href="#api.models.Routes.protocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Routes.route">
+<code class="sig-name descname">route</code><a class="headerlink" href="#api.models.Routes.route" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.Routes.route_id">
+<code class="sig-name descname">route_id</code><a class="headerlink" href="#api.models.Routes.route_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.models.TunnelPool">
+<em class="property">class </em><code class="sig-prename descclassname">api.models.</code><code class="sig-name descname">TunnelPool</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ip</span></em>, <em class="sig-param"><span class="n">is_used</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/models.html#TunnelPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.models.TunnelPool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<dl class="py exception">
+<dt id="api.models.TunnelPool.DoesNotExist">
+<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#api.models.TunnelPool.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="api.models.TunnelPool.MultipleObjectsReturned">
+<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#api.models.TunnelPool.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.TunnelPool.ip">
+<code class="sig-name descname">ip</code><a class="headerlink" href="#api.models.TunnelPool.ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.TunnelPool.is_used">
+<code class="sig-name descname">is_used</code><a class="headerlink" href="#api.models.TunnelPool.is_used" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.models.TunnelPool.objects">
+<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#api.models.TunnelPool.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-api.serializers">
+<span id="api-serializers-module"></span><h2>api.serializers module<a class="headerlink" href="#module-api.serializers" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="api.serializers.DefaultsSerializer">
+<em class="property">class </em><code class="sig-prename descclassname">api.serializers.</code><code class="sig-name descname">DefaultsSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/serializers.html#DefaultsSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.serializers.DefaultsSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<dl class="py class">
+<dt id="api.serializers.DefaultsSerializer.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="_modules/api/serializers.html#DefaultsSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.serializers.DefaultsSerializer.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="api.serializers.DefaultsSerializer.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = ['tunnel_int', 'asn', 'policy_num', 'ipsec_key', 'trans_name', 'profile_name', 'nhs_server', 'nhs_nbma', 'access_type', 'ip_sla_process', 'track_ip', 'is_sla_configured']</em><a class="headerlink" href="#api.serializers.DefaultsSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.serializers.DefaultsSerializer.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#api.serializers.DefaultsSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#api.models.Defaults" title="api.models.Defaults"><code class="xref py py-class docutils literal notranslate"><span class="pre">api.models.Defaults</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.serializers.HostsSerializer">
+<em class="property">class </em><code class="sig-prename descclassname">api.serializers.</code><code class="sig-name descname">HostsSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/serializers.html#HostsSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.serializers.HostsSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<dl class="py class">
+<dt id="api.serializers.HostsSerializer.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="_modules/api/serializers.html#HostsSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.serializers.HostsSerializer.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="api.serializers.HostsSerializer.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = ['ip', 'name', 'username', 'password', 'platform', 'group', 'is_configured', 'wan_int', 'wan_subnet', 'tunnel_ip', 'loop_back', 'next_hop', 'vendor', 'model', 'ram_size', 'os_version', 'serial_no', 'dev_name', 'interfaces', 'fhrp', 'fhrp_interface', 'primary_router', 'virtual_ip']</em><a class="headerlink" href="#api.serializers.HostsSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.serializers.HostsSerializer.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#api.serializers.HostsSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#api.models.Hosts" title="api.models.Hosts"><code class="xref py py-class docutils literal notranslate"><span class="pre">api.models.Hosts</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt id="api.serializers.HostsSerializer.validate_name">
+<code class="sig-name descname">validate_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/serializers.html#HostsSerializer.validate_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.serializers.HostsSerializer.validate_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>validate ‘name’ field</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-api.urls">
+<span id="api-urls-module"></span><h2>api.urls module<a class="headerlink" href="#module-api.urls" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-api.views">
+<span id="api-views-module"></span><h2>api.views module<a class="headerlink" href="#module-api.views" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="api.views.add_Host">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">add_Host</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#add_Host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.add_Host" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to add Hosts in the Hosts table, it will assign the tunnel IP to the host being added,
+first looking for tunnel IP in the CacheTable, if not found,
+An unused IP will assigned from the TunnelPool Table,
+if host being added is a HUB then its NBMA and tunnel IP will also be added to Defaults Table
+end point -&gt; /api/add-host/</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.add_remove_hub">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">add_remove_hub</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#add_remove_hub"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.add_remove_hub" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to Add or Remove the Hub (other than Primary Hub) individually.
+Along removing or adding configuration to new Hub , change in converged across other Hubs and spokes
+i.e Add/remove nhrp static mapping &amp; BGP neighborship commands</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.add_remove_spoke">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">add_remove_spoke</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#add_remove_spoke"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.add_remove_spoke" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to add/remove a indivisual spoke
+endpoint -&gt; ‘api/branch/&lt;str:pk&gt;/’</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.check_alive">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">check_alive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#check_alive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.check_alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to test the ssh connectivity of the hosts
+endpoind -&gt; ‘api/ping/’</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.configure">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">configure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.configure" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to configure the network with dmvpn, the ‘option’( int-&gt; 1,2 or 3) argument will be passed to the
+configuration function to configure the access type of the network as demanded by the user.
+endpoint -&gt; /api/configure/&lt;int:option&gt;/</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.copp">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">copp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#copp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.copp" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>View for configuring Control Plane Policing on Cisco devices</dt><dd><ul class="simple">
+<li><p>check max throughput from model_spec file</p></li>
+<li><p>calculte COPP bandwidth classes and feed to configuration template</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.delete_host">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">delete_host</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#delete_host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.delete_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to delete a Host from Database, if host is configured, first, it will be removed from the network</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.device_hardening">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">device_hardening</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#device_hardening"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.device_hardening" title="Permalink to this definition">¶</a></dt>
+<dd><p>View for pushing Hardening Commands to devices</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.gather_routes">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">gather_routes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#gather_routes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.gather_routes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>View for suggesting routes to user</dt><dd><ul class="simple">
+<li><p>return list of directly connected &amp; static routes ( GET)</p></li>
+<li><p>for fortigate only returns directly connected ( GET )</p></li>
+<li><p>POST routes back to the Database ( POST )</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.get_cdp_info">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">get_cdp_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#get_cdp_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.get_cdp_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to get CDP information from all the Hosts in the Database
+Data is then structured to feed the Viz-js library to create Network Topology on front-end</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.get_deployed_access_type">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">get_deployed_access_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#get_deployed_access_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.get_deployed_access_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>View for getting deployed access type</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.get_facts">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">get_facts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#get_facts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.get_facts" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to gather the facts about devices
+1. Check the device Platform and update Hosts table
+2. Gather hostname,interfaces,model,serial_no,os_version ,vendor</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.get_interfaces">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">get_interfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#get_interfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.get_interfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>View for getting interface information</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.get_inventory">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">get_inventory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#get_inventory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.get_inventory" title="Permalink to this definition">¶</a></dt>
+<dd><p>temporary function to get nornir inventory, for debug and testing purpose
+endpoint -&gt; /api/inventory/</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.ip_sla_conf">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">ip_sla_conf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#ip_sla_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.ip_sla_conf" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>function to configure ip sla and track in HSRP</dt><dd><p>endpoind -&gt; ‘api/ip-sla/’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.reachability">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">reachability</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#reachability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.reachability" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to check the reachability of the hosts
+endpoind -&gt; ‘api/ping/’</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.set_logging">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">set_logging</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#set_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.set_logging" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="api.views.snmp_poll">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">snmp_poll</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#snmp_poll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.snmp_poll" title="Permalink to this definition">¶</a></dt>
+<dd><p>View for SNMP polling</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.swipe_ipsec_keys">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">swipe_ipsec_keys</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#swipe_ipsec_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.swipe_ipsec_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>View For Changing IPsec Keys</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.views.tear_down">
+<code class="sig-prename descclassname">api.views.</code><code class="sig-name descname">tear_down</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/views.html#tear_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.views.tear_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to tear down whole network
+endpoint -&gt; ‘api/tear-down/’</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="api.helpers.html" class="btn btn-neutral float-right" title="Helpers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="modules.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Uurnik Systems.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

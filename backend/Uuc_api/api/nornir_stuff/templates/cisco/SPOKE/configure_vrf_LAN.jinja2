@@ -1,0 +1,7 @@
+{% for interface in advertised_interfaces %}
+interface {{ interface["interface"] }}
+ ip vrf forwarding LAN
+ ip address {{ interface["address"] }} {{ interface["mask"] }}
+ ip nat inside
+ exit
+ {% endfor %}

@@ -1,0 +1,17 @@
+{% if option == 1 %}
+ip vrf INTERNET
+ rd 65{{ host.tunnel_int }}:0
+{% endif %}
+
+{% if option == 3 %}
+ip vrf INTERNET
+ import map LAN_TO_INTERNET
+ route-target export 65{{ host.tunnel_int }}:0
+ route-target import 65{{ host.tunnel_int }}:0
+ route-target import 65{{ host.tunnel_int }}:1
+ip vrf LAN
+ rd 65{{ host.tunnel_int }}:1
+ route-target export 65{{ host.tunnel_int }}:1
+ route-target import 65{{ host.tunnel_int }}:1
+ route-target import 65{{ host.tunnel_int }}:0
+{% endif %}

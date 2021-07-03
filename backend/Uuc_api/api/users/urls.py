@@ -1,0 +1,25 @@
+from django.urls import path
+from django.conf.urls import url
+from .views import ManageUsers, ChangePassword
+from rest_framework import routers
+
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
+
+user_router = routers.SimpleRouter()
+user_router.register(r"", ManageUsers)
+
+
+app_name = "api"
+
+
+urlpatterns = [
+    path("change_password/", ChangePassword.as_view(), name="change_password"),
+    path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+]
+
+urlpatterns += user_router.urls

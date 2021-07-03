@@ -1,0 +1,5 @@
+{% for interface in advertised_interfaces %}
+interface {{ interface["interface"] }}
+ ip nat inside
+ exit
+ {% endfor %}

@@ -1,0 +1,536 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Helpers &mdash; Uurnik Connect v0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Nornir-end" href="api.nornir_stuff.html" />
+    <link rel="prev" title="API Docs" href="api.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Uurnik Connect
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uc-defaults.html">Defaults</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Uuc_api_doc.html">Uurnik Connect API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Docs</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="api.html">API Reference</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Helpers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-api.helpers.distribute_tunnel_ip">api.helpers.distribute_tunnel_ip module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-api.helpers.get_tunnel_pool_list">api.helpers.get_tunnel_pool_list module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-api.helpers.inventory_builder">api.helpers.inventory_builder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-api.helpers.misc">api.helpers.misc module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.nornir_stuff.html">Nornir-end</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.users.html">Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.admin">api.admin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.apps">api.apps module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.models">api.models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.serializers">api.serializers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.urls">api.urls module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.views">api.views module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies &amp; Housekeeping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployement_todos.html">Tasks before Deployement</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Uurnik Connect</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="api.html">API Docs</a> &raquo;</li>
+        
+      <li>Helpers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/api.helpers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="helpers">
+<h1>Helpers<a class="headerlink" href="#helpers" title="Permalink to this headline">¶</a></h1>
+<p>Helper Functions!</p>
+<div class="section" id="module-api.helpers.distribute_tunnel_ip">
+<span id="api-helpers-distribute-tunnel-ip-module"></span><h2>api.helpers.distribute_tunnel_ip module<a class="headerlink" href="#module-api.helpers.distribute_tunnel_ip" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="api.helpers.distribute_tunnel_ip.update_defaults_nhs">
+<code class="sig-prename descclassname">api.helpers.distribute_tunnel_ip.</code><code class="sig-name descname">update_defaults_nhs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tunnel_ip</span></em>, <em class="sig-param"><span class="n">serializer</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/distribute_tunnel_ip.html#update_defaults_nhs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.distribute_tunnel_ip.update_defaults_nhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>function for updating nhs in inventory &amp; DB defaults when a HUB is added</p>
+<blockquote>
+<div><dl class="field-list">
+<dt class="field-odd">params</dt>
+<dd class="field-odd"><p>tunnel_ip: tunnel IP of the hub being added</p>
+<p>serializer: host serializer object</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-api.helpers.get_tunnel_pool_list">
+<span id="api-helpers-get-tunnel-pool-list-module"></span><h2>api.helpers.get_tunnel_pool_list module<a class="headerlink" href="#module-api.helpers.get_tunnel_pool_list" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="api.helpers.get_tunnel_pool_list.add_tunnel_pool">
+<code class="sig-prename descclassname">api.helpers.get_tunnel_pool_list.</code><code class="sig-name descname">add_tunnel_pool</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/get_tunnel_pool_list.html#add_tunnel_pool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.get_tunnel_pool_list.add_tunnel_pool" title="Permalink to this definition">¶</a></dt>
+<dd><p>funtion for defining a pool used in tunnel network,calculte number of host ips
+and saving it to database</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-api.helpers.inventory_builder">
+<span id="api-helpers-inventory-builder-module"></span><h2>api.helpers.inventory_builder module<a class="headerlink" href="#module-api.helpers.inventory_builder" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="api.helpers.inventory_builder.Myinventory">
+<em class="property">class </em><code class="sig-prename descclassname">api.helpers.inventory_builder.</code><code class="sig-name descname">Myinventory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/inventory_builder.html#Myinventory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.inventory_builder.Myinventory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">nornir.core.deserializer.inventory.Inventory</span></code></p>
+<p>Initiating nornir inventory</p>
+<dl class="py attribute">
+<dt id="api.helpers.inventory_builder.Myinventory.defaults">
+<code class="sig-name descname">defaults</code><em class="property">: nornir.core.deserializer.inventory.Defaults</em><a class="headerlink" href="#api.helpers.inventory_builder.Myinventory.defaults" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.inventory_builder.Myinventory.groups">
+<code class="sig-name descname">groups</code><em class="property">: Dict<span class="p">[</span>str<span class="p">, </span>nornir.core.deserializer.inventory.InventoryElement<span class="p">]</span></em><a class="headerlink" href="#api.helpers.inventory_builder.Myinventory.groups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.inventory_builder.Myinventory.hosts">
+<code class="sig-name descname">hosts</code><em class="property">: Dict<span class="p">[</span>str<span class="p">, </span>nornir.core.deserializer.inventory.InventoryElement<span class="p">]</span></em><a class="headerlink" href="#api.helpers.inventory_builder.Myinventory.hosts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.helpers.inventory_builder.get_inventory_data">
+<code class="sig-prename descclassname">api.helpers.inventory_builder.</code><code class="sig-name descname">get_inventory_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Defaults</span></em>, <em class="sig-param"><span class="n">Hosts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/inventory_builder.html#get_inventory_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.inventory_builder.get_inventory_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to create the nornir inventory structure from DB objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Params</dt>
+<dd class="field-odd"><p>Defaults: Defaults DB table
+Hosts: Hosts DB table</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-api.helpers.misc">
+<span id="api-helpers-misc-module"></span><h2>api.helpers.misc module<a class="headerlink" href="#module-api.helpers.misc" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="api.helpers.misc.CoppBWCalculator">
+<em class="property">class </em><code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">CoppBWCalculator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bw</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#CoppBWCalculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Bandwidth caculator for Control Place Policing (Cisco)</p>
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.bw_percent_classes">
+<code class="sig-name descname">bw_percent_classes</code><em class="property"> = [0.106, 0.0008, 0.0008, 0.159, 0.159, 0.212, 0.0795, 0.0795, 0.0159, 0.0795, 0.0795, 0.0286]</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.bw_percent_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="api.helpers.misc.CoppBWCalculator.calculate">
+<code class="sig-name descname">calculate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#CoppBWCalculator.calculate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.calculate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.catch_all_ipv4">
+<code class="sig-name descname">catch_all_ipv4</code><em class="property"> = 0.0795</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.catch_all_ipv4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.catch_all_ipv6">
+<code class="sig-name descname">catch_all_ipv6</code><em class="property"> = 0.0795</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.catch_all_ipv6" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.class_default">
+<code class="sig-name descname">class_default</code><em class="property"> = 0.0286</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.class_default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.ipv6_cp">
+<code class="sig-name descname">ipv6_cp</code><em class="property"> = 0.106</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.ipv6_cp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.isakmp_esp_ah_cp">
+<code class="sig-name descname">isakmp_esp_ah_cp</code><em class="property"> = 0.0159</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.isakmp_esp_ah_cp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.management_cp">
+<code class="sig-name descname">management_cp</code><em class="property"> = 0.212</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.management_cp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.normal_cp_ipv4">
+<code class="sig-name descname">normal_cp_ipv4</code><em class="property"> = 0.0795</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.normal_cp_ipv4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.normal_cp_ipv6">
+<code class="sig-name descname">normal_cp_ipv6</code><em class="property"> = 0.0795</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.normal_cp_ipv6" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.routing_cp_ipv4">
+<code class="sig-name descname">routing_cp_ipv4</code><em class="property"> = 0.159</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.routing_cp_ipv4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.routing_cp_ipv6">
+<code class="sig-name descname">routing_cp_ipv6</code><em class="property"> = 0.159</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.routing_cp_ipv6" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.undesireable_cp_ipv6">
+<code class="sig-name descname">undesireable_cp_ipv6</code><em class="property"> = 0.0008</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.undesireable_cp_ipv6" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.CoppBWCalculator.undesireable_ip_ipv4">
+<code class="sig-name descname">undesireable_ip_ipv4</code><em class="property"> = 0.0008</em><a class="headerlink" href="#api.helpers.misc.CoppBWCalculator.undesireable_ip_ipv4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.helpers.misc.ForigateParser">
+<em class="property">class </em><code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">ForigateParser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#ForigateParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.ForigateParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>ttp parsers for Fortigate devices</p>
+<dl class="py attribute">
+<dt id="api.helpers.misc.ForigateParser.default_next_hop_temp">
+<code class="sig-name descname">default_next_hop_temp</code><em class="property"> = '\nS*    {{ default }} {{ distance }} via {{ next_hop }}, {{ port }}\n'</em><a class="headerlink" href="#api.helpers.misc.ForigateParser.default_next_hop_temp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="api.helpers.misc.ForigateParser.get_parsed">
+<code class="sig-name descname">get_parsed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">template</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#ForigateParser.get_parsed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.ForigateParser.get_parsed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.ForigateParser.interface_all_template">
+<code class="sig-name descname">interface_all_template</code><em class="property"> = '\n== [ {{ interface }} ]\n'</em><a class="headerlink" href="#api.helpers.misc.ForigateParser.interface_all_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.ForigateParser.interface_attr_template">
+<code class="sig-name descname">interface_attr_template</code><em class="property"> = '\nname: {{ port }}  mode: {{ mode }}   ip: {{ ip }} {{ mask }} status: {{ status }}  {{ extras | _line_ }}\n'</em><a class="headerlink" href="#api.helpers.misc.ForigateParser.interface_attr_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.ForigateParser.struct_txtfsm_interfaces">
+<code class="sig-name descname">struct_txtfsm_interfaces</code><em class="property"> = '\nname: {{ intf }}  mode: {{ mode }}   ip: {{ ipaddr }} {{ mask }} status: {{ status }}  {{ extras | _line_ }}\n'</em><a class="headerlink" href="#api.helpers.misc.ForigateParser.struct_txtfsm_interfaces" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.ForigateParser.system_status_template">
+<code class="sig-name descname">system_status_template</code><em class="property"> = '\nVersion: {{ model }} {{ os_version }},{{ build }},{{ num }} {{ a }}\nHostname: {{ hostname }}\nSerial-Number: {{ serial_no }}\n'</em><a class="headerlink" href="#api.helpers.misc.ForigateParser.system_status_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.helpers.misc.JuniperParser">
+<em class="property">class </em><code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">JuniperParser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#JuniperParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.JuniperParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="api.helpers.misc.JuniperParser.get_parsed">
+<code class="sig-name descname">get_parsed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">template</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#JuniperParser.get_parsed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.JuniperParser.get_parsed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.JuniperParser.interface_front_template">
+<code class="sig-name descname">interface_front_template</code><em class="property"> = &quot;\n{{ interface | notequal('Interface') }} {{ status }} {{ extra | _line_ }}\n&quot;</em><a class="headerlink" href="#api.helpers.misc.JuniperParser.interface_front_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.JuniperParser.interface_name_template">
+<code class="sig-name descname">interface_name_template</code><em class="property"> = &quot;\n{{ interface | notequal('Interface') }} {{ extra | _line_ }}\n&quot;</em><a class="headerlink" href="#api.helpers.misc.JuniperParser.interface_name_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.JuniperParser.interface_template">
+<code class="sig-name descname">interface_template</code><em class="property"> = &quot;\n{{ interface | notequal('Interface') }} {{ admin_status }} {{ link_status }} {{ protocol }} {{ ip | PREFIX }}\n&quot;</em><a class="headerlink" href="#api.helpers.misc.JuniperParser.interface_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.helpers.misc.ParseConfig">
+<em class="property">class </em><code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">ParseConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#ParseConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.ParseConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>ttp parsers for Cisco</p>
+<dl class="py attribute">
+<dt id="api.helpers.misc.ParseConfig.check_nat_config">
+<code class="sig-name descname">check_nat_config</code><em class="property"> = '\ninterface {{ interface }}\n ip nat {{ type }}\n'</em><a class="headerlink" href="#api.helpers.misc.ParseConfig.check_nat_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.ParseConfig.default_route_template">
+<code class="sig-name descname">default_route_template</code><em class="property"> = '\nip route 0.0.0.0 0.0.0.0 {{ nexthop }}\n'</em><a class="headerlink" href="#api.helpers.misc.ParseConfig.default_route_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="api.helpers.misc.ParseConfig.get_parsed">
+<code class="sig-name descname">get_parsed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">temp</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#ParseConfig.get_parsed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.ParseConfig.get_parsed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.ParseConfig.get_static_route_template">
+<code class="sig-name descname">get_static_route_template</code><em class="property"> = '\nip route {{ netid }} {{ mask }} {{ nexthop }}\n'</em><a class="headerlink" href="#api.helpers.misc.ParseConfig.get_static_route_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.helpers.misc.ParseConfig.interface_template">
+<code class="sig-name descname">interface_template</code><em class="property"> = '\ninterface {{ interface }}\n ip address {{ address }} {{ mask }}\n'</em><a class="headerlink" href="#api.helpers.misc.ParseConfig.interface_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.helpers.misc.convert_to_cidr">
+<code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">convert_to_cidr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subnet</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#convert_to_cidr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.convert_to_cidr" title="Permalink to this definition">¶</a></dt>
+<dd><p>filter to convert subnet mask to CIDR</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.helpers.misc.create_response">
+<code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">create_response</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nr</span></em>, <em class="sig-param"><span class="n">result</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#create_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.create_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="api.helpers.misc.custom_filters">
+<code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">custom_filters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#custom_filters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.custom_filters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all available filter to nornir</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.helpers.misc.do_ping">
+<code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">do_ping</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nr</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#do_ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.do_ping" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to check reachability of the hosts</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.helpers.misc.do_poll">
+<em class="property">async </em><code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">do_poll</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hosts</span></em>, <em class="sig-param"><span class="n">community_str</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#do_poll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.do_poll" title="Permalink to this definition">¶</a></dt>
+<dd><p>function for running snmp_get function Asynchronously against hosts</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.helpers.misc.get_challenge_pass">
+<code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">get_challenge_pass</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#get_challenge_pass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.get_challenge_pass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="api.helpers.misc.get_interface_index">
+<code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">get_interface_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span></em>, <em class="sig-param"><span class="n">community_str</span></em>, <em class="sig-param"><span class="n">int_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#get_interface_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.get_interface_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="api.helpers.misc.snmp_get">
+<em class="property">async </em><code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">snmp_get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span></em>, <em class="sig-param"><span class="n">community_str</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#snmp_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.snmp_get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="api.helpers.misc.test_ssh_conn">
+<code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">test_ssh_conn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#test_ssh_conn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.test_ssh_conn" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to test the ssh connectivity</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.helpers.misc.wildcard_conversion">
+<code class="sig-prename descclassname">api.helpers.misc.</code><code class="sig-name descname">wildcard_conversion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subnet</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/helpers/misc.html#wildcard_conversion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.helpers.misc.wildcard_conversion" title="Permalink to this definition">¶</a></dt>
+<dd><p>filter to convert subnetmask to wildcard</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="api.nornir_stuff.html" class="btn btn-neutral float-right" title="Nornir-end" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api.html" class="btn btn-neutral float-left" title="API Docs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Uurnik Systems.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

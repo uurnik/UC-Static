@@ -1,0 +1,19 @@
+crypto isakmp policy 22
+ encr aes
+ authentication pre-share
+ group 5
+{% if option == 2 and host.groups[0] == "SPOKE" %}
+crypto isakmp key uurnik123 address 0.0.0.0
+{% endif %}
+{% if host.groups[0] == "HUB" %}
+crypto isakmp key uurnik123 address 0.0.0.0
+{% endif %}
+crypto isakmp keepalive 10 periodic
+crypto ipsec transform-set UURNIK esp-aes esp-sha-hmac
+ mode transport
+crypto ipsec profile UURNIK_CONNECT
+ set transform-set UURNIK
+{% if option != 2 and host.groups[0] == "SPOKE" %}
+crypto keyring DMVPN vrf INTERNET 
+pre-shared-key address 0.0.0.0 0.0.0.0 key uurnik123
+{% endif %}

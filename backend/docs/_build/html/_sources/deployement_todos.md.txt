@@ -1,0 +1,8 @@
+# Tasks before Deployement
+
+- Command for saving config must be included in template (or after deployment validation)
+- Check License information
+- Check model and get device's max throughput from model_spec file ( for COPP)
+- Remove print statements ( print statements are for debugging purposes only)
+- DDNS server must be configured
+

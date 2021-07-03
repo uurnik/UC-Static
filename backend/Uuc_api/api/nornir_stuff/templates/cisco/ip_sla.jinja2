@@ -1,0 +1,17 @@
+ip sla {{ host.ip_sla_process }}
+ icmp-echo {{ track_ip }}
+ {% if host.groups[0] == "SPOKE" and host.access_type != 2 %}
+  vrf INTERNET
+ {% endif %}
+  frequency 5
+ exit
+ip sla schedule {{ host.ip_sla_process }} life forever start-time now
+track {{ host.ip_sla_process }} ip sla {{ host.ip_sla_process }} state
+int {{ host.fhrp_interface }}
+ vrrp {{ host.ip_sla_process }} ip {{ host.virtual_ip }}
+ {% if host.primary_router == true %}
+ vrrp {{ host.ip_sla_process }} preempt
+ vrrp {{ host.ip_sla_process }} priority 110
+ {% endif %}
+ vrrp {{ host.ip_sla_process }} track {{ host.ip_sla_process }} decrement 50
+ exit

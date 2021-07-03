@@ -1,0 +1,26 @@
+control-plane
+no service-policy input RTR_CoPP
+exit
+no policy-map RTR_CoPP
+no class-map match-any Catch_All_IPv6
+no class-map match-any Catch_All_IPv4
+no class-map match-any ISAKMP_ESP_AH_CP
+no class-map match-any Undesirable_CP_IPv6
+no class-map match-any Undesirable_CP_IPv4
+no class-map match-any Normal_CP_IPv6
+no class-map match-any Normal_CP_IPv4
+no class-map match-any Management_CP
+no class-map match-any Routing_CP_IPv6
+no class-map match-any Routing_CP_IPv4
+no class-map match-any IPv6_CP
+no ipv6 access-list IPv6_CP_Traffic
+no ip access-list extended Routing_IPv4_CP_Traffic
+no ipv6 access-list Routing_IPv6_CP_Traffic
+no ip access-list extended Management_Traffic
+no ip access-list extended Normal_IPv4_Traffic
+no ipv6 access-list Normal_IPv6_Traffic
+no ip access-list extended Undesirable_IPv4_Traffic
+no ipv6 access-list Undesirable_IPv6_Traffic
+no ip access-list extended ISAKMP_ESP_AH_Traffic
+no ip access-list extended Catch_All_IPv4_Traffic
+no ipv6 access-list Catch_All_IPv6_Traffic

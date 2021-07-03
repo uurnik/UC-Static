@@ -1,0 +1,99 @@
+{% if host.groups[0] == 'SPOKE' %}
+
+{% if option != 2 %}
+ip route vrf INTERNET 0.0.0.0 0.0.0.0 {{ host.data['next_hop'] }}
+{% endif %}
+
+router bgp 65{{ host.tunnel_int }}
+ {% set loopback = host.data["loop_back"].split(' ') %}
+ bgp router-id {{ loopback[0] }}
+ no bgp default ipv4-unicast
+ {% if option == 3 %}
+ address-family ipv4 vrf INTERNET
+ network 0.0.0.0
+ {% endif %}
+ {% if option != 3 %}
+ {% for hub_address in host.nhs_server %}
+ neighbor {{ hub_address }} remote-as 65{{ host.tunnel_int }}
+ neighbor {{ hub_address }} password uurnik123
+ neighbor {{ hub_address }} update-source Tunnel{{ host.tunnel_int }}
+ neighbor {{ hub_address }} timers 10 30
+ {% endfor %}
+ {% endif %}
+ {% if option == 3 %}
+ address-family ipv4 vrf LAN    
+  {% for network in host.data["routes"] %}
+  {% set address = network.split(' ') %}
+  network {{ address[0] }} mask {{ address[1] }}
+  {% endfor %}
+
+  {% for network in host.data["custom_routes"] %}
+  {% set address = network.split(' ') %}
+  network {{ address[0] }} mask {{ address[1] }}
+  {% endfor %}
+
+ {% set loopback = host.data["loop_back"].split(' ') %}
+  network {{ loopback[0] }} mask {{ loopback[1] }}
+{% for hub_address in host.nhs_server %}
+  neighbor {{ hub_address }} remote-as 65{{ host.tunnel_int }}
+  neighbor {{ hub_address }} password {{ host.ipsec_key }}
+  neighbor {{ hub_address }} update-source Tunnel{{ host.tunnel_int }}
+  neighbor {{ hub_address }} activate
+{% endfor %}
+{% else %}
+ address-family ipv4    
+  {% for network in host.data["routes"] %}
+  {% set address = network.split(' ') %}
+  network {{ address[0] }} mask {{ address[1] }}
+  {% endfor %}
+
+  {% for network in host.data["custom_routes"] %}
+  {% set address = network.split(' ') %}
+  network {{ address[0] }} mask {{ address[1] }}
+  {% endfor %}
+
+  {% set loopback = host.data["loop_back"].split(' ') %}
+  network {{ loopback[0] }} mask {{ loopback[1] }}
+  {% for hub_address in host.nhs_server %}
+  neighbor {{ hub_address }} activate
+  {% endfor %}
+  {% endif %}
+{% endif %}
+
+
+
+{% if host.groups[0] == 'HUB' %}
+router bgp 65{{ host.tunnel_int }}
+{% set loopback = host.data["loop_back"].split(' ') %}
+ bgp router-id {{ loopback[0] }}
+ bgp listen range 172.27.0.0/16 peer-group UURNIK_CONNECT
+ neighbor UURNIK_CONNECT peer-group
+ neighbor UURNIK_CONNECT remote-as 65{{ host.tunnel_int }}
+ neighbor UURNIK_CONNECT password uurnik123
+ neighbor UURNIK_CONNECT update-source Tunnel{{ host.tunnel_int }}
+ neighbor UURNIK_CONNECT route-reflector-client
+ neighbor UURNIK_CONNECT timers 10 30
+ {% for nhs_server in host.nhs_server %}
+ {% if nhs_server != host.data['tunnel_ip'] %}
+ neighbor {{ nhs_server }} peer-group UURNIK_CONNECT
+ {% endif %}
+ {% endfor %}
+{% if option == 1 %}
+ neighbor UURNIK_CONNECT default-originate
+{% endif %}
+ address-family ipv4      
+  {% for network in host.data["routes"] %}
+  {% set address = network.split(' ') %}
+  network {{ address[0] }} mask {{ address[1] }}
+  {% endfor %}
+
+  {% for custom_route in host.data['custom_routes'] %}
+  {% set address = custom_route.split(" ") %}
+  network {{ address[0] }} mask {{ address[1] }}
+  {% endfor %}
+
+  {% set loopback = host.data["loop_back"].split(' ') %}
+  network {{ loopback[0] }} mask {{ loopback[1] }}
+  neighbor UURNIK_CONNECT activate
+{% endif %}
+

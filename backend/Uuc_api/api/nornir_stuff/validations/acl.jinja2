@@ -1,0 +1,42 @@
+{% if host.groups[0] == 'HUB' and  option == 1 %}
+ip access-list extended uurnik
+{% for network in spoke_networks_all %}
+{% set filter = network.split() %}
+{% if filter[1] == "255.255.255.255" %}
+ permit ip host {{ filter[0] }} any
+{% else %}
+ permit ip {{ filter[0] }} {{ filter[1] | convert_to_wildcard }} any
+{% endif %}
+{% endfor %}
+
+{% set loopbackadd = host.data["loop_back"].split() %}
+permit ip host {{ loopbackadd[0] }} any
+{% for network in host.data["routes"] %}
+{% set address = network.split(' ') %}
+permit ip {{ address[0] }} {{ address[1] | convert_to_wildcard }} any
+{% endfor %}
+
+{% for network in host.data["custom_routes"] %}
+{% set address = network.split(' ') %}
+permit ip {{ address[0] }} {{ address[1] | convert_to_wildcard }} any
+{% endfor %}
+{% endif %}
+
+{% if option != 1 %}
+ip access-list extended uurnik
+{% set loopbackadd = host.data["loop_back"].split() %}
+permit ip host {{ loopbackadd[0] }} any
+{% for network in host.data["routes"] %}
+{% set address = network.split(' ') %}
+permit ip {{ address[0] }} {{ address[1] | convert_to_wildcard }} any
+{% endfor %}
+{% for network in host.data["custom_routes"] %}
+{% set address = network.split(' ') %}
+permit ip {{ address[0] }} {{ address[1] | convert_to_wildcard }} any
+{% endfor %}
+{% endif %}
+
+
+
+
+

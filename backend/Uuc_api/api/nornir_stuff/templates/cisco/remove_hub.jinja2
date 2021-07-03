@@ -1,0 +1,14 @@
+int tunnel {{ host.tunnel_int }}
+{% for i in host.nhs_server %}
+{% set server = host.nhs_server[loop.index-1] %}
+{% set nbma = host.nhs_nbma[loop.index-1] %}
+{% if nbma == hub_to_remove %}
+{% if host.hostname == hub_to_remove %}
+no ip nhrp map multicast dynamic
+{% else %}
+no ip nhrp map {{ server }} {{ nbma }}
+no ip nhrp map multicast {{ nbma }}
+no ip nhrp nhs {{ server }}
+{% endif %}
+{% endif %}
+{% endfor %}

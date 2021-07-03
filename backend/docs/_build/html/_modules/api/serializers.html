@@ -1,0 +1,267 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>api.serializers &mdash; Uurnik Connect v0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Uurnik Connect
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../workflow.html">Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../uc-defaults.html">Defaults</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Uuc_api_doc.html">Uurnik Connect API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">API Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dependencies.html">Dependencies &amp; Housekeeping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deployement.html">Deploy Uurnik Connect in Test Environment</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Uurnik Connect</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>api.serializers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for api.serializers</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">rest_framework</span> <span class="kn">import</span> <span class="n">serializers</span>
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Hosts</span><span class="p">,</span>
+                    <span class="n">Defaults</span><span class="p">,</span>
+                    <span class="n">Account</span>
+                    <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ipaddress</span> <span class="kn">import</span> <span class="n">ip_address</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+
+
+
+<div class="viewcode-block" id="HostsSerializer"><a class="viewcode-back" href="../../api.html#api.serializers.HostsSerializer">[docs]</a><span class="k">class</span> <span class="nc">HostsSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+    <span class="n">ip</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">IPAddressField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;input_type&#39;</span><span class="p">:</span><span class="s1">&#39;password&#39;</span><span class="p">}</span> <span class="p">,</span> <span class="n">write_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="HostsSerializer.Meta"><a class="viewcode-back" href="../../api.html#api.serializers.HostsSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Hosts</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ip&#39;</span><span class="p">,</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;username&#39;</span><span class="p">,</span><span class="s1">&#39;password&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;platform&#39;</span><span class="p">,</span><span class="s1">&#39;group&#39;</span><span class="p">,</span><span class="s1">&#39;is_configured&#39;</span><span class="p">,</span><span class="s1">&#39;wan_int&#39;</span><span class="p">,</span><span class="s1">&#39;wan_subnet&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;tunnel_ip&#39;</span><span class="p">,</span><span class="s1">&#39;loop_back&#39;</span><span class="p">,</span><span class="s1">&#39;next_hop&#39;</span><span class="p">,</span><span class="s2">&quot;vendor&quot;</span><span class="p">,</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;ram_size&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;os_version&#39;</span><span class="p">,</span><span class="s1">&#39;serial_no&#39;</span><span class="p">,</span><span class="s1">&#39;dev_name&#39;</span><span class="p">,</span><span class="s1">&#39;interfaces&#39;</span><span class="p">,</span><span class="s2">&quot;fhrp&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;fhrp_interface&quot;</span><span class="p">,</span><span class="s2">&quot;primary_router&quot;</span><span class="p">,</span><span class="s2">&quot;virtual_ip&quot;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="HostsSerializer.validate_name"><a class="viewcode-back" href="../../api.html#api.serializers.HostsSerializer.validate_name">[docs]</a>    <span class="k">def</span> <span class="nf">validate_name</span><span class="p">(</span><span class="bp">self</span> <span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        validate &#39;name&#39; field</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;must be under 12 characters&quot;</span><span class="p">)</span>
+        
+        <span class="n">p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;[,*/+=;:]&#39;</span> <span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">!=</span><span class="mi">0</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;must not include &#39;,*/+=;:&#39;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;must not include any spaces&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">value</span></div></div>
+
+
+
+
+<div class="viewcode-block" id="DefaultsSerializer"><a class="viewcode-back" href="../../api.html#api.serializers.DefaultsSerializer">[docs]</a><span class="k">class</span> <span class="nc">DefaultsSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<div class="viewcode-block" id="DefaultsSerializer.Meta"><a class="viewcode-back" href="../../api.html#api.serializers.DefaultsSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Defaults</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tunnel_int&#39;</span><span class="p">,</span><span class="s1">&#39;asn&#39;</span><span class="p">,</span><span class="s1">&#39;policy_num&#39;</span><span class="p">,</span><span class="s1">&#39;ipsec_key&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;trans_name&#39;</span><span class="p">,</span><span class="s1">&#39;profile_name&#39;</span><span class="p">,</span><span class="s1">&#39;nhs_server&#39;</span><span class="p">,</span><span class="s1">&#39;nhs_nbma&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;access_type&#39;</span><span class="p">,</span><span class="s2">&quot;ip_sla_process&quot;</span><span class="p">,</span><span class="s2">&quot;track_ip&quot;</span><span class="p">,</span><span class="s2">&quot;is_sla_configured&quot;</span><span class="p">]</span></div></div>
+
+
+
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Uurnik Systems.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

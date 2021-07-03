@@ -1,0 +1,27 @@
+config firewall policy
+delete 1
+end
+
+config firewall policy
+delete 2
+end
+
+
+config vpn ipsec phase2-interface
+delete "spoke1"
+end
+
+config vpn ipsec phase1-interface
+delete "spoke1"
+end
+
+
+config router bgp
+unset as
+config neighbor
+delete "{{ host.nhs_server[0] }}"
+end
+config network
+delete 1
+end
+end

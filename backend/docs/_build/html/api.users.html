@@ -1,0 +1,396 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Users &mdash; Uurnik Connect v0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Known Issues" href="known_issues.html" />
+    <link rel="prev" title="Nornir-end" href="api.nornir_stuff.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Uurnik Connect
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uc-defaults.html">Defaults</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Uuc_api_doc.html">Uurnik Connect API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Docs</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="api.html">API Reference</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="api.helpers.html">Helpers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.nornir_stuff.html">Nornir-end</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Users</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-api.users.serializers">api.users.serializers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-api.users.urls">api.users.urls module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-api.users.views">api.users.views module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.admin">api.admin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.apps">api.apps module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.models">api.models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.serializers">api.serializers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.urls">api.urls module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api.views">api.views module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known_issues.html">Known Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies &amp; Housekeeping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployement_todos.html">Tasks before Deployement</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Uurnik Connect</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="api.html">API Docs</a> &raquo;</li>
+        
+      <li>Users</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/api.users.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="users">
+<h1>Users<a class="headerlink" href="#users" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-api.users.serializers">
+<span id="api-users-serializers-module"></span><h2>api.users.serializers module<a class="headerlink" href="#module-api.users.serializers" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="api.users.serializers.AccountPropertiesSerializer">
+<em class="property">class </em><code class="sig-prename descclassname">api.users.serializers.</code><code class="sig-name descname">AccountPropertiesSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/users/serializers.html#AccountPropertiesSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.serializers.AccountPropertiesSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<dl class="py class">
+<dt id="api.users.serializers.AccountPropertiesSerializer.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="_modules/api/users/serializers.html#AccountPropertiesSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.serializers.AccountPropertiesSerializer.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="api.users.serializers.AccountPropertiesSerializer.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = ['pk', 'email', 'username']</em><a class="headerlink" href="#api.users.serializers.AccountPropertiesSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.users.serializers.AccountPropertiesSerializer.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#api.users.serializers.AccountPropertiesSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="api.html#api.models.Account" title="api.models.Account"><code class="xref py py-class docutils literal notranslate"><span class="pre">api.models.Account</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.users.serializers.ChangePasswordSerializer">
+<em class="property">class </em><code class="sig-prename descclassname">api.users.serializers.</code><code class="sig-name descname">ChangePasswordSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/users/serializers.html#ChangePasswordSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.serializers.ChangePasswordSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.Serializer</span></code></p>
+<dl class="py attribute">
+<dt id="api.users.serializers.ChangePasswordSerializer.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#api.users.serializers.ChangePasswordSerializer.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.models.User</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.users.serializers.RegistrationSerializer">
+<em class="property">class </em><code class="sig-prename descclassname">api.users.serializers.</code><code class="sig-name descname">RegistrationSerializer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/users/serializers.html#RegistrationSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.serializers.RegistrationSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<p>Serializer for registering a new user</p>
+<dl class="py class">
+<dt id="api.users.serializers.RegistrationSerializer.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="_modules/api/users/serializers.html#RegistrationSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.serializers.RegistrationSerializer.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="api.users.serializers.RegistrationSerializer.Meta.extra_kwargs">
+<code class="sig-name descname">extra_kwargs</code><em class="property"> = {'password': {'write_only': True}}</em><a class="headerlink" href="#api.users.serializers.RegistrationSerializer.Meta.extra_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.users.serializers.RegistrationSerializer.Meta.fields">
+<code class="sig-name descname">fields</code><em class="property"> = ['email', 'username', 'password', 'password2']</em><a class="headerlink" href="#api.users.serializers.RegistrationSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.users.serializers.RegistrationSerializer.Meta.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#api.users.serializers.RegistrationSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="api.html#api.models.Account" title="api.models.Account"><code class="xref py py-class docutils literal notranslate"><span class="pre">api.models.Account</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt id="api.users.serializers.RegistrationSerializer.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/users/serializers.html#RegistrationSerializer.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.serializers.RegistrationSerializer.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-api.users.urls">
+<span id="api-users-urls-module"></span><h2>api.users.urls module<a class="headerlink" href="#module-api.users.urls" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-api.users.views">
+<span id="api-users-views-module"></span><h2>api.users.views module<a class="headerlink" href="#module-api.users.views" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="api.users.views.ChangePasswordView">
+<em class="property">class </em><code class="sig-prename descclassname">api.users.views.</code><code class="sig-name descname">ChangePasswordView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/users/views.html#ChangePasswordView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.views.ChangePasswordView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.generics.UpdateAPIView</span></code></p>
+<p>An endpoint for changing password.</p>
+<dl class="py method">
+<dt id="api.users.views.ChangePasswordView.get_object">
+<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">queryset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/users/views.html#ChangePasswordView.get_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.views.ChangePasswordView.get_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the object the view is displaying.</p>
+<p>You may want to override this if you need to provide non-standard
+queryset lookups.  Eg if objects are referenced using multiple
+keyword arguments in the url conf.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.users.views.ChangePasswordView.model">
+<code class="sig-name descname">model</code><a class="headerlink" href="#api.users.views.ChangePasswordView.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.models.User</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="api.users.views.ChangePasswordView.permission_classes">
+<code class="sig-name descname">permission_classes</code><em class="property"> = (&lt;class 'rest_framework.permissions.IsAuthenticated'&gt;,)</em><a class="headerlink" href="#api.users.views.ChangePasswordView.permission_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="api.users.views.ChangePasswordView.serializer_class">
+<code class="sig-name descname">serializer_class</code><a class="headerlink" href="#api.users.views.ChangePasswordView.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#api.users.serializers.ChangePasswordSerializer" title="api.users.serializers.ChangePasswordSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">api.users.serializers.ChangePasswordSerializer</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="api.users.views.ChangePasswordView.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/users/views.html#ChangePasswordView.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.views.ChangePasswordView.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.users.views.IsSuperUser">
+<em class="property">class </em><code class="sig-prename descclassname">api.users.views.</code><code class="sig-name descname">IsSuperUser</code><a class="reference internal" href="_modules/api/users/views.html#IsSuperUser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.views.IsSuperUser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rest_framework.permissions.IsAdminUser</span></code></p>
+<dl class="py method">
+<dt id="api.users.views.IsSuperUser.has_permission">
+<code class="sig-name descname">has_permission</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">view</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/users/views.html#IsSuperUser.has_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.views.IsSuperUser.has_permission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <cite>True</cite> if permission is granted, <cite>False</cite> otherwise.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="api.users.views.LoginAPI">
+<em class="property">class </em><code class="sig-prename descclassname">api.users.views.</code><code class="sig-name descname">LoginAPI</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/users/views.html#LoginAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.views.LoginAPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">knox.views.LoginView</span></code></p>
+<p>View for user login</p>
+<dl class="py attribute">
+<dt id="api.users.views.LoginAPI.permission_classes">
+<code class="sig-name descname">permission_classes</code><em class="property"> = (&lt;class 'rest_framework.permissions.AllowAny'&gt;,)</em><a class="headerlink" href="#api.users.views.LoginAPI.permission_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="api.users.views.LoginAPI.post">
+<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/users/views.html#LoginAPI.post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.views.LoginAPI.post" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.users.views.delete_user">
+<code class="sig-prename descclassname">api.users.views.</code><code class="sig-name descname">delete_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/users/views.html#delete_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.views.delete_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>view for deleting a user ,only super user have permission</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="api.users.views.registration_view">
+<code class="sig-prename descclassname">api.users.views.</code><code class="sig-name descname">registration_view</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/users/views.html#registration_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.users.views.registration_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>api view for registering a new user , only django super user can is authorized to register a new user</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="known_issues.html" class="btn btn-neutral float-right" title="Known Issues" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api.nornir_stuff.html" class="btn btn-neutral float-left" title="Nornir-end" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Uurnik Systems.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

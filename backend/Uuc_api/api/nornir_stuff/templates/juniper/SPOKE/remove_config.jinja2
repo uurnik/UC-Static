@@ -1,0 +1,23 @@
+delete security ipsec vpn PARTNER_VPN
+delete security ike gateway {{ host.name }}_GW
+delete security ike policy IKE_POL
+delete security ike proposal IKE_PROP
+delete security ipsec policy IPSEC_POL
+delete system domain-name
+delete system name-server
+delete protocols ospf area 0.0.0.0
+delete routing-options router-id
+delete protocols ospf graceful-restart
+delete security zones security-zone trust interfaces ge-0/0/1
+delete security zones security-zone trust interfaces lo0.0
+delete security zones security-zone trust interfaces st0.1
+delete interfaces st0 unit 1 multipoint
+delete interfaces st0 unit 1 family inet address {{ host.data['tunnel_ip'] }}/16
+{% set address = host.data['loop_back'].split(' ') %}
+delete interfaces lo0 unit 0 family inet address {{ address[0] }}/32
+delete security pki
+commit
+exit
+clear security pki local-certificate all
+clear security pki ca-certificate all
+clear security pki key-pair all

@@ -1,0 +1,229 @@
+ipv6 access-list IPv6_CP_Traffic
+ permit icmp any any nd-ns
+ permit icmp any any nd-na
+ permit icmp any any router-solicitation
+ permit icmp any any router-advertisement
+ exit
+
+ip access-list extended Routing_IPv4_CP_Traffic
+ permit tcp any gt 1024 any eq bgp
+ permit tcp any eq bgp any gt 1024 established
+ permit tcp any gt 1024 any eq 639
+ permit tcp any eq 639 any gt 1024 established
+ permit ospf any any
+ permit eigrp any any
+ permit udp any any eq rip
+ permit pim any any
+ permit udp any any eq pim-auto-rp
+ exit
+
+ipv6 access-list Routing_IPv6_CP_Traffic				
+ permit tcp any gt 1024 any eq bgp
+ permit tcp any eq bgp any gt 1024 established
+ permit tcp any gt 1024 any eq 639
+ permit tcp any eq 639 any gt 1024 established
+ permit 89 any any
+ permit 88 any any
+ permit udp any any eq 521
+ permit udp any any eq pim-auto-rp
+ permit 103 any any
+ exit
+
+
+ip access-list extended Management_Traffic
+ permit tcp any any eq telnet				
+ permit tcp any eq telnet any established
+ permit tcp any eq 22 any established		
+ permit udp any any eq snmp		
+ permit tcp any any eq ftp
+ permit tcp any any eq ftp-data
+ permit udp any eq domain any							
+ permit udp any any eq ntp							
+ permit tcp any any eq tacacs
+ exit
+
+
+ip access-list extended Normal_IPv4_Traffic
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ permit icmp any any ttl-exceeded
+ permit icmp any any packet-too-big
+ permit icmp any any port-unreachable  						
+ permit icmp any any unreachable 
+ permit igmp any any
+ permit gre any any
+ exit
+
+ipv6 access-list Normal_IPv6_Traffic
+ permit icmp any any echo-request
+ permit icmp any any echo-reply
+ permit icmp any any hop-limit
+ permit icmp any any packet-too-big
+ permit icmp any any port-unreachable
+ permit icmp any any unreachable 
+ permit ipv6 any any hbh
+ permit icmp any any mld-query
+ permit icmp any any mld-reduction
+ permit icmp any any mld-report
+ permit 47 any any
+ exit
+
+
+ip access-list extended Undesirable_IPv4_Traffic				
+ permit icmp any any fragments
+ permit udp any any fragments
+ permit tcp any any fragments
+ permit ip any any fragments
+ permit udp any any eq 1434
+ permit tcp any any eq 639 rst
+ permit tcp any any eq bgp rst
+ permit tcp any any eq 646
+ permit udp any any eq 646
+ permit tcp any any eq www
+ permit tcp any any eq 443
+ permit udp any any eq 443
+ exit
+
+
+ipv6 access-list Undesirable_IPv6_Traffic
+ permit ipv6 any any fragments
+ permit ipv6 any any routing-type 0
+ permit udp any any eq 1434
+ permit tcp any any eq 639 rst
+ permit tcp any any eq bgp rst
+ permit tcp any any eq 646
+ permit udp any any eq 646
+ permit tcp any any eq www
+ permit tcp any any eq 443
+ permit udp any any eq 443
+ exit
+
+ip access-list extended ISAKMP_ESP_AH_Traffic
+ permit udp any any eq 500
+ permit udp any any eq 4500
+ permit 50 any any
+ permit 51 any any
+ exit
+
+
+ip access-list extended Catch_All_IPv4_Traffic
+ permit tcp any any
+ permit udp any any
+ permit icmp any any
+ permit ip any any
+ exit
+
+ipv6 access-list Catch_All_IPv6_Traffic
+ permit tcp any any
+ permit udp any any
+ permit icmp any any
+ permit ipv6 any any
+ exit
+
+class-map match-any IPv6_CP
+ match access-group name IPv6_CP_Traffic
+ exit
+
+class-map match-any Routing_CP_IPv4
+ match access-group name Routing_IPv4_CP_Traffic
+ exit
+
+class-map match-any Routing_CP_IPv6
+ match access-group name Routing_IPv6_CP_Traffic
+ exit
+
+class-map match-any Management_CP
+ match access-group name Management_Traffic
+ exit
+
+class-map match-any Normal_CP_IPv4
+ match access-group name Normal_IPv4_Traffic
+ exit
+class-map match-any Normal_CP_IPv6
+ match access-group name Normal_IPv6_Traffic
+ exit
+
+class-map match-any Undesirable_CP_IPv4
+ match access-group name Undesirable_IPv4_Traffic
+ exit
+
+class-map match-any Undesirable_CP_IPv6
+ match access-group name Undesirable_IPv6_Traffic
+ exit
+
+class-map match-any ISAKMP_ESP_AH_CP
+ match access-group name ISAKMP_ESP_AH_Traffic
+ exit
+
+class-map match-any Catch_All_IPv4
+ match access-group name Catch_All_IPv4_Traffic
+ exit
+
+class-map match-any Catch_All_IPv6
+ match access-group name Catch_All_IPv6_Traffic
+ exit
+
+policy-map RTR_CoPP
+ class IPv6_CP
+  police {{ copp_bw[0]['cp_bw'] }} {{ copp_bw[0]['cp_burst'] }} {{ copp_bw[0]['cp_exceeded']  }} conform-action transmit exceed-action drop
+  exit
+ exit
+
+ class Undesirable_CP_IPv4
+  police {{ copp_bw[2]['cp_bw'] }} {{ copp_bw[2]['cp_burst'] }} {{ copp_bw[2]['cp_exceeded'] }} conform-action drop exceed-action drop
+  exit
+ exit
+
+ class Undesirable_CP_IPv6
+  police {{ copp_bw[1]['cp_bw'] }} {{ copp_bw[1]['cp_burst'] }} {{ copp_bw[1]['cp_exceeded'] }} conform-action drop exceed-action drop
+  exit
+ exit
+
+ class Routing_CP_IPv4
+  police {{ copp_bw[3]['cp_bw'] }} {{ copp_bw[3]['cp_burst'] }} {{ copp_bw[3]['cp_exceeded'] }} conform-action transmit exceed-action transmit
+  exit
+ exit
+
+ class Routing_CP_IPv6
+  police {{ copp_bw[4]['cp_bw'] }} {{ copp_bw[4]['cp_burst'] }} {{ copp_bw[4]['cp_exceeded'] }} conform-action transmit exceed-action transmit
+  exit
+ exit
+
+ class Management_CP
+  police {{ copp_bw[5]['cp_bw'] }} {{ copp_bw[5]['cp_burst'] }} {{ copp_bw[5]['cp_exceeded'] }} conform-action transmit exceed-action drop		
+  exit
+ exit
+
+ class Normal_CP_IPv4
+  police {{ copp_bw[6]['cp_bw'] }} {{ copp_bw[6]['cp_burst'] }} {{ copp_bw[6]['cp_exceeded'] }} conform-action transmit exceed-action drop
+  exit
+ exit
+
+ class Normal_CP_IPv6
+  police {{ copp_bw[7]['cp_bw'] }} {{ copp_bw[7]['cp_burst'] }} {{ copp_bw[7]['cp_exceeded'] }} conform-action transmit exceed-action drop
+  exit
+ exit
+
+ class ISAKMP_ESP_AH_CP
+  police {{ copp_bw[8]['cp_bw'] }} {{ copp_bw[8]['cp_burst'] }} {{ copp_bw[8]['cp_exceeded'] }} conform-action transmit exceed-action drop
+  exit
+ exit
+
+ class Catch_All_IPv4
+  police {{ copp_bw[9]['cp_bw'] }} {{ copp_bw[9]['cp_burst'] }} {{ copp_bw[9]['cp_exceeded'] }} conform-action transmit exceed-action drop
+  exit
+ exit
+
+ class Catch_All_IPv6
+  police {{ copp_bw[10]['cp_bw'] }} {{ copp_bw[10]['cp_burst'] }} {{ copp_bw[10]['cp_exceeded'] }} conform-action transmit exceed-action drop			
+  exit
+ exit
+
+ class class-default
+  police {{ copp_bw[11]['cp_bw'] }} {{ copp_bw[11]['cp_burst'] }} {{ copp_bw[11]['cp_exceeded'] }} conform-action transmit exceed-action transmit
+  exit
+ exit
+exit
+
+control-plane
+ service-policy input RTR_CoPP

@@ -1,0 +1,123 @@
+no router bgp 65{{ host.tunnel_int }}
+no int tunnel {{ host.tunnel_int }}
+no crypto isakmp policy {{ host.policy_num }}
+no crypto ipsec profile {{ host.profile_name }}
+no crypto isakmp keepalive 10 periodic
+no crypto ipsec transform-set {{ host.trans_set }}
+no crypto isakmp key {{ host.ipsec_key }} address 0.0.0.0
+no int loopback0
+no ip access-list extended uurnik 
+no ip ddns update method uurnik_dns
+
+
+
+
+
+{% for interface in host.data['advertised_interfaces'] %}
+no ip dhcp pool uurnik_{{ loop.index }}
+{% endfor %}
+
+
+{% if option != 2 %}
+no ip name-server vrf INTERNET {{ host.dns }}
+no ip dns view vrf INTERNET default
+{% else %}
+no ip name-server {{ host.dns }}
+{% endif %}
+
+{% if host.groups[0] == "HUB" %}
+int {{ host.data["wan_int"] }}
+ no ip nat outside
+ no ip ddns update uurnik_dns host {{ host.dns }}
+ no ip ddns update hostname {{ host.data['fqdn'] }}
+ exit
+
+{% for custom_route in host.data["custom_routes"] %}
+no ip route {{ custom_route }}
+{% endfor %}
+
+
+{% for interface in host.advertised_interfaces %}
+int {{ interface }}
+ no ip nat inside
+ exit
+{% endfor %}
+{% endif %}
+
+{% if host.groups[0] == "SPOKE" and option != 3 %}
+{% for custom_route in host.data["custom_routes"] %}
+no ip route {{ custom_route }}
+{% endfor %}
+{% for static_route in static_routes %}
+no ip route {{ static_route }}
+{% endfor %}
+{% endif %}
+
+{% if host.groups[0] == "SPOKE" %}
+int {{ host.data["wan_int"] }}
+ no ip ddns update uurnik_dns host {{ host.dns }}
+ no ip ddns update hostname {{ host.data['fqdn'] }}
+{% if option == 2 or option == 3 %}
+no ip nat outside
+ exit
+{% endif %}
+{% if option == 3 or option == 1  %}
+no crypto keyring DMVPN vrf INTERNET
+no kron policy-list uurnik
+{% endif %}
+
+{% if option != 1 %}
+{% for interface in host.advertised_interfaces %}
+int {{ interface }}
+ no ip nat inside
+ exit
+{% endfor %}
+{% endif %}
+
+{% if option == 3 %}
+no ip vrf LAN
+
+{% for static_route in static_routes %}
+ip route {{ static_route }}
+{% endfor %}
+
+
+
+{% for interface in advertised_int %}
+int {{ interface["name"] }}
+ ip address {{ interface["ip"] }} {{ interface["mask"] }}
+ exit
+{% endfor %}
+
+no route-map LAN_TO_INTERNET permit 10
+no ip extcommunity-list standard LAN_TO_INTERNET permit rt 65{{ host.tunnel_int }}:1
+{% set loopback = host.data["loop_back"].split(' ') %}
+no ip prefix-list LAN_TO_INTERNET permit {{ loopback[0] }}/32
+{% for route in host.data["routes"] %}
+{% set route = route.split(" ") %}
+no ip prefix-list LAN_TO_INTERNET permit {{ route[0] }}/{{ route[1] | convert_to_cidr }}
+{% endfor %}
+
+{% for custom_route in host.data["custom_routes"] %}
+{% set prefix,mask,nexthop = custom_route.split(" ") %}
+no ip prefix-list LAN_TO_INTERNET permit {{ prefix }}/{{ mask | convert_to_cidr }}
+{% endfor %}
+
+{% endif %}
+{% endif %}
+
+{% if host.fhrp == true and host.is_sla_configured == true %}
+no ip sla {{ host.ip_sla_process }}
+no track {{ host.ip_sla_process }}
+int {{ host.fhrp_interface }}
+ no vrrp {{ host.ip_sla_process }}
+ exit
+{% endif %}
+
+
+{% if host.data['logging_configured'] == True %}
+no logging host {{ host.data['logging_host'] }}
+no logging trap {{ host.data['logging_level'] }}
+no logging facility {{ host.data['facility'] }}
+{% endif %}
+

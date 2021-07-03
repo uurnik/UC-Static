@@ -1,0 +1,110 @@
+ipv6 cef
+{% if 'XE' in host.data['os_version'] %}
+ipv6 cef distributed
+{% endif %}
+
+
+service tcp-keepalives-in
+service tcp-keepalives-out
+no ip http server
+no ip http secure-server
+no boot network
+no service pad
+no ip identd
+no ip source-route
+no ip gratuitous-arps
+no tftp-server enable
+no service config
+no service tcp-small-servers
+no service udp-small-servers
+no ip source-route
+
+no ip finger
+no server finger
+
+
+ip ssh time-out 60
+ip ssh authentication-retries 3
+service password-encryption
+security passwords min-length 8
+login block-for 300 attempts 5 within 120
+security authentication failure rate 3 log
+login delay 5
+ip icmp rate-limit unreachable 150
+ip icmp rate-limit unreachable DF 100
+service sequence-numbers
+scheduler interval 500
+snmp-server enable trap cpu threshold
+process cpu threshold type total rising 80 interval 5 falling 70 interval 5
+scheduler heapcheck process memory
+
+{% if 'XE' in host.data['os_version'] %}
+exception crashinfo maximum files 8
+{% endif %}
+
+memory reserve critical {{ reserve_mem }}
+memory free low-watermark processor {{ reserve_mem }}
+memory free low-watermark io {{ reserve_mem }}
+
+
+line aux 0
+ no exec
+ no password
+ exec-timeout 0 1
+ transport input none
+ transport output none
+ exit
+
+
+ipv6 access-list ND_Control_QoS
+ permit icmp any any nd-ns sequence 10
+ permit icmp any any nd-na sequence 20
+ exit
+ipv6 access-list RA_RS_Control_QoS
+ permit icmp any any router-advertisement sequence 10
+ permit icmp any any router-solicitation sequence 20
+ exit
+ipv6 access-list ICMP_Control_QoS
+ permit icmp any any sequence 10
+ exit
+ipv6 access-list DENY_IPV6_MGMT
+ deny ipv6 any any
+ exit
+
+class-map match-any ND_Control
+ match access-group name ND_Control_QoS
+ exit
+class-map match-any RA_RS_Control
+ match access-group name RA_RS_Control
+ exit
+class-map match-any ICMP_Control
+ match access-group name ICMP_Control_QoS
+ exit
+
+policy-map P3_Protection
+class ND_Control
+  police cir 8000000 conform-action transmit  exceed-action drop
+  exit
+class RA_RS_Control
+  police cir 8000000 conform-action transmit  exceed-action drop
+  exit
+class ICMP_Control
+  police cir 8000000 conform-action transmit  exceed-action drop
+  exit
+
+
+{% for interface in interfaces %}
+interface {{ interface }}
+ service-policy input P3_Protection
+ no ip directed-broadcast
+ no ip unreachable
+ no ip redirects
+ no ip mask-reply
+ no mop enable
+ exit
+{% endfor %}
+
+
+interface {{ host.data['wan_int'] }}
+ ipv6 nd dad attempts 0
+exit

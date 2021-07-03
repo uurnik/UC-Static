@@ -1,0 +1,148 @@
+ip domain lookup
+ip name-server {{ dns }}
+snmp-server community uurnik123 ro
+
+username uurnik-admin priv 10 pass cisco123
+{% for cmd in low_usr_cmds %}
+privilege exec all level 10 {{ cmd }}
+{% endfor %}
+
+interface {{ host.data["wan_int"] }}
+ ip ddns update uurnik_dns host {{ dns }}
+ ip ddns update hostname {{ host.data['fqdn'] }}
+ exit
+
+crypto isakmp policy {{ host.policy_num }}
+ encr aes
+ authentication pre-share
+ group 5
+ exit
+crypto isakmp key {{ host.ipsec_key }} address 0.0.0.0       
+crypto isakmp keepalive 10 periodic 
+crypto ipsec transform-set {{ host.trans_set }} esp-aes esp-sha-hmac
+ mode transport
+ exit
+crypto ipsec profile {{ host.profile_name }}
+ set transform-set {{ host.trans_set }}
+ exit
+int tunnel {{ host.tunnel_int }}
+ shut
+ ip address {{ host.data["tunnel_ip"]}} 255.255.0.0
+{% for i in host.hubs_fqdn %}
+{% set nhs_fqdn = host.hubs_fqdn[loop.index-1] %}
+{% set nhs_server = host.nhs_server[loop.index-1] %}
+{% set nbma = host.nhs_nbma[loop.index-1] %}
+{% if nhs_fqdn == host.hubs_fqdn[0] and nhs_server == host.nhs_server[0] %}
+{% if nbma != host.hostname and nhs_server != host.data["tunnel_ip"] %}
+
+
+{% if host.data['os_version'] | float() >= 15.2  %}
+ ip nhrp nhs {{ nhs_server }} nbma {{ nhs_fqdn }} multicast
+{% else %}
+ ip nhrp map multicast {{ nbma }}
+ ip nhrp map {{ nhs_server }} {{ nbma }}
+ ip nhrp nhs {{ nhs_server }}
+{% endif %}
+
+
+{% endif %}
+{% endif %}
+{% endfor %}
+ ip nhrp map multicast dynamic
+
+ ip nhrp network-id 1
+ ip nhrp redirect
+ ip mtu 1400
+ cdp enable
+ ip nat inside
+ ip tcp adjust-mss 1360
+ tunnel mode gre multipoint
+ tunnel source {{ host.data["wan_int"] }}
+ tunnel key 100
+ tunnel protection ipsec profile {{ host.profile_name }}
+ no shut
+ exit
+
+{% for custom_route in host.data['custom_routes'] %}
+ip route {{ custom_route }}
+{% endfor %}
+
+router bgp 65{{ host.tunnel_int }}
+{% set loopback = host.data["loop_back"].split(' ') %}
+ bgp router-id {{ loopback[0] }}
+ bgp listen range 172.27.0.0/16 peer-group UURNIK_CONNECT
+ neighbor UURNIK_CONNECT peer-group
+ neighbor UURNIK_CONNECT remote-as 65{{ host.tunnel_int }}
+ neighbor UURNIK_CONNECT password uurnik123
+ neighbor UURNIK_CONNECT update-source tunnel{{ host.tunnel_int }}
+ neighbor UURNIK_CONNECT route-reflector-client
+ neighbor UURNIK_CONNECT timers 10 30
+ {% for nhs_server in host.nhs_server %}
+ {% if nhs_server != host.data['tunnel_ip'] %}
+ neighbor {{ nhs_server }} peer-group UURNIK_CONNECT
+ {% endif %}
+ {% endfor %}
+{% if dia == "n" %}
+ neighbor UURNIK_CONNECT default-originate
+{% endif %}
+ address-family ipv4      
+  {% for network in host.data["routes"] %}
+  {% set address = network.split(' ') %}
+  network {{ address[0] }} mask {{ address[1] }}
+  {% endfor %}
+
+  {% for custom_route in host.data['custom_routes'] %}
+  {% set address = custom_route.split(" ") %}
+  network {{ address[0] }} mask {{ address[1] }}
+  {% endfor %}
+
+  {% set loopback = host.data["loop_back"].split(' ') %}
+  network {{ loopback[0] }} mask {{ loopback[1] }}
+  neighbor UURNIK_CONNECT activate
+  exit
+ exit
+ip access-list extended uurnik
+ 
+{% for network in host.data["routes"] %}
+{% set address = network.split(' ') %}
+permit ip {{ address[0] }} {{ address[1] | convert_to_wildcard }} any
+{% endfor %}
+
+{% for custom_route in host.data['custom_routes'] %}
+{% set address = custom_route.split(" ") %}
+permit ip {{ address[0] }} {{ address[1] | convert_to_wildcard }} any
+{% endfor %}
+
+ permit ip {{ loopback[0] }} 0.0.0.0 any
+{% if dia == 'n' and  other_services == 'n' %}
+{% for network in loop_backs %}
+{% set filter = network.split() %}
+ permit ip {{ filter[0] }} {{ filter[1] | convert_to_wildcard }} any
+{% endfor %}
+
+{% for network in custom_routes %}
+{% set address = network.split(' ') %}
+permit ip {{ address[0] }} {{ address[1] | convert_to_wildcard }} any
+{% endfor %}
+
+{% for spoke_network in spoke_networks %}
+{% set network = spoke_network.split(' ') %}
+permit ip {{ network[0] }} {{ network[1] | convert_to_wildcard }} any
+{% endfor %}
+{% endif %}
+ exit
+ip nat inside source list uurnik interface {{ host.data["wan_int"] }} overload
+int loopback 0
+ ip address {{ host.data["loop_back"] }}
+{% if dia == 'y' %}
+ ip nat inside
+{% endif %}
+
+
+{% for network in connected_networks %}
+{% set net = network['network'].split("/")  %}
+ip dhcp pool uurnik_{{ loop.index }}
+network {{ net[0] }} /{{ net[1] }}
+default-router {{ network['ip'] }}
+exit
+{% endfor %}

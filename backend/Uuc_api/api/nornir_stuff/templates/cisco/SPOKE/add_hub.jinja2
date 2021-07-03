@@ -1,0 +1,21 @@
+int tunnel {{ host.tunnel_int }}
+ip nhrp nhs {{ hub_tunnel_ip }} nbma {{ hub_nbma }} multicast
+exit
+router bgp 65{{ host.tunnel_int }}
+{% if option != 3 %}
+neighbor {{ hub_tunnel_ip }} remote-as 65{{ host.tunnel_int }}
+neighbor {{ hub_tunnel_ip }} password {{ host.ipsec_key }}
+neighbor {{ hub_tunnel_ip }} update-source tunnel {{ host.tunnel_int }}
+neighbor {{ hub_tunnel_ip }} timers 10 30
+address-family ipv4
+neighbor {{ hub_tunnel_ip }} activate
+{% else %}
+address-family ipv4 vrf LAN
+neighbor {{ hub_tunnel_ip }} remote-as 65{{ host.tunnel_int }}
+neighbor {{ hub_tunnel_ip }} password {{ host.ipsec_key }}
+neighbor {{ hub_tunnel_ip }} update-source tunnel {{ host.tunnel_int }}
+neighbor {{ hub_tunnel_ip }} timers 10 30
+neighbor {{ hub_tunnel_ip }} activate
+{% endif %}
+end
+clear ip nhrp

@@ -76,9 +76,12 @@ services:
       dockerfile: ./nginx/Dockerfile
     env_file: .env
     ports:
-      - 80:8088
+      - 80:80
+      - 443:443
     depends_on:
       - api
+    volumes:
+      - "./nginx/letsencrypt:/etc/letsencrypt"
     container_name: nginx
     restart: always
     networks:

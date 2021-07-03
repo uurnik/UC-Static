@@ -2,7 +2,7 @@ import axios from 'axios'
 
 
 const getAPI = axios.create({
-    baseURL: "http://"+ process.env.VUE_APP_DOMAIN_NAME + "/api/"
+    baseURL: "https://"+ process.env.VUE_APP_DOMAIN_NAME + "/api/"
 })
 
 getAPI.interceptors.request.use(function (config) {

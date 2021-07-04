@@ -2,8 +2,9 @@ import axios from 'axios'
 
 
 const getAPI = axios.create({
-    baseURL: "https://"+ "app.uurnik.com" + "/api/"
+    baseURL: "http://192.168.100.98:8001/api/"
 })
+
 
 getAPI.interceptors.request.use(function (config) {
     const token = localStorage.getItem('UserToken');

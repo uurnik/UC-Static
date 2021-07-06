@@ -4,6 +4,7 @@ import itertools
 import re
 import os
 
+from django.conf import settings
 from api.models import Hosts, Defaults
 from nornir.core.filter import F
 from nornir.plugins.tasks import networking, text
@@ -34,9 +35,10 @@ from ..helpers.misc import (
     resolve_host,
 )
 
-# import logging
-# logging.basicConfig(filename="scrapli.log", level=logging.DEBUG)
-# logger = logging.getLogger("scrapli")
+if settings.DEBUG:
+    import logging
+    logging.basicConfig(filename="scrapli.log", level=logging.DEBUG)
+    logger = logging.getLogger("scrapli")
 
 
 def netmiko_direct(task, cmd):

@@ -3,6 +3,8 @@ from api.models import Defaults, Hosts, Routes
 from nornir.core.deserializer.inventory import Inventory
 from nornir import InitNornir
 from netaddr import IPNetwork
+import os
+from django.conf import settings
 
 
 def get_inventory_data(Defaults, Hosts):
@@ -214,7 +216,7 @@ def inventory():
     nr = InitNornir(
         core={"num_workers": 100},
         inventory={"plugin": Myinventory, "options": {"data": data}},
-        logging={"enabled": False},
+        logging={"enabled": settings.DEBUG},
         jinja2={"filters": "api.helpers.misc.custom_filters"},
     )
     return nr

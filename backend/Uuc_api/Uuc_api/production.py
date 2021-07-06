@@ -2,7 +2,7 @@ from .settings import *
 import os
 
 
-DEBUG = True
+DEBUG = False
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 SECRET_KEY = os.environ["SECRET_KEY"]

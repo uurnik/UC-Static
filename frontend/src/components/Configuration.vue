@@ -5,6 +5,7 @@
         Configuration
       </div>
       <v-spacer></v-spacer>
+      <AddDevice/>
       <v-dialog
         style="height: 100%"
         overlay-opacity="0.75"
@@ -120,61 +121,69 @@
     </v-col>
 
     <v-row>
-      <v-col v-for="stat,index in stats" :key="index">
-      <v-card elevation="2" class="mx-auto" max-width="340" height="85px" outlined>
-        <v-list-item three-line>
-          <v-list-item-content>
-            <v-list-item-title class="font-weight-light text-h6 mb-1">
-              {{ stat.name }}
-            </v-list-item-title >
-            <v-list-item-subtitle v-if="index == 0">{{ stat.accesstype }}</v-list-item-subtitle>
-          </v-list-item-content>
+      <v-col v-for="(stat, index) in stats" :key="index">
+        <v-card
+          elevation="2"
+          class="mx-auto"
+          max-width="340"
+          height="85px"
+          outlined
+        >
+          <v-list-item three-line>
+            <v-list-item-content>
+              <v-list-item-title class="font-weight-light text-h6 mb-1">
+                {{ stat.name }}
+              </v-list-item-title>
+              <v-list-item-subtitle v-if="index == 0">{{
+                stat.accesstype
+              }}</v-list-item-subtitle>
+            </v-list-item-content>
 
-          <v-avatar text tile rounded size="40"
-            >
-            <v-icon v-if="stat.status"  color="success" text>{{ stat.icon }}</v-icon>
-            <v-icon v-if="!stat.status" color="red" text>{{ stat.icon }}</v-icon>
-
-            </v-avatar
-          >
-        </v-list-item>
-      </v-card>
-    </v-col>
+            <v-avatar text tile rounded size="40">
+              <v-icon v-if="stat.status" color="success" text>{{
+                stat.icon
+              }}</v-icon>
+              <v-icon v-if="!stat.status" color="red" text>{{
+                stat.icon
+              }}</v-icon>
+            </v-avatar>
+          </v-list-item>
+        </v-card>
+      </v-col>
     </v-row>
-    
 
-<v-divider class="ma-5"></v-divider>
+    <v-divider class="ma-5"></v-divider>
     <v-col>
-       <v-card flat>
-            <!-- <v-card-title align-center>
+      <v-card flat>
+        <!-- <v-card-title align-center>
               <h2 class="mx-auto my-5 font-weight-light pageheading--text">
                 Sites
               </h2>
             </v-card-title> -->
-            
-      <v-fab-transition>
-        <v-skeleton-loader :loading="loading" type="table">
-          <v-data-table
-            flat
-            hide-default-footer
-            :headers="headers"
-            :items="allDevices"
-            class="elevation-0 mx-3 mt-5 table-cursor"
-          >
-            <template v-slot:[`item.is_configured`]="{ item }">
-              <v-icon v-if="item.is_configured" class="pl-4" color="green"
-                >mdi-check-circle</v-icon
-              >
-              <v-icon v-if="!item.is_configured" class="pl-4" color="red"
-                >mdi-close-circle</v-icon
-              >
-            </template>
-            <template v-slot:[`item.group`]="{ item }">
-              <span>{{ showGroups(item.group) }}</span>
-            </template>
-          </v-data-table>
-        </v-skeleton-loader>
-      </v-fab-transition>
+
+        <v-fab-transition>
+          <v-skeleton-loader :loading="loading" type="table">
+            <v-data-table
+              flat
+              hide-default-footer
+              :headers="headers"
+              :items="$store.state.devices"
+              class="elevation-0 mx-3 mt-5 table-cursor"
+            >
+              <template v-slot:[`item.is_configured`]="{ item }">
+                <v-icon v-if="item.is_configured" class="pl-4" color="green"
+                  >mdi-check-circle</v-icon
+                >
+                <v-icon v-if="!item.is_configured" class="pl-4" color="red"
+                  >mdi-close-circle</v-icon
+                >
+              </template>
+              <template v-slot:[`item.group`]="{ item }">
+                <span>{{ showGroups(item.group) }}</span>
+              </template>
+            </v-data-table>
+          </v-skeleton-loader>
+        </v-fab-transition>
       </v-card>
     </v-col>
   </div>
@@ -190,6 +199,7 @@ import Step4 from "./configurationdialogs/Step4";
 import DeviceHardening from "./configurationdialogs/actions/DeviceHardening";
 import ChangeKeys from "./configurationdialogs/actions/ChangeKeys";
 import COPP from "./configurationdialogs/actions/COPP";
+import AddDevice from "./AddDevice";
 
 export default {
   components: {
@@ -200,6 +210,7 @@ export default {
     DeviceHardening,
     ChangeKeys,
     COPP,
+    AddDevice,
   },
 
   data() {
@@ -209,23 +220,24 @@ export default {
           name: "Deployment Status",
           status: !this.$store.state.notConfigured,
           accesstype: this.$store.state.accessType,
-          icon:"mdi-moon-new"
+          icon: "mdi-moon-new",
         },
         {
           name: "Control Plane Policing",
           status: this.$store.state.copp,
-          icon:"mdi-moon-new"
+          icon: "mdi-moon-new",
         },
-         {
+        {
           name: "Device Hardening",
           status: this.$store.state.devicehardening,
-          icon:"mdi-moon-new"
+          icon: "mdi-moon-new",
         },
       ],
       steptitle: "Discover Devices",
       cardaction: "Next",
       show: true,
       e1: 1,
+      adddialog: false,
       dialog: false,
       notifications: false,
       sound: true,
@@ -249,33 +261,31 @@ export default {
     };
   },
   beforeMount() {
-  this.DeployementStatus();
+    this.DeployementStatus();
   },
   mounted() {
-    
     this.loading = true;
     this.getDevices();
   },
   methods: {
     DeployementStatus() {
       this.$getAPI.get("access-type/").then((response) => {
-        this.$store.state.copp = response.data.copp_configured
-        this.$store.state.devicehardening = response.data.device_hardening
-        this.stats[1].status = this.$store.state.copp
-        this.stats[2].status = this.$store.state.devicehardening
+        this.$store.state.copp = response.data.copp_configured;
+        this.$store.state.devicehardening = response.data.device_hardening;
+        this.stats[1].status = this.$store.state.copp;
+        this.stats[2].status = this.$store.state.devicehardening;
 
         if (response.data.access_type != null) {
           this.$store.state.notConfigured = false;
-          this.stats[0].status = true
+          this.stats[0].status = true;
         }
       });
     },
     getDevices() {
       this.$getAPI.get("hosts").then((response) => {
-        this.allDevices = response.data;
+        this.$store.state.devices = response.data;
         this.loading = false;
       });
-      // # TODO - add logic for error handing
     },
     showGroups(group) {
       if (group == "HUB") {
@@ -286,6 +296,9 @@ export default {
     },
   },
   watch: {
+    // '$store.state.devices': function() {
+    //   return this.$store.state.devices
+    // },
     e1: function (value) {
       if (value == 1) {
         this.steptitle = "Discover Devices";
@@ -303,7 +316,6 @@ export default {
         this.cardaction = "Next";
       }
     },
-    
   },
 };
 </script>

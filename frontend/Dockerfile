@@ -1,3 +1,4 @@
+# Development container for frontend
 FROM node:latest
 
 WORKDIR /app

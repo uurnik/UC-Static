@@ -7,9 +7,9 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         menuDialogs: {
-            1:false,
-            2:false,
-            3:false,
+            1: false,
+            2: false,
+            3: false,
         },
         copp: false,
         devicehardening: false,
@@ -20,6 +20,7 @@ export default new Vuex.Store({
         APIData: '',
         accesstype: null,
         dns: null,
+        devices: [],
     },
     mutations: {
         updateStorage(state, { access, refresh }) {
@@ -52,36 +53,35 @@ export default new Vuex.Store({
         getaccesstypedns(state) {
             return { accesstype: state.accesstype, dns: state.dns }
         },
-
     },
     actions: {
-        commitparams(context, params) {
-            context.commit('updateaccessdns', {
-                type: params.accesstype,
-                dnsip: params.dns
-            })
-        },
+    commitparams(context, params) {
+        context.commit('updateaccessdns', {
+            type: params.accesstype,
+            dnsip: params.dns
+        })
+    },
 
 
-        userLogout(context) {
-            if (context.getters.loggedIn) {
-                context.commit('destroyToken')
-            }
-        },
-        userLogin(context, usercredentials) {
-            return new Promise((resolve, reject) => {
-                getAPI.post('users/token/', {
-                        username: usercredentials.username,
-                        password: usercredentials.password
-                    })
-                    .then(response => {
-                        context.commit('updateStorage', { access: response.data.access, refresh: response.data.refresh })
-                        resolve()
-                    })
-                    .catch(err => {
-                        reject(err)
-                    })
-            })
+    userLogout(context) {
+        if (context.getters.loggedIn) {
+            context.commit('destroyToken')
         }
+    },
+    userLogin(context, usercredentials) {
+        return new Promise((resolve, reject) => {
+            getAPI.post('users/token/', {
+                username: usercredentials.username,
+                password: usercredentials.password
+            })
+                .then(response => {
+                    context.commit('updateStorage', { access: response.data.access, refresh: response.data.refresh })
+                    resolve()
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
     }
+}
 })

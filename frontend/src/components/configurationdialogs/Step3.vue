@@ -127,6 +127,7 @@ export default {
       .then(() => {
         this.finalroutes = []
       })
+      this.$store.state.e1 += 1
     },
     addCustomRoute(name, route) {
       if (route !== "") {

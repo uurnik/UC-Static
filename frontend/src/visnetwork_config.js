@@ -1,7 +1,7 @@
 export const Options = {
     edges: {
         physics: false,
-        width: 0.30,
+        width: 0.60,
         smooth: true,
         color: "black"
     },

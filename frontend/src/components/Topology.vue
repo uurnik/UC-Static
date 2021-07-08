@@ -2,7 +2,14 @@
   <div>
     <v-col>
       <div
-        class="font-weight-light d-flex justify-end pa-4 text-h4 pageheading--text"
+        class="
+          font-weight-light
+          d-flex
+          justify-end
+          pa-4
+          text-h4
+          pageheading--text
+        "
       >
         Topology
         <v-spacer></v-spacer>
@@ -11,8 +18,9 @@
       <v-divider class="my-2 mx-2"></v-divider>
     </v-col>
     <v-fab-transition>
-    <v-container class="my-4 display-4">
-        <network v-if="showtopology"
+      <v-container class="my-4 display-4">
+        <network
+          v-if="showtopology"
           style="
             height: 80%;
             position: absolute;
@@ -27,7 +35,7 @@
           :edges="edges"
           :options="options"
         />
-    </v-container>
+      </v-container>
     </v-fab-transition>
   </div>
 </template>
@@ -35,7 +43,6 @@
 <script>
 import { Network } from "vue-vis-network";
 import { Options } from "../visnetwork_config";
-
 
 export default {
   name: "Topology",
@@ -48,37 +55,47 @@ export default {
       network: null,
       options: Options,
       nodes: [],
-      edges: []
+      edges: [],
+      timer: "",
     };
   },
-  mounted() {
-    this.$getAPI
-    .get("neighbors/",{
+  methods: {
+    getNeighbors() {
+      this.$getAPI
+        .get("neighbors/", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("UserToken")}`,
           },
         })
-    .then(response => {
-      for ( var i=0; i < response.data.result.nodes.length; i++) {
-        if ("image" in response.data.result.nodes[i]) {
-          let image = response.data.result.nodes[i].image
-          response.data.result.nodes[i].image = require(`@/assets/${image}`)
-          
-        }
-      }
-      
-      this.nodes =  response.data.result.nodes;
-      this.edges = response.data.result.edges;
-      this.showtopology = true
-      // this.$refs.network.fit({
-      // animation: {
-      //   duration: 2000,
-      // },
-      // })
-    })
+        .then((response) => {
+          for (var i = 0; i < response.data.result.nodes.length; i++) {
+            if ("image" in response.data.result.nodes[i]) {
+              let image = response.data.result.nodes[i].image;
+              response.data.result.nodes[
+                i
+              ].image = require(`@/assets/${image}`);
+            }
+          }
+
+          this.nodes = response.data.result.nodes;
+          this.edges = response.data.result.edges;
+          this.showtopology = true;
+          // this.$refs.network.fit({
+          // animation: {
+          //   duration: 2000,
+          // },
+          // })
+        });
+    },
+  },
+  created() {
+    this.getNeighbors();
+    this.timer = setInterval(() => {
+      this.getNeighbors();
+    }, 20000);
+  },
+  destroyed() {
+    clearInterval(this.timer)
   }
 };
 </script>
-
-<style scoped lang="scss">
-</style>

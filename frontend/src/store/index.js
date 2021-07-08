@@ -21,6 +21,7 @@ export default new Vuex.Store({
         accesstype: null,
         dns: null,
         devices: [],
+        e1:1,
     },
     mutations: {
         updateStorage(state, { access, refresh }) {

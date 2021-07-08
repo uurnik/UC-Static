@@ -45,9 +45,9 @@ export default {
       } else {
         this.type = 3
       }
-      console.log(this.type)
       this.$store.dispatch('commitparams',{accesstype:this.type ,dns:this.dns})
       this.reset()
+      this.$store.state.e1 = 3
     }
   }
 };

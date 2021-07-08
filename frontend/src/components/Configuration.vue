@@ -33,7 +33,7 @@
               dark
               @click="
                 dialog = false;
-                e1 = 1;
+                $store.state.e1 = 1;
               "
             >
               <v-icon>mdi-close</v-icon>
@@ -48,15 +48,15 @@
             }}</span>
           </v-card-title>
           <v-card-text>
-            <Step1 v-if="e1 == 1" />
-            <Step2 v-if="e1 == 2" />
-            <Step3 v-if="e1 == 3" />
-            <Step4 v-if="e1 == 4" />
+            <Step1 v-if="$store.state.e1 == 1" />
+            <Step2 v-if="$store.state.e1 == 2" />
+            <Step3 v-if="$store.state.e1 == 3" />
+            <Step4 v-if="$store.state.e1 == 4" />
             <!-- Action buttons -->
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="pageheading white--text mb-2 mr-2" @click="e1 += 1">
+            <v-btn v-if="showcardaction" color="pageheading white--text mb-2 mr-2" @click="$store.state.e1 += 1">
               {{ cardaction }}
             </v-btn>
           </v-card-actions>
@@ -65,21 +65,21 @@
           <!-- Footer -->
           <v-footer padless bottom>
             <v-flex>
-              <v-stepper v-model="e1">
+              <v-stepper v-model="$store.state.e1">
                 <v-stepper-header>
-                  <v-stepper-step :complete="e1 > 1" step="1">
+                  <v-stepper-step :complete="$store.state.e1 > 1" step="1">
                     Discover Devices
                   </v-stepper-step>
                   <v-divider></v-divider>
-                  <v-stepper-step :complete="e1 > 2" step="2">
+                  <v-stepper-step :complete="$store.state.e1 > 2" step="2">
                     Select Access Type & DNS
                   </v-stepper-step>
                   <v-divider></v-divider>
-                  <v-stepper-step :complete="e1 > 3" step="3"
+                  <v-stepper-step :complete="$store.state.e1 > 3" step="3"
                     >Discover Networks</v-stepper-step
                   >
                   <v-divider></v-divider>
-                  <v-stepper-step :complete="e1 > 4" step="4"
+                  <v-stepper-step :complete="$store.state.e1 > 4" step="4"
                     >Deploy</v-stepper-step
                   >
                 </v-stepper-header>
@@ -236,7 +236,6 @@ export default {
       steptitle: "Discover Devices",
       cardaction: "Next",
       show: true,
-      e1: 1,
       adddialog: false,
       dialog: false,
       notifications: false,
@@ -259,6 +258,15 @@ export default {
         { text: "Vendor", value: "vendor" },
       ],
     };
+  },
+  computed: {
+    showcardaction: function() {
+      if (this.$store.state.e1 == 2 ||  this.$store.state.e1 == 3){
+        return false
+      } else {
+        return true
+      }
+    }
   },
   beforeMount() {
     this.DeployementStatus();
@@ -296,10 +304,7 @@ export default {
     },
   },
   watch: {
-    // '$store.state.devices': function() {
-    //   return this.$store.state.devices
-    // },
-    e1: function (value) {
+    '$store.state.e1': function (value) {
       if (value == 1) {
         this.steptitle = "Discover Devices";
         this.cardaction = "Next";
@@ -312,7 +317,7 @@ export default {
         this.cardaction = "Finish";
       } else if (value > 4) {
         this.dialog = false;
-        this.e1 = 1;
+        this.$store.state.e1 = 1;
         this.cardaction = "Next";
       }
     },

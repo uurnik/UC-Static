@@ -544,7 +544,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None):
         )
 
         with open(
-            f"{os.getcwd()}/api/backup_configs/{task.host.name}.cfg", "w"
+            f"{os.getcwd()}/Uuc_api/api/backup_configs/{task.host.name}.cfg", "w"
         ) as file:
             file.write(get_configs.result)
 
@@ -553,7 +553,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None):
             task=text.template_file,
             name="Parse archive_en template",
             template="archive_en.jinja2",
-            path=f"api/nornir_stuff/templates/cisco",
+            path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco",
         )
         task.host["archive"] = parse_archive.result
 
@@ -640,7 +640,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None):
             task=text.template_file,
             name="Base Configuration",
             template="mytemplate.jinja2",
-            path=f"api/nornir_stuff/templates/cisco/{task.host.groups[0]}",
+            path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco/{task.host.groups[0]}",
             neighbors=spokes_tunnel,
             loop_backs=loop_backs,
             spoke_networks=spoke_networks,
@@ -691,7 +691,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None):
             ip_nat_parse_template = task.run(
                 task=text.template_file,
                 template="ip_nat_inside.jinja2",
-                path="api/nornir_stuff/templates/cisco",
+                path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco",
                 advertised_interfaces=advertised_interfaces,
             )
 
@@ -706,7 +706,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None):
                 vrf_parse_template = task.run(
                     task=text.template_file,
                     template="configure_vrf_LAN.jinja2",
-                    path="api/nornir_stuff/templates/cisco/SPOKE",
+                    path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco/SPOKE",
                     advertised_interfaces=advertised_interfaces,
                 )
 
@@ -719,7 +719,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None):
                     static_route_vrf_template = task.run(
                         task=text.template_file,
                         template="change_static_route.jinja2",
-                        path="api/nornir_stuff/templates/cisco",
+                        path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco",
                         routes_to_change=routes_to_change,
                     )
 

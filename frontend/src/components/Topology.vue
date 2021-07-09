@@ -13,7 +13,39 @@
       >
         Topology
         <v-spacer></v-spacer>
-        <v-icon style="cursor: pointer" class="pt-1 pb-0">mdi-reload</v-icon>
+        <v-menu offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              small
+              class="mr-5 mt-4"
+              color="pageheading white--text"
+              v-bind="attrs"
+              v-on="on"
+            >
+              <span>Set Interval</span>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item
+              link
+              v-for="(item, index) in timers"
+              :key="index"
+              @click="setPollInterval(index)"
+            >
+              <v-list-item-title link ripple dense
+                >{{ item.title
+                }}<v-icon
+                  class="pl-7"
+                  v-if="item.selected"
+                  color="pageheading"
+                  pl-3
+                  small
+                  >mdi-check-circle</v-icon
+                ></v-list-item-title
+              >
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
       <v-divider class="my-2 mx-2"></v-divider>
     </v-col>
@@ -51,15 +83,34 @@ export default {
   },
   data() {
     return {
+      networkEvents: "",
       showtopology: false,
       network: null,
       options: Options,
+      timers: [
+        { title: "15s", id: 1, value: 15000, selected: false },
+        { title: "30s", id: 2, value: 30000, selected: false },
+        { title: "1m", id: 3, value: 60000, selected: false },
+        { title: "2m", id: 4, value: 120000, selected: false },
+        { title: "5m", id: 5, value: 300000, selected: false },
+      ],
       nodes: [],
       edges: [],
       timer: "",
     };
   },
   methods: {
+    setPollInterval(index) {
+      for (let i = 0; i < this.timers.length; i++) {
+        this.timers[i].selected = false;
+      }
+      clearInterval(this.timer);
+      localStorage.setItem("neighborpoll", this.timers[index].value);
+      this.timers[index].selected = true;
+      this.timer = setInterval(() => {
+        this.getNeighbors();
+      }, this.timers[index].value);
+    },
     getNeighbors() {
       this.$getAPI
         .get("neighbors/", {
@@ -89,13 +140,26 @@ export default {
     },
   },
   created() {
+    var interval = null;
+    if (localStorage.getItem("neighborpoll")) {
+      interval = parseInt(localStorage.getItem("neighborpoll"));
+      for (let i = 0; i < this.timers.length; i++) {
+        if (this.timers[i].value == interval) {
+          this.timers[i].selected = true;
+          break
+        }
+      }
+    } else {
+      interval = 30000;
+      this.timers[1].selected = true;
+    }
     this.getNeighbors();
     this.timer = setInterval(() => {
       this.getNeighbors();
-    }, 20000);
+    }, interval);
   },
   destroyed() {
-    clearInterval(this.timer)
-  }
+    clearInterval(this.timer);
+  },
 };
 </script>

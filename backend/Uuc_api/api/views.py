@@ -671,8 +671,8 @@ def add_remove_spoke(request, pk):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def reachability(request):
-    """function to check the reachability of the hosts
-    endpoind -> 'api/ping/'
+    """
+    function to check the reachability of the hosts
     """
     nr = inventory()
 
@@ -690,7 +690,6 @@ def reachability(request):
 def tear_down(request):
     """
     function to tear down whole network
-    endpoint -> 'api/tear-down/'
     """
     nr = inventory()
 
@@ -800,7 +799,11 @@ def get_cdp_info(request):
     for host in nr.inventory.hosts.keys():
         hosts.update({nr.inventory.hosts[host].data["dev_name"]: host})
         if result[host].failed == True:
-            continue
+              cdp_dict[nr.inventory.hosts[host].data["dev_name"]] = {
+                "wan_ip": nr.inventory.hosts[host].hostname,
+                "tunnel_ip": nr.inventory.hosts[host].data["tunnel_ip"],
+                "cdp": [],
+            }
         else:
             cdp_dict[nr.inventory.hosts[host].data["dev_name"]] = {
                 "wan_ip": nr.inventory.hosts[host].hostname,
@@ -871,9 +874,17 @@ def get_cdp_info(request):
     # only Get Tunnel414 neighbors
     add_uurnik_node = 0
     for k in cdp_dict:
+        if len(cdp_dict[k]["cdp"]) == 0:
+            edges.append(
+                    {
+                        "device": k,
+                        "neighbor": '',
+                        "type": "overlay",
+                    }
+                )
         for neighbor in cdp_dict[k]["cdp"]:
             if neighbor["local_interface"] == "Tunnel414":
-                add_uurnik_node += 1
+                # add_uurnik_node += 1
                 edges.append(
                     {
                         "device": k,
@@ -889,8 +900,20 @@ def get_cdp_info(request):
                         "type": "underlay",
                     }
                 )
+    for edge in edges:
+        device = edge['device']
+        if len([n for n in edges if n['device'] == device and n['type'] == "overlay" ]) == 0 :
+            
+            edges.append(
+                    {
+                        "device": device,
+                        "neighbor": '',
+                        "type": "overlay",
+                    }
+                )
 
-    if add_uurnik_node > 0:
+
+    if Defaults.objects.get(pk=1).access_type != None:
         sum_of_devices += 1
         nodes.append(
             {
@@ -913,14 +936,22 @@ def get_cdp_info(request):
             nr.inventory.hosts[hosts[edge["device"]]].groups[0] == "HUB"
             or nr.inventory.hosts[hosts[edge["device"]]].groups[0] == "SPOKE"
         ):
+           
             for node in nodes:
                 if edge["device"] == node["label"]:
                     new_edge["from"] = node["id"]
+                    if edge["neighbor"] == '':
+                    # if edge['type'] == "overlay":
+                        final_edges.append({"from": new_edge["from"], "to": sum_of_devices ,"color":"red","width":1.7})
+                        continue
                     for node in nodes:
                         if edge["neighbor"] == node["label"].split(".")[0]:
                             new_edge["to"] = node["id"]
 
             if edge["type"] == "overlay":
+                if edge["neighbor"] == '':
+                    # final_edges.append({"from": new_edge["from"], "to": sum_of_devices ,"color":"red","width":1.7})
+                    pass
                 final_edges.append({"from": new_edge["from"], "to": sum_of_devices})
             elif edge["type"] == "underlay":
                 final_edges.append(
@@ -944,7 +975,6 @@ def add_remove_hub(request, pk):
     Along removing or adding configuration to new Hub , change in converged across other Hubs and spokes
     i.e Add/remove nhrp static mapping & BGP neighborship commands
     """
-    # Return 404 if Host does not exists
     try:
         db = Hosts.objects.get(name=pk)
     except Hosts.DoesNotExist:

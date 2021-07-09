@@ -56,7 +56,6 @@ export default {
     return {
       loading: false,
       search: "",
-      dialog: false,
       headers: [
         { text: "Site Name", align: "start", sortable: false, value: "name" },
         { text: "IP Address", value: "ip" },

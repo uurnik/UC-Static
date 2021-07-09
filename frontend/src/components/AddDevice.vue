@@ -3,7 +3,6 @@
     scrollable
     transition="dialog-bottom-transition"
     overlay-color="white"
-    v-model="dialog"
     max-width="500px"
     overlay-opacity="0.55"
   >

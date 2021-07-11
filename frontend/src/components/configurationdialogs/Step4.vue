@@ -1,6 +1,7 @@
 <template>
   <v-container fill-height class="mb-5">
-    <v-btn v-if="showbtn"
+    <v-btn
+      v-if="showbtn"
       @click="Deploy()"
       class="mx-auto"
       fab
@@ -19,23 +20,29 @@
     ></v-progress-linear>
 
     <v-col v-if="showstatus" class="d-flex justify-center">
-      <v-flex md7 xs9 lg5>
+      <v-flex md10 xs12 lg8>
         <v-simple-table class="mx-auto align-center">
           <template v-slot:default>
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Success</th>
+                <th v-for="(task, index) in devices[0].tasks" :key="index + 1">
+                  {{ task }}
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="item in devices" :key="item.name">
-                <td>{{ item.name }}</td>
+                <td><h4 class="grey--text text--darken-3">{{ item.name }}</h4></td>
                 <td v-if="item.failed == false">
                   <v-icon class="pl-4" color="green">mdi-check-circle</v-icon>
                 </td>
                 <td v-if="item.failed == true">
                   <v-icon class="pl-4" color="red">mdi-close-circle</v-icon>
+                </td>
+                <td v-for="task in item.tasks" :key="task.index + 3">
+                  <v-icon class="pl-4" color="green">mdi-check-circle</v-icon>
                 </td>
               </tr>
             </tbody>
@@ -47,8 +54,6 @@
 </template>
 
 <script>
-
-
 export default {
   name: "Step4",
   data() {
@@ -58,13 +63,14 @@ export default {
       showtable: false,
       showbtn: true,
       devices: [],
-      showstatus:false
+      showstatus: false,
     };
   },
   mounted() {
     this.reset();
   },
   methods: {
+
     reset() {
       this.loader = false;
       this.showbtn = true;
@@ -72,7 +78,7 @@ export default {
     },
 
     Deploy() {
-      this.showbtn = false
+      this.showbtn = false;
       this.loader = true;
       this.dns = { dns: this.$store.state.dns };
       this.$getAPI
@@ -81,7 +87,7 @@ export default {
           this.devices = response.data;
           this.loader = false;
           this.showstatus = true;
-          this.$store.state.notConfigured = false
+          this.$store.state.notConfigured = false;
         });
     },
   },

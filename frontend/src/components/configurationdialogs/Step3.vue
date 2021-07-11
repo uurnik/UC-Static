@@ -122,7 +122,6 @@ export default {
           custom: this.formatedroutes[device].custom,
         });
       }
-      console.log(this.finalroutes)
       this.$getAPI.post("routing/", this.finalroutes)
       .then(() => {
         this.finalroutes = []
@@ -140,7 +139,6 @@ export default {
     deleteRoutes(route, name) {
       this.chips[name].splice(this.chips[name].indexOf(route), 1);
       this.chips = Object.assign({}, this.chips, { name: this.chips[name] })
-      console.log(this.chips[name])
       for (const key of Object.keys(this.postroutes)) {
         if (key == name) {
           this.postroutes[key].custom = this.chips[name]

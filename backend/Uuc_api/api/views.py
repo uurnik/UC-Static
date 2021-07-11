@@ -379,7 +379,6 @@ def configure(request, option):
     """
     function to configure the network with dmvpn, the 'option'( int-> 1,2 or 3) argument will be passed to the
     configuration function to configure the access type of the network as demanded by the user.
-    endpoint -> /api/configure/<int:option>/
     """
     other_services = "n"
     DIA = "n"
@@ -451,13 +450,27 @@ def configure(request, option):
         task=validate, option=option, spoke_networks_all=spoke_networks_all
     )
 
+    if option == 2:
+        tasks = [
+            "Overlay Network",
+            "End-to-End Encryption",
+            "Advertise Routes"
+        ]
+    else:
+        [
+            "Overlay Network",
+            "End-to-End Encryption",
+            "Segmented Routing"
+            "Route Advertisement",
+            
+        ]
+
     for host in nr.inventory.hosts.keys():
-        tasks = []
         for task, performed in validation_result[host][0].result.items():
             if performed == None:
                 continue
             else:
-                tasks.append(task)
+                pass
 
         data.append(
             {
@@ -489,9 +502,9 @@ def configure(request, option):
 @api_view(["POST", "DELETE"])
 @permission_classes([IsAuthenticated])
 def add_remove_spoke(request, pk):
-    """function to add/remove a indivisual spoke
-    endpoint -> 'api/branch/<str:pk>/'"""
-
+    """
+    function to add/remove a indivisual spoke
+    """
     try:
         db = Hosts.objects.get(name=pk)
     except Hosts.DoesNotExist:
@@ -522,7 +535,6 @@ def add_remove_spoke(request, pk):
 
     # configure the spoke
     if request.method == "POST":
-
         if db.is_configured == True:
             return JsonResponse(
                 {"message": "Host is Already configured"},

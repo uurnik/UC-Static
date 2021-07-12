@@ -82,7 +82,6 @@ def add_Host(request):
     first looking for tunnel IP in the CacheTable, if not found,
     An unused IP will assigned from the TunnelPool Table,
     if host being added is a HUB then its NBMA and tunnel IP will also be added to Defaults Table
-    end point -> /api/add-host/
     """
     if request.method == "POST":
         serializer = HostsSerializer(data=request.data)
@@ -218,7 +217,7 @@ def delete_host(request, pk):
         # if host being deleted is a HUB and it is not configured then remove its tunnel IP & NBMA address from the Defaults Table
         # then delete the host from DB
         if dbHost.is_configured == False:
-            hub_to_remove = nr.filter(F(name__contains=pk))
+            hub_to_remove = nr.filter(F(name=pk))
 
             fqdn = ""
             for i in hub_to_remove.inventory.hosts.keys():
@@ -258,7 +257,7 @@ def delete_host(request, pk):
 
         if dbHost.is_configured == True:
             # if HUB is configured then first remove the neighborship from other HUBs and SPOKEs and delete its NBMA & tunnel IP from Defaults
-            hub_to_remove = nr.filter(F(name__contains=pk) & F(groups__contains="HUB"))
+            hub_to_remove = nr.filter(F(name=pk) & F(groups__contains="HUB"))
             result = hub_to_remove.run(
                 task=remove_hosts, nr=hub_to_remove, Hosts=Hosts, Defaults=Defaults
             )
@@ -272,7 +271,7 @@ def delete_host(request, pk):
                 except:
                     pass
 
-            other_hubs = nr.filter(~F(name__contains=pk) & F(groups__contains="HUB"))
+            other_hubs = nr.filter(~F(name=pk) & F(groups__contains="HUB"))
             _result_other_hubs = other_hubs.run(
                 task=scrape_config,
                 configs=[

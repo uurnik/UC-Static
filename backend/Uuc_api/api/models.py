@@ -1,8 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-import json
-import ast
-
 
 class AccountManager(BaseUserManager):
     def create_user(self, email, username, password=None):

@@ -2,4 +2,4 @@ from django.contrib.auth import get_user_model
 import os
 User = get_user_model()
 if len(User.objects.filter(is_superuser=True)) < 1:
-    User.objects.create_superuser(os.environ['DJANGO_SUPERUSER'], os.environ['DJANGO_SUPERUSER_EMAIL'],os.environ['DJANGO_SUPERUSER_PASS'])
+    User.objects.create_superuser(os.environ['DJANGO_SUPERUSER_EMAIL'],os.environ['DJANGO_SUPERUSER'],os.environ['DJANGO_SUPERUSER_PASS'])

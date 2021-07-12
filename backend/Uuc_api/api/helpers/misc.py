@@ -1,6 +1,7 @@
 import subprocess
 import datetime
 import time
+import os
 import re
 import asyncio
 from api.models import Hosts
@@ -475,7 +476,7 @@ def add_ddns_url(task, dns):
         auth_username=task.host.username,
         auth_password=task.host.password,
         auth_strict_key=False,
-        timeout_socket=10,
+        timeout_socket=8,
         timeout_ops=10,
         timeout_transport=10,
         transport="ssh2",
@@ -487,7 +488,7 @@ def add_ddns_url(task, dns):
     time.sleep(0.1)
     conn.transport.write("http\n")
     time.sleep(0.1)
-    conn.transport.write(f"add http://{dns}:8080/nic")
+    conn.transport.write(f"add {os.getenv('DNSUPDATER')}")
     time.sleep(0.1)
     conn.transport.write(b"\x16")
     time.sleep(0.1)

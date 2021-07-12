@@ -5,7 +5,6 @@
         Inventory
       </div>
       <v-spacer></v-spacer>
-      
     </v-col>
     <div>
       <v-col class="d-flex justify-end">

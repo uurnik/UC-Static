@@ -215,6 +215,7 @@ export default {
 
   data() {
     return {
+
       stats: [
         {
           name: "Deployment Status",

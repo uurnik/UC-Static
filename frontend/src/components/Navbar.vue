@@ -1,13 +1,32 @@
 <template>
   <nav>
     <v-toolbar flat>
-      <v-app-bar-nav-icon  @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title class="text-uppercase grey--text">
         <span class="font-weight-light">Uurnik</span>
         <span>Connect</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-icon style="cursor: pointer" @click="logout()">mdi-logout</v-icon>
+      <v-menu flat offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-icon v-bind="attrs" v-on="on" class="back--text" left
+            >mdi-account-circle</v-icon
+          >
+        </template>
+        <v-list dense>
+          <v-list-item link ripple>
+            <v-list-item-title @click="$router.push({ path: '/user'})" dense link ripple>
+              <v-icon class="mr-2" small style="cursor: pointer">mdi-card-account-details-outline</v-icon>Profile</v-list-item-title>
+          </v-list-item>
+          <v-list-item link ripple
+            ><v-list-item-title @click="logout()" dense link ripple>
+              <v-icon small style="cursor: pointer" >mdi-logout</v-icon>
+              Sign Out
+            </v-list-item-title>
+            </v-list-item>
+        </v-list>
+      </v-menu>
+      <!--  -->
     </v-toolbar>
     <v-navigation-drawer v-model="drawer" app>
       <v-list nav>

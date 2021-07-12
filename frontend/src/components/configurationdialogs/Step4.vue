@@ -18,6 +18,7 @@
       indeterminate
       color="pageheading"
     ></v-progress-linear>
+    <span v-if="loader" class="mx-auto">{{ currenttask }}</span>
 
     <v-col v-if="showstatus" class="d-flex justify-center">
       <v-flex md10 xs12 lg8>
@@ -34,7 +35,9 @@
             </thead>
             <tbody>
               <tr v-for="item in devices" :key="item.name">
-                <td><h4 class="grey--text text--darken-3">{{ item.name }}</h4></td>
+                <td>
+                  <h4 class="grey--text text--darken-3">{{ item.name }}</h4>
+                </td>
                 <td v-if="item.failed == false">
                   <v-icon class="pl-4" color="green">mdi-check-circle</v-icon>
                 </td>
@@ -54,10 +57,23 @@
 </template>
 
 <script>
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export default {
   name: "Step4",
   data() {
     return {
+      configurationtasks: [
+        "Settings up devices",
+        "Creating Overlay Network",
+        "Setting up Encryption",
+        "Configuring Segmented Routing",
+        "Advertising Routes",
+      ],
+      currenttask: "",
       dns: "",
       loader: false,
       showtable: false,
@@ -69,8 +85,21 @@ export default {
   mounted() {
     this.reset();
   },
-  methods: {
+  watch: {
+    loader: async function(value) {
+      if (value == true) {
+        for (var i = 0; i < this.configurationtasks.length; i++) {
+            // if (this.$store.state.accesstype != 2 && i != 3 ) {
+            this.currenttask = this.configurationtasks[i]
+            await sleep(2200)
+            // }
 
+        }
+      }
+
+    }
+  },
+  methods: {
     reset() {
       this.loader = false;
       this.showbtn = true;

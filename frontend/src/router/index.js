@@ -8,6 +8,8 @@ import Login from '../components/Login.vue'
 import SingleDevice from '../components/SingleDevice.vue'
 import Topology from '../components/Topology.vue'
 import PageNotFound from '../components/PageNotFound.vue'
+import UserPanel from '../components/UserPanel.vue'
+
 
 
 Vue.use(VueRouter)
@@ -69,6 +71,13 @@ const routes = [{
             hidenavbar: true
         }
     },
+    {
+        path: "/user",
+        component: UserPanel,
+        meta: {
+            requiresLogin: true
+        }
+    },
 
     {
         path: "*",
@@ -76,7 +85,8 @@ const routes = [{
         meta: {
             hidenavbar: true
         }
-    }
+    },
+
 ]
 
 const router = new VueRouter({

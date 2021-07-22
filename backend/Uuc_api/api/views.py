@@ -1447,17 +1447,17 @@ def copp(request):
                 dbHost.save()
 
     import yaml
-
-    with open("model_spec_cisco.yaml") as file:
+    import os
+    with open(f"{os.getcwd()}/Uuc_api/api/model_spec_cisco.yaml") as file:
         model_specs = yaml.safe_load(file)
 
     for host in nr.inventory.hosts.keys():
         model = nr.inventory.hosts[host].data["model"]
         # bw = model_specs[f"Cisco {model}"]
         ## cut 25% for models < 1gig
-
+      
         dbHost = Hosts.objects.get(pk=nr.inventory.hosts[host].name)
-        dbHost.copp_bw = 1000
+        dbHost.copp_bw = 1000                     # TODO fix this
         dbHost.save()
 
     results = nr.run(task=configure_copp)

@@ -1,0 +1,88 @@
+---
+# max throughput in Mbps
+Cisco 880:
+  max_through: 30
+  cut : 25%
+
+Cisco 890:
+  max_through: 45
+  
+Cisco 1921:
+  max_through: 68
+
+Cisco 1941:
+  max_through: 76
+
+Cisco 2901:
+  max_through: 77
+
+Cisco 2911:
+  max_through: 81
+
+Cisco 2921:
+  max_through: 105
+
+Cisco 2951:
+  max_through: 114
+
+Cisco 3925:
+  max_through: 198
+
+Cisco 3925E:
+  max_through: 534
+
+Cisco 3945:
+  max_through: 223
+
+Cisco 3945E:
+  max_through: 668
+
+Cisco 850:
+  max_through: 8
+
+Cisco 870:
+  max_through: 30
+
+Cisco 1800:
+  max_through: 40
+
+Cisco 1841:
+  max_through: 45
+  with_AIM_VPN_SSL: 95
+
+Cisco 2801:
+  max_through: 50
+  with_AIM_VPN_SSL: 160
+
+Cisco 2811:
+  max_through: 55
+  with_AIM_VPN_SSL: 130
+
+Cisco 2821:
+  max_through: 56
+  with_AIM_VPN_SSL: 140
+
+Cisco 2851:
+  max_through: 66
+  with_AIM_VPN_SSL: 160
+
+Cisco 3825:
+  max_through: 170
+  with_AIM_VPN_SSL: 185
+
+
+Cisco 3845:
+  max_through: 180
+  with_AIM_VPN_SSL: 210
+
+Cisco 7301:
+  max_through: 280
+
+Cisco 7200:
+  max_through: 280
+  with_single_VSA: 950
+
+Cisco ASR 1000:
+  max_through: 1800
+  with_ESP_10G: 4000
+  with_ESP_20G: 7000

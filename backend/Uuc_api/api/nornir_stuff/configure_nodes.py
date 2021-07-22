@@ -394,7 +394,7 @@ def device_harderning(task):
     config = task.run(
         task=text.template_file,
         template="hardening_cisco.jinja2",
-        path="api/nornir_stuff/templates/cisco",
+        path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco",
         interfaces=interfaces,
         logical_interfaces=logical_interfaces,
         reserve_mem=reserve_mem,
@@ -416,7 +416,7 @@ def configure_copp(task):
     config = task.run(
         task=text.template_file,
         template="copp_cisco_template.jinja2",
-        path="api/nornir_stuff/templates/cisco",
+        path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco",
         copp_bw=copp_bw,
     )
     commands = [x.strip() for x in config.result.splitlines() if len(x) != 0]

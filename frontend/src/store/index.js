@@ -20,6 +20,8 @@ export default new Vuex.Store({
         APIData: '',
         accesstype: null,
         dns: null,
+        toggleloader:false,
+        hidestatusbtn: true,
         devices: [],
         e1:1,
     },

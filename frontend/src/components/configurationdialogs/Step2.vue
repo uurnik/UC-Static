@@ -12,7 +12,7 @@
       return-object
     ></v-select>
         <v-text-field class="pageheading--text pa-0 ma-0" outlined v-model="dns" label="DNS"></v-text-field>
-        <v-btn @click="Submit()"  class="pageheading white--text">Submit</v-btn>
+        <v-btn @click="Submit()"  class="pageheading white--text">Next</v-btn>
         </div>
       </v-form>
     </v-flex>

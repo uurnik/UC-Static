@@ -13,11 +13,6 @@
     >
       <v-icon x-large dark>mdi-router</v-icon></v-btn
     >
-    <v-progress-linear
-      v-if="loader"
-      indeterminate
-      color="pageheading"
-    ></v-progress-linear>
     <v-col v-if="showroutes" class="d-flex justify-start">
       <v-flex lg11 md12 xs8 justify-start>
         <v-form autocomplete="off" v-for="device in routes" :key="device.name">
@@ -50,7 +45,7 @@
                 height="18px"
                 v-model="customroute[device.name]"
                 label="Route"
-                placeholder="x.x.x.x/x x.x.x.x"
+                placeholder="x.x.x.x/xx  x.x.x.x"
               ></v-text-field>
             </v-flex>
             <v-btn
@@ -61,10 +56,9 @@
               >Add</v-btn
             >
           </v-row>
-          <!-- <v-divider></v-divider> -->
         </v-form>
         <v-btn class="pageheading white--text mt-3" @click="postRoutes()"
-          >submit</v-btn
+          >Next</v-btn
         >
       </v-flex>
     </v-col>
@@ -85,17 +79,20 @@ export default {
       finalroutes: [],
       customroute: {},
       showbtn: true,
-      loader: false,
       chips: {},
     };
   },
+   destroyed() {
+    this.$store.state.toggleloader = false;
+    this.routes = null
+  },
   methods: {
     getRoutes() {
-      this.loader = true;
+     this.$store.state.toggleloader = true;
       this.showbtn = false;
       this.$getAPI.get("routing/").then((response) => {
         this.routes = response.data;
-        this.loader = false;
+         this.$store.state.toggleloader = false;
         this.showroutes = true;
         for (const value of Object.values(response.data)) {
           this.chips[value.name] = [];

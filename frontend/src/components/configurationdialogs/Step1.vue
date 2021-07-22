@@ -11,13 +11,9 @@
       width="90px"
       height="90px"
     >
+
       <v-icon x-large dark> mdi-bullseye </v-icon></v-btn
     >
-    <v-progress-linear v-if="loader"
-      indeterminate
-      color="pageheading"
-    ></v-progress-linear>
-
     <v-col v-if="showstatus" class="d-flex justify-center">
       <v-flex md7 xs9 lg5>
         <v-simple-table class="mx-auto align-center">
@@ -30,7 +26,7 @@
             </thead>
             <tbody>
               <tr v-for="item in devices" :key="item.name">
-                <td>{{ item.name }}</td>
+                <td><h4 class="grey--text text--darken-3">{{ item.name }}</h4></td>
                 <td v-if="item.failed == false"><v-icon class="pl-4" color="green">mdi-check-circle</v-icon></td>
                 <td v-if="item.failed == true"><v-icon class="pl-4" color="red">mdi-close-circle</v-icon></td>
               </tr>
@@ -50,21 +46,24 @@ export default {
   data() {
     return {
       showstatus: false,
-      loader: false,
-      desserts: [],
       devices: [],
       showbtn: true,
     };
   },
+  destroyed() {
+    this.$store.state.toggleloader = false;
+    this.showstatus = false;
+    this.devices = []
+  },
   methods: {
     getStatus() {
-      this.loader = true;
+      this.$store.state.toggleloader = true;
       this.showbtn=false;
       this.$getAPI
         .get("facts/")
         .then((response) => {
           this.devices = response.data
-          this.loader = false;
+          this.$store.state.toggleloader = false;
           this.showstatus = true;
         });
     },

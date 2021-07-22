@@ -5,7 +5,7 @@
         Configuration
       </div>
       <v-spacer></v-spacer>
-      <AddDevice/>
+      <AddDevice />
       <v-dialog
         style="height: 100%"
         overlay-opacity="0.75"
@@ -41,6 +41,11 @@
             <v-toolbar-title>Configuration</v-toolbar-title>
             <v-spacer></v-spacer>
           </v-toolbar>
+          <v-progress-linear
+            v-if="$store.state.toggleloader"
+            indeterminate
+            color="#FF8A65"
+          ></v-progress-linear>
 
           <v-card-title>
             <span class="font-weight-light pa-4 text-h4 pageheading--text">{{
@@ -56,7 +61,18 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn v-if="showcardaction" color="pageheading white--text mb-2 mr-2" @click="$store.state.e1 += 1">
+
+            <v-btn
+              class="pageheading white--text mb-2 mr-2"
+              v-if="$store.state.e1 == 4"
+              :disabled="$store.state.hidestatusbtn"
+              >Status</v-btn
+            >
+            <v-btn
+              v-if="showcardaction"
+              class="pageheading white--text mb-2 mr-2"
+              @click="$store.state.e1 += 1"
+            >
               {{ cardaction }}
             </v-btn>
           </v-card-actions>
@@ -155,12 +171,6 @@
     <v-divider class="ma-5"></v-divider>
     <v-col>
       <v-card flat>
-        <!-- <v-card-title align-center>
-              <h2 class="mx-auto my-5 font-weight-light pageheading--text">
-                Sites
-              </h2>
-            </v-card-title> -->
-
         <v-fab-transition>
           <v-skeleton-loader :loading="loading" type="table">
             <v-data-table
@@ -215,7 +225,6 @@ export default {
 
   data() {
     return {
-
       stats: [
         {
           name: "Deployment Status",
@@ -224,12 +233,12 @@ export default {
           icon: "mdi-moon-new",
         },
         {
-          name: "Control Plane Policing",
+          name: "Device Protection",
           status: this.$store.state.copp,
           icon: "mdi-moon-new",
         },
         {
-          name: "Device Hardening",
+          name: "Secure Access Control",
           status: this.$store.state.devicehardening,
           icon: "mdi-moon-new",
         },
@@ -246,8 +255,8 @@ export default {
       loading: false,
 
       menuitems: [
-        { title: "COPP", id: "1" },
-        { title: "Device Hardening", id: "2" },
+        { title: "Device Protection", id: "1" },
+        { title: "Secure Access Control", id: "2" },
         { title: "Change IPsec Keys", id: "3" },
       ],
       headers: [
@@ -261,13 +270,13 @@ export default {
     };
   },
   computed: {
-    showcardaction: function() {
-      if (this.$store.state.e1 == 2 ||  this.$store.state.e1 == 3){
-        return false
+    showcardaction: function () {
+      if (this.$store.state.e1 == 2 || this.$store.state.e1 == 3) {
+        return false;
       } else {
-        return true
+        return true;
       }
-    }
+    },
   },
   beforeMount() {
     this.DeployementStatus();
@@ -305,7 +314,7 @@ export default {
     },
   },
   watch: {
-    '$store.state.e1': function (value) {
+    "$store.state.e1": function (value) {
       if (value == 1) {
         this.steptitle = "Discover Devices";
         this.cardaction = "Next";

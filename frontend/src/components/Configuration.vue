@@ -65,6 +65,7 @@
             <v-btn
               class="pageheading white--text mb-2 mr-2"
               v-if="$store.state.e1 == 4"
+              @click="$store.state.showstatustable4 = true; $store.state.showtasks4 = false"
               :disabled="$store.state.hidestatusbtn"
               >Status</v-btn
             >

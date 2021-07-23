@@ -14,7 +14,7 @@
       <v-icon x-large dark>mdi-cog</v-icon></v-btn
     >
 
-    <v-list class="list mx-auto" v-if="$store.state.toggleloader == true">
+    <v-list class="list mx-auto" v-if="$store.state.showtasks4 == true && $store.state.showstatustable4 == false">
       <v-list-item-group color="pageheading">
         <v-list-item v-for="(item, i) in currenttask" :key="i">
           <v-list-item-icon>
@@ -27,7 +27,7 @@
       </v-list-item-group>
     </v-list>
 
-    <v-col v-if="showstatus" class="d-flex justify-center">
+    <v-col v-if="$store.state.showstatustable4" class="d-flex justify-center">
       <v-flex md10 xs12 lg8>
         <v-simple-table class="mx-auto align-center">
           <template v-slot:default>
@@ -35,9 +35,6 @@
               <tr>
                 <th>Name</th>
                 <th>Success</th>
-                <!-- <th v-for="(task, index) in devices[0].tasks" :key="index + 1">
-                  {{ task }}
-                </th> -->
               </tr>
             </thead>
             <tbody>
@@ -51,9 +48,6 @@
                 <td v-if="item.failed == true">
                   <v-icon class="pl-4" color="red">mdi-close-circle</v-icon>
                 </td>
-                <!-- <td v-for="task in item.tasks" :key="task.index + 3">
-                  <v-icon class="pl-4" color="green">mdi-check-circle</v-icon>
-                </td> -->
               </tr>
             </tbody>
           </template>
@@ -100,12 +94,26 @@ export default {
       showbtn: true,
       devices: [],
       showstatus: false,
+      showtasks: false
     };
   },
   mounted() {
     this.reset();
   },
   watch: {
+    devices : function(value) {
+      console.log(value.length)
+      if (value.length > 0 && this.currenttask[this.currenttask.length - 1] == "Verifying Deployement") {
+          this.$store.state.toggleloader = false;
+          this.$store.state.hidestatusbtn = false;
+      }
+    },
+    currenttask: function(value) {
+      if (value[value.length -1] == "Verifying Deployement" && this.devices.length > 0 ) {
+          this.$store.state.toggleloader = false;
+          this.$store.state.hidestatusbtn = false;
+      }
+    },
     "$store.state.toggleloader": async function (value) {
       if (value == true) {
         for (var i = 0; i < this.configurationtasks.length; i++) {
@@ -125,6 +133,7 @@ export default {
     },
 
     Deploy() {
+      this.$store.state.showtasks4 = true
       this.showbtn = false;
       this.$store.state.toggleloader = true;
       this.dns = { dns: this.$store.state.dns };
@@ -132,8 +141,6 @@ export default {
         .post(`configure/${this.$store.state.accesstype}/`, this.dns)
         .then((response) => {
           this.devices = response.data;
-          this.$store.state.hidestatusbtn = false;
-          this.$store.state.toggleloader = false;
           this.showstatus = true;
           this.$store.state.notConfigured = false;
         });

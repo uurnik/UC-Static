@@ -22,6 +22,8 @@ export default new Vuex.Store({
         dns: null,
         toggleloader:false,
         hidestatusbtn: true,
+        showstatustable4: false,
+        showtasks4: false,
         devices: [],
         e1:1,
     },

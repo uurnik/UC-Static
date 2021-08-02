@@ -131,11 +131,6 @@ export default {
           this.nodes = response.data.result.nodes;
           this.edges = response.data.result.edges;
           this.showtopology = true;
-          // this.$refs.network.fit({
-          // animation: {
-          //   duration: 2000,
-          // },
-          // })
         });
     },
   },

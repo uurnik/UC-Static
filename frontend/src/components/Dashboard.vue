@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-flex class="mx-auto" lg10 md10 justify-space-between row>
-      <v-card width="35em" style="border: solid 2px #42A5F5" class="ma-5 elevation-0">
+      <v-card width="32em" style="border: solid 2px #42A5F5" class="ma-5 elevation-0">
         <v-card-title class="ma-1 elevation-0 pageheading--text" style="border-bottom: solid 2px #42A5F5"
           >Summary</v-card-title
         >
@@ -14,7 +14,7 @@
           ></apexchart>
         </v-card-text>
       </v-card>
-      <v-card width="35em" style="border: solid 2px #42A5F5" class="ma-5 elevation-0">
+      <v-card width="32em" style="border: solid 2px #42A5F5" class="ma-5 elevation-0">
         <v-card-title class="ma-1 elevation-0 pageheading--text" style="border-bottom: solid 2px #42A5F5"
           >Locations</v-card-title
         >
@@ -40,7 +40,7 @@
     </v-flex>
     <v-divider class="ma-5"></v-divider>
     <v-flex class="mx-auto" row mt-5 lg10 md10 justify-space-between>
-      <v-card width="35em" class="ma-7 elevation-0">
+      <v-card width="32em" class="ma-7 elevation-0">
         <v-card-title class="grey lighten-3"
           >Top 5 Devices By CPU Utilization</v-card-title
         >
@@ -73,7 +73,7 @@
         </v-simple-table>
       </v-card>
       <v-spacer></v-spacer>
-      <v-card width="35em" class="ma-7 elevation-0">
+      <v-card width="32em" class="ma-7 elevation-0">
         <v-card-title class="grey lighten-3"
           >Top 5 Devices By Memory Utilization</v-card-title
         >

@@ -1,4 +1,6 @@
 from time import sleep
+import yaml
+import os
 import asyncio
 from netaddr import IPNetwork, IPAddress
 from ipaddress import IPv4Interface, ip_network, ip_address, ip_interface
@@ -1446,8 +1448,6 @@ def copp(request):
                 dbHost.ip = nr.inventory.hosts[h].hostname
                 dbHost.save()
 
-    import yaml
-    import os
     with open(f"{os.getcwd()}/Uuc_api/api/model_spec_cisco.yaml") as file:
         model_specs = yaml.safe_load(file)
 
@@ -1457,7 +1457,7 @@ def copp(request):
         ## cut 25% for models < 1gig
       
         dbHost = Hosts.objects.get(pk=nr.inventory.hosts[host].name)
-        dbHost.copp_bw = 1000                     # TODO fix this
+        dbHost.copp_bw = 500                # TODO fix this
         dbHost.save()
 
     results = nr.run(task=configure_copp)
@@ -1532,18 +1532,30 @@ def snmp_poll(request):
         nr.run(task=resolve_host, dns=dns)
     #####################################
 
+    hosts = []
     community_str = "public"
 
-    hosts = []
-    for host in nr.inventory.hosts.keys():
-        # if nr.inventory.hosts[host].data['is_configured'] == True:
-        hosts.append(
+    if request.query_params.get("name"):
+        name = request.query_params.get("name")
+        device = nr.filter(F(name=name))
+        for host in device.inventory.hosts.keys():
+            hosts.append(
             {
                 "name": nr.inventory.hosts[host].name,
                 "IP": nr.inventory.hosts[host].hostname,
                 "int_index": nr.inventory.hosts[host].data["interface_index"],
             }
         )
+    else:
+        for host in nr.inventory.hosts.keys():
+            # if nr.inventory.hosts[host].data['is_configured'] == True:
+            hosts.append(
+                {
+                    "name": nr.inventory.hosts[host].name,
+                    "IP": nr.inventory.hosts[host].hostname,
+                    "int_index": nr.inventory.hosts[host].data["interface_index"],
+                }
+            )
 
     output = asyncio.run(do_poll(hosts, community_str))
 

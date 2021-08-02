@@ -411,6 +411,7 @@ async def snmp_get(host, community_str):
             "OID": "1.3.6.1.4.1.9.9.48.1.1.1.6.1",
         },
         {"field": "cpmCPUTotal5minRev", "OID": "1.3.6.1.4.1.9.9.109.1.1.1.1.8.1"},
+        {"field": "cpmCPUTotalminRev", "OID": "1.3.6.1.4.1.9.9.109.1.1.1.1.7.1"},
         {"field": "sysUpTime", "OID": "1.3.6.1.2.1.1.3.0"},
         {"field": "TunnelCounter_in", "OID": "1.3.6.1.2.1.2.2.1.16"},
         {"field": "TunnelCounter_out", "OID": "1.3.6.1.2.1.2.2.1.10"},
@@ -434,7 +435,9 @@ async def snmp_get(host, community_str):
 
             _errorIndication, _errorStatus, _errorIndex, varBinds = response
 
+            ramusage=""
             for varBind in varBinds:
+
                 output = {oid["field"]: [x.prettyPrint() for x in varBind][1]}
                 if "No Such Instance" in output[oid["field"]]:
                     result.update({oid["field"]: []})
@@ -446,8 +449,14 @@ async def snmp_get(host, community_str):
                     result.update(output)
                 else:
                     result.update(output)
+        
 
-        data = {"name": host["name"], "result": result}
+
+        totalram = int(result['ciscoMemoryPoolUsed-processor']) + int(result['ciscoMemoryPoolFree-processor'])
+        ramusage = float(int(result['ciscoMemoryPoolUsed-processor'])) / float(totalram) *100
+        result['ramusage'] = str("%.2f" % round(ramusage,2))
+
+        data = {"name": host["name"], "result": result} 
     except:
         data = {"name": host["name"], "result": []}
 

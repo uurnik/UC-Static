@@ -61,6 +61,14 @@
               ><strong>RAM Size</strong
               ><span>{{ device.ram_size }}</span></v-col
             >
+          
+          </v-card-text>
+          <v-card-text class="pb-0 ma-0">
+            <v-col class="d-flex justify-space-between pb-1 pa-0 ml-4 ma-0"
+              ><strong>Uptime</strong
+              ><span>{{ uptime }}</span></v-col
+            >
+          
           </v-card-text>
         </v-card>
       </v-flex>
@@ -76,7 +84,7 @@
             height="180px"
             width="180px"
             :options="cpuchart.chartOptions"
-            :series="series"
+            :series="cpuusage"
           ></apexchart>
           <apexchart
             type="radialBar"
@@ -84,7 +92,7 @@
             width="180px"
             title="WAN Interface"
             :options="memorychart.chartOptions"
-            :series="series"
+            :series="ramusage"
           ></apexchart>
         </v-card>
         <v-card class="mr-5 mx-auto mt-5 elevation-0">
@@ -157,36 +165,15 @@ export default {
       cpuchart: radialCPUoptions,
       memorychart: radialMemoryoptions,
       wanchart: WANChartOptions,
-      // chartOptions: {
-      //   stroke: {
-      //         width: 2.5,
-      //         curve: 'smooth'
-      //       },
-      //   title: {
-      //     text: "WAN Interface",
-      //     align: "center",
-      //     style: {
-      //       fontSize: "17px",
-      //       fontWeight: "medium",
-      //       fontFamily: "Roboto,sans-serif",
-      //       color: "#42A5F5",
-      //     },
-      //   },
-      //   // title:"Interface Details",
-      //   colors: ["#42A5F5"],
-      //   plotOptions: {
-      //     radialBar: {
-      //       hollow: {
-      //         size: "78%",
-      //       },
-      //     },
-      //   },
-      // },
+
       wseries:[{
         name: 'Kb',
             data: [4, 3, 10, 9, 29, 19, 22, 9, 12, 7, 19, 5, 13, 9, 17, 2, 7, 5]
       }],
-      series: [76],
+      uptime:"",
+      ramusage:[],
+      cpuusage:[],
+      polltimer:null,
       loading: true,
       headers: [
         {
@@ -203,9 +190,26 @@ export default {
       device: {},
     };
   },
+  methods: {
+    snmppoll() {
+      this.$getAPI.get("snmp?name=" + this.name).then((response) => {
+        this.ramusage = [response.data[0].result.ramusage]
+        this.cpuusage = [response.data[0].result.cpmCPUTotal5minRev]
+        this.uptime = response.data[0].result.sysUpTime
+      })
+    }
+  },
+  destroyed() {
+    clearInterval(this.polltimer);
+  },
   mounted() {
     this.$getAPI.get("hosts?name=" + this.name).then((response) => {
       this.device = response.data;
+      this.snmppoll();
+      this.polltimer = setInterval(() => {
+        this.snmppoll();
+      },15000)
+
     });
     this.$getAPI.get(`interfaces/${this.name}/`).then((response) => {
       this.interfaces = response.data;

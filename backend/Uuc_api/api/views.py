@@ -420,10 +420,14 @@ def configure(request, option):
     # _result_facts = nr.run(task=facts)
 
     nr = inventory()
+    headend= nr.filter(F(vendor="Cisco") & F(groups__contains="HUB"))
+    headend_device = list(headend.inventory.hosts.keys())[0]
+    headend_vendor = headend.inventory.hosts[headend_device].data['vendor']
+
 
     # result_2 = nr.run(task=get_challenge_pass)
     result_1 = nr.run(
-        task=conf_dmvpn, nr=nr, dia=DIA, other_services=other_services, dns=dns
+        task=conf_dmvpn, nr=nr, dia=DIA, other_services=other_services, dns=dns , headend_vendor=headend_vendor
     )
 
     # Save Host's WAN interface, WAN subnet, Next Hop and mark host as configured and update dns server
@@ -438,7 +442,10 @@ def configure(request, option):
 
         if result_1[nr.inventory.hosts[i].name].failed == False:
             db.is_configured = True
-            db.snmp_int_index = nr.inventory.hosts[i].data["interface_index"]
+            try:
+                db.snmp_int_index = nr.inventory.hosts[i].data["interface_index"]
+            except:
+                pass
             db.save()
 
     dbDefaults = Defaults.objects.get(pk=1)
@@ -451,48 +458,30 @@ def configure(request, option):
         task=validate, option=option, spoke_networks_all=spoke_networks_all
     )
 
-    if option == 2:
-        tasks = [
-            "Overlay Network",
-            "End-to-End Encryption",
-            "Advertise Routes"
-        ]
-    else:
-        [
-            "Overlay Network",
-            "End-to-End Encryption",
-            "Segmented Routing"
-            "Route Advertisement",
-            
-        ]
-
     for host in nr.inventory.hosts.keys():
-        for task, performed in validation_result[host][0].result.items():
-            if performed == None:
-                continue
-            else:
-                pass
-
         data.append(
             {
                 "name": nr.inventory.hosts[host].name,
                 "changed": result_1[host].changed,
-                "failed": result_1[host].failed,
-                "tasks": tasks,
+                "failed": result_1[host].failed
             }
         )
 
+
         dbHost = Hosts.objects.get(name=nr.inventory.hosts[host].name)
-        dbHost.crypto = validation_result[host][0].result["crypto"]
-        dbHost.tunnel_int = validation_result[host][0].result["tunnel_int"]
-        dbHost.routing = validation_result[host][0].result["routing"]
-        dbHost.vrfs = validation_result[host][0].result["vrfs"]
-        dbHost.tcl_scp = validation_result[host][0].result["tcl_scp"]
-        dbHost.route_map_prefix_list = validation_result[host][0].result[
-            "route_map_prefix_list"
-        ]
-        dbHost.acl = validation_result[host][0].result["acl"]
-        dbHost.nat = validation_result[host][0].result["nat"]
+        try:
+            dbHost.crypto = validation_result[host][0].result["crypto"]
+            dbHost.tunnel_int = validation_result[host][0].result["tunnel_int"]
+            dbHost.routing = validation_result[host][0].result["routing"]
+            dbHost.vrfs = validation_result[host][0].result["vrfs"]
+            dbHost.tcl_scp = validation_result[host][0].result["tcl_scp"]
+            dbHost.route_map_prefix_list = validation_result[host][0].result[
+                "route_map_prefix_list"
+            ]
+            dbHost.acl = validation_result[host][0].result["acl"]
+            dbHost.nat = validation_result[host][0].result["nat"]
+        except:
+            pass
         dbHost.save()
 
     #####################################################################################
@@ -1309,7 +1298,10 @@ def gather_routes(request):
     if request.method == "GET":
         devices = nr.filter(F(is_configured=False))
         result_1 = devices.run(task=get_routes)
-        result_2 = devices.run(task=get_routing_table_cisco)
+
+        cisco_devices = devices.filter(F(vendor="Cisco"))
+        result_2 = cisco_devices.run(task=get_routing_table_cisco)
+
 
         all_routes = []
         for host in devices.inventory.hosts.keys():
@@ -1321,19 +1313,20 @@ def gather_routes(request):
                     pass
 
                 dbHost = Hosts.objects.get(name=host)
-                for route in routes:
-                    for route_in_table in result_2[host][0].result:
-                        in_table = (
-                            route_in_table["network"] + "/" + route_in_table["mask"]
-                        )
-                        if in_table == route:
-                            dbRoute = Routes(
-                                route=dbHost,
-                                lan_routes=route,
-                                protocol=route_in_table["protocol"],
-                                advertised=False,
+                if devices.inventory.hosts[host].data['vendor'] == "Cisco":
+                    for route in routes:
+                        for route_in_table in result_2[host][0].result:
+                            in_table = (
+                                route_in_table["network"] + "/" + route_in_table["mask"]
                             )
-                            dbRoute.save()
+                            if in_table == route:
+                                dbRoute = Routes(
+                                    route=dbHost,
+                                    lan_routes=route,
+                                    protocol=route_in_table["protocol"],
+                                    advertised=False,
+                                )
+                                dbRoute.save()
 
                 all_routes.append(
                     {"name": devices.inventory.hosts[host].name, "routes": routes}
@@ -1363,6 +1356,8 @@ def gather_routes(request):
                         dbRoute.save()
 
         return JsonResponse(request.data, safe=False)
+
+
 
 
 @api_view(["GET"])

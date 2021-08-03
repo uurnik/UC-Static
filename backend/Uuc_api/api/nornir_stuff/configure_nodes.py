@@ -426,7 +426,7 @@ def configure_copp(task):
     task.host.close_connection("scrapli")
 
 
-def conf_dmvpn(task, nr, dia, other_services=None, dns=None):
+def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None):
     """
     1. Create configuration backup on control node, configurations are saved to api/backup_configs
     2. Enable archive feature to create a backup of running-config of Host locally
@@ -488,7 +488,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None):
         ).result
         task.host.close_connection("scrapli")
         with open(
-            f"{os.getcwd()}/api/backup_configs/{task.host.name}.cfg", "w"
+            f"{os.getcwd()}/Uuc_api/api/backup_configs/{task.host.name}.cfg", "w"
         ) as file:
             file.write(get_config)
 
@@ -511,16 +511,24 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None):
                         advertised_interfaces.append(interface["port"])
         task.host.data["advertised_int"] = advertised_interfaces
 
-        config = task.run(
-            task=text.template_file,
-            template="advpn_main.jinja2",
-            path=f"api/nornir_stuff/templates/fortigate/{ task.host.groups[0] }",
-            advertised_interfaces=advertised_interfaces,
-        )
+        if headend_vendor =="Cisco":
+            config = task.run(
+                task=text.template_file,
+                name="Foritage Static Tunnels",
+                template="fortigate.jinja2",
+                path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/fortigate/cisco_integration/"
+                ,)
+        elif headend_vendor != "Cisco":
+            config = task.run(
+                task=text.template_file,
+                template="advpn_main.jinja2",
+                path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/fortigate/{ task.host.groups[0] }",
+                advertised_interfaces=advertised_interfaces,
+            )
 
         commands = [x.strip() for x in config.result.splitlines() if len(x) != 0]
         task.run(
-            task=scrape_config_commands, name="forigate advpn config", commands=commands
+            task=scrape_config_commands, name="forigate config", commands=commands
         )
         task.host.close_connection("scrapli")
 
@@ -530,6 +538,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None):
             _response = dnsquery.tcp(update, dns, timeout=20)
         except:
             pass
+
     ###################################################################################################
 
     ################################## Cisco Configuration Starts #####################################

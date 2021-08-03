@@ -12,6 +12,19 @@ interface {{ host.data["wan_int"] }}
  ip ddns update hostname {{ host.data['fqdn'] }}
  exit
 
+
+crypto isakmp policy 21
+ authentication pre-share
+ group 5  
+exit     
+
+crypto ipsec transform-set UUC esp-des esp-sha-hmac 
+ mode tunnel
+exit         
+crypto ipsec profile UUC
+ set transform-set UUC 
+exit
+
 crypto isakmp policy {{ host.policy_num }}
  encr aes
  authentication pre-share
@@ -25,6 +38,21 @@ crypto ipsec transform-set {{ host.trans_set }} esp-aes esp-sha-hmac
 crypto ipsec profile {{ host.profile_name }}
  set transform-set {{ host.trans_set }}
  exit
+
+
+
+
+interface Tunnel0
+ ip address 172.28.0.1 255.255.0.0
+ tunnel source {{ host.data["wan_int"] }}
+ tunnel mode ipsec ipv4
+ tunnel destination 11.5.105.1
+ tunnel protection ipsec profile UUC
+ exit
+
+
+
+
 int tunnel {{ host.tunnel_int }}
  shut
  ip address {{ host.data["tunnel_ip"]}} 255.255.0.0
@@ -68,6 +96,10 @@ ip route {{ custom_route }}
 {% endfor %}
 
 router bgp 65{{ host.tunnel_int }}
+
+ neighbor 172.28.0.2 remote-as 65415
+ neighbor 172.28.0.2 update-source Tunnel0
+
 {% set loopback = host.data["loop_back"].split(' ') %}
  bgp router-id {{ loopback[0] }}
  bgp listen range 172.27.0.0/16 peer-group UURNIK_CONNECT
@@ -99,6 +131,7 @@ router bgp 65{{ host.tunnel_int }}
   {% set loopback = host.data["loop_back"].split(' ') %}
   network {{ loopback[0] }} mask {{ loopback[1] }}
   neighbor UURNIK_CONNECT activate
+  neighbor 172.28.0.2 activate
   exit
  exit
 ip access-list extended uurnik

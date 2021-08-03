@@ -1,0 +1,68 @@
+config vpn ipsec phase1-interface
+edit "HQ_CISCO_VTI"
+set interface {{ host.data["wan_int"] }}
+set peertype any
+set net-device disable
+set proposal des-sha1
+set dhgrp 5
+set remote-gw {{ host.nhs_nbma[0] }}
+set psksecret uurnik123
+next
+end
+
+config vpn ipsec phase2-interface
+edit "TO_HQ_CISCO"
+set phase1name "HQ_CISCO_VTI"
+set proposal des-sha1
+set dhgrp 5
+next
+end
+
+config router bgp
+set as 65415
+set router-id 172.28.0.2
+config neighbor
+edit 172.28.0.1
+set remote-as 65414
+next
+end
+config network
+edit 1
+set prefix {{ host.data['routes'][0] }}
+next
+end
+
+config system interface
+edit "HQ_CISCO_VTI"
+set vdom "root"
+set ip 172.28.0.2 255.255.255.255
+set allowaccess ping https ssh
+set type tunnel
+set remote-ip 172.28.0.1 255.255.0.0
+set interface "port1"
+next 
+end
+
+
+config firewall policy
+edit 1
+set name "port2_to_vti"
+set srcintf "port2"
+set dstintf "HQ_CISCO_VTI"
+set srcaddr "all"
+set dstaddr "all"
+set action accept
+set schedule "always"
+set service "ALL"
+next
+edit 2
+set name "vti_to_port2"
+set srcintf "HQ_CISCO_VTI"
+set dstintf "port2"
+set srcaddr "all"
+set dstaddr "all"
+set action accept
+set schedule "always"
+set service "ALL"
+next
+end

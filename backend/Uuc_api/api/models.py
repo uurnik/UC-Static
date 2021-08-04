@@ -79,6 +79,8 @@ class Hosts(models.Model):
     fqdn = models.TextField(max_length=100, blank=True)
     ram_size = models.CharField(max_length=20, blank=True)
     copp_bw = models.IntegerField(null=True)
+
+    static_tunnel_network = models.GenericIPAddressField(null=True , protocol="ipv4")
     #
 
     fhrp = models.BooleanField(default=False)
@@ -118,6 +120,7 @@ class Routes(models.Model):
     protocol = models.TextField(null=True, max_length=10)
 
 
+
 class Defaults(models.Model):
     tunnel_int = models.CharField(max_length=5, default="414")
     asn = models.CharField(max_length=5, default="65414")
@@ -146,3 +149,13 @@ class CacheTable(models.Model):
     ip = models.CharField(max_length=15, primary_key=True)
     in_use = models.BooleanField(default=False)
     device_ip = models.CharField(max_length=15)
+
+
+
+
+class StaticTunnelNet(models.Model):
+    parentnetwork = models.GenericIPAddressField(protocol="ipv4")
+    network = models.GenericIPAddressField(protocol="ipv4")
+    used = models.BooleanField(default=False)
+    vendor = models.CharField(max_length=256)
+

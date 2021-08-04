@@ -25,7 +25,7 @@ from django.db import transaction, IntegrityError
 from .users.utils import IsSuperUser
 
 
-from api.models import Hosts, Defaults, TunnelPool, CacheTable, Account, Routes
+from api.models import Hosts, Defaults, TunnelPool, CacheTable, Account, Routes ,StaticTunnelNet
 
 from api.serializers import (
     HostsSerializer,
@@ -402,32 +402,59 @@ def configure(request, option):
         return JsonResponse(
             {"error": "No connectivity to DNS"}, status=status.HTTP_408_REQUEST_TIMEOUT
         )
-    ######################################################################
-
-    # Create nornir inventory from DB
-    # data = get_inventory_data(Defaults,Hosts)
-    # nr = InitNornir(
-    #     core = {"num_workers": 100},
-    #     inventory={
-    #         "plugin": Myinventory,
-    #         "options": {"data":data},
-    #     },
-    #     jinja2 = {"filters":"api.helpers.misc.custom_filters"}
-    # )
-
-    # ####################################################
-    # # Configure all Hosts in the inventory according to the access type given by the user
-    # _result_facts = nr.run(task=facts)
 
     nr = inventory()
     headend= nr.filter(F(vendor="Cisco") & F(groups__contains="HUB"))
+    fortigate= nr.filter(~F(vendor="Cisco"))
     headend_device = list(headend.inventory.hosts.keys())[0]
     headend_vendor = headend.inventory.hosts[headend_device].data['vendor']
 
 
+    static_sites=[]
+    if headend_vendor == "Cisco" and len(list(fortigate.inventory.hosts.keys())) > 0:
+        tunnel_id=414   
+        for device in fortigate.inventory.hosts.keys():
+            dbHost = Hosts.objects.get(name=fortigate.inventory.hosts[device].name)
+            static_tunnel = StaticTunnelNet.objects.filter(vendor="fortigate" , used=False)[0]
+            dbHost.static_tunnel_network = static_tunnel.network
+            static_tunnel.used=True
+            static_tunnel.save()
+            dbHost.save()
+
+            tunnel_id += 1
+            
+            remote_tunnel_ip = static_tunnel.network.split(".")[3]
+            remote_temp = static_tunnel.network.split(".")[:3]
+            remote_temp.append(str(int(remote_tunnel_ip) + 2))
+            remote_tunnel_ip = ".".join(remote_temp)
+
+
+
+            network_tunnel = static_tunnel.network.split(".")[3]
+            temp = static_tunnel.network.split(".")[:3]
+            temp.append(str(int(network_tunnel) + 1))
+            tunnel_ip = ".".join(temp)
+
+
+            
+
+            static_sites.append({
+                "site_name":fortigate.inventory.hosts[device].name,
+                "tunnel_network":static_tunnel.network,
+                "site_public_ip":fortigate.inventory.hosts[device].hostname,
+                "tunnel_id":tunnel_id,
+                "tunnel_ip":tunnel_ip,
+                "remote_tunnel_ip":remote_tunnel_ip
+            })
+
+
+    nr = inventory()
+
+
+
     # result_2 = nr.run(task=get_challenge_pass)
     result_1 = nr.run(
-        task=conf_dmvpn, nr=nr, dia=DIA, other_services=other_services, dns=dns , headend_vendor=headend_vendor
+        task=conf_dmvpn, nr=nr, dia=DIA, other_services=other_services, dns=dns , headend_vendor=headend_vendor,static_sites=static_sites
     )
 
     # Save Host's WAN interface, WAN subnet, Next Hop and mark host as configured and update dns server
@@ -1313,6 +1340,7 @@ def gather_routes(request):
                     pass
 
                 dbHost = Hosts.objects.get(name=host)
+                
                 if devices.inventory.hosts[host].data['vendor'] == "Cisco":
                     for route in routes:
                         for route_in_table in result_2[host][0].result:
@@ -1327,6 +1355,15 @@ def gather_routes(request):
                                     advertised=False,
                                 )
                                 dbRoute.save()
+                else:
+                    for route in routes:
+                        dbRoute = Routes(
+                                    route=dbHost,
+                                    lan_routes=route,
+                                    protocol="S",
+                                    advertised=False,
+                                )
+                        dbRoute.save()
 
                 all_routes.append(
                     {"name": devices.inventory.hosts[host].name, "routes": routes}
@@ -1337,6 +1374,7 @@ def gather_routes(request):
     if request.method == "POST":
         for data in request.data:
             dbHost = Hosts.objects.get(name=data["name"])
+
 
             for route_in_db in Routes.objects.filter(route=dbHost):
                 for route in data["routes"]:

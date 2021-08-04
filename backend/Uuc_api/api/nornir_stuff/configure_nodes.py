@@ -426,7 +426,7 @@ def configure_copp(task):
     task.host.close_connection("scrapli")
 
 
-def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None):
+def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,static_sites=None):
     """
     1. Create configuration backup on control node, configurations are saved to api/backup_configs
     2. Enable archive feature to create a backup of running-config of Host locally
@@ -511,13 +511,32 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None)
                         advertised_interfaces.append(interface["port"])
         task.host.data["advertised_int"] = advertised_interfaces
 
+
+        print(static_sites)
         if headend_vendor =="Cisco":
+            static_tunnel = None
+            for site in static_sites:
+                if site['site_name'] == task.host.name:
+                    static_tunnel = site
+                    break
+                else:
+                    continue
+
             config = task.run(
                 task=text.template_file,
                 name="Foritage Static Tunnels",
                 template="fortigate.jinja2",
-                path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/fortigate/cisco_integration/"
-                ,)
+                path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/fortigate/cisco_integration/",
+                tunnel_ip=static_tunnel['remote_tunnel_ip'],
+                remote_tunnel_ip=static_tunnel['tunnel_ip'],
+                advertised_interfaces=advertised_interfaces,
+                )
+            print(config.result)
+
+
+
+
+
         elif headend_vendor != "Cisco":
             config = task.run(
                 task=text.template_file,
@@ -527,9 +546,10 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None)
             )
 
         commands = [x.strip() for x in config.result.splitlines() if len(x) != 0]
-        task.run(
+        r = task.run(
             task=scrape_config_commands, name="forigate config", commands=commands
         )
+        print(r.result)
         task.host.close_connection("scrapli")
 
         try:
@@ -659,6 +679,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None)
             other_services=other_services,
             low_usr_cmds=low_usr_cmds,
             connected_networks=connected_networks,
+            static_sites=static_sites,
         )
 
         task.host["config"] = parse_template.result

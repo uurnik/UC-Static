@@ -2,7 +2,7 @@
 
 from django.db import transaction
 from django.db import migrations
-from api.helpers.get_tunnel_pool_list import add_tunnel_pool
+from api.helpers.get_tunnel_pool_list import add_tunnel_pool , add_static_tunnel_pool
 
 
 def initailize_uc(apps, schema_editor):
@@ -17,6 +17,15 @@ def initailize_uc(apps, schema_editor):
     Defaults = apps.get_model("api", "Defaults")
     Defaults.objects.create()
 
+
+
+    StaticTunnelNet = apps.get_model("api","StaticTunnelNet")
+    staticnetworks = add_static_tunnel_pool()
+
+    with transaction.atomic():
+        for net in staticnetworks:
+            StaticTunnelNet.objects.create(parentnetwork=net['parentpool'],
+                                            network=net['network'], vendor=net['vendor'])
 
 class Migration(migrations.Migration):
 

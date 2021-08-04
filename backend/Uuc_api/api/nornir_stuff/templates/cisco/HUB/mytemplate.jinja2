@@ -25,6 +25,11 @@ crypto ipsec profile UUC
  set transform-set UUC 
 exit
 
+
+crypto isakmp policy 21
+ authentication pre-share
+ group 5
+ exit
 crypto isakmp policy {{ host.policy_num }}
  encr aes
  authentication pre-share
@@ -35,21 +40,29 @@ crypto isakmp keepalive 10 periodic
 crypto ipsec transform-set {{ host.trans_set }} esp-aes esp-sha-hmac
  mode transport
  exit
+crypto ipsec transform-set UUC esp-des esp-sha-hmac 
+ mode tunnel
+ exit
+crypto ipsec profile UUC
+ set transform-set UUC
+ exit
 crypto ipsec profile {{ host.profile_name }}
  set transform-set {{ host.trans_set }}
  exit
 
 
 
-
-interface Tunnel0
- ip address 172.28.0.1 255.255.0.0
+{% if static_sites %}
+{% for static_site in static_sites %}
+interface Tunnel{{ static_site.tunnel_id }}
+ ip address {{ static_site.tunnel_ip }} 255.255.255.252
  tunnel source {{ host.data["wan_int"] }}
  tunnel mode ipsec ipv4
- tunnel destination 11.5.105.1
+ tunnel destination {{ static_site.site_public_ip }}
  tunnel protection ipsec profile UUC
  exit
-
+{% endfor %}
+{% endif %}
 
 
 
@@ -97,8 +110,12 @@ ip route {{ custom_route }}
 
 router bgp 65{{ host.tunnel_int }}
 
- neighbor 172.28.0.2 remote-as 65415
- neighbor 172.28.0.2 update-source Tunnel0
+{% if static_sites %}
+{% for static_site in static_sites %}
+ neighbor {{ static_site.remote_tunnel_ip }} remote-as 65415
+ neighbor {{ static_site.remote_tunnel_ip }} update-source Tunne{{ static_site.tunnel_id }}
+{% endfor %}
+{% endif %}
 
 {% set loopback = host.data["loop_back"].split(' ') %}
  bgp router-id {{ loopback[0] }}
@@ -131,7 +148,11 @@ router bgp 65{{ host.tunnel_int }}
   {% set loopback = host.data["loop_back"].split(' ') %}
   network {{ loopback[0] }} mask {{ loopback[1] }}
   neighbor UURNIK_CONNECT activate
-  neighbor 172.28.0.2 activate
+  {% if static_sites %}
+  {% for static_site in static_sites %}
+  neighbor {{ static_site.remote_tunnel_ip }} activate
+  {% endfor %}
+  {% endif %}
   exit
  exit
 ip access-list extended uurnik

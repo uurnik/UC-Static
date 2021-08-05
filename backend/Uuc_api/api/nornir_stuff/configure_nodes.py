@@ -482,6 +482,11 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
             commands=["config system console", "set output standard", "end"],
         )
 
+        connect_routes = task.run(
+            task=scrape_send, command="get system interface"
+        ).result
+        task.host.close_connection("scrapli")
+
         # Backup full configuration
         get_config = task.run(
             task=scrape_send, command="show full-configuration"
@@ -492,14 +497,15 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
         ) as file:
             file.write(get_config)
 
-        connect_routes = task.run(
-            task=scrape_send, command="get system interface"
-        ).result
-        task.host.close_connection("scrapli")
+
+        
+        print(connect_routes)
+        
         interface_parser = ForigateParser(connect_routes).get_parsed(
             template="interface_attr"
         )
 
+        print(interface_parser)
         advertised_interfaces = []
         for interface in interface_parser[0][0]:
             ip = interface.get("ip")
@@ -511,8 +517,9 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
                         advertised_interfaces.append(interface["port"])
         task.host.data["advertised_int"] = advertised_interfaces
 
+        print(advertised_interfaces)
 
-        print(static_sites)
+
         if headend_vendor =="Cisco":
             static_tunnel = None
             for site in static_sites:
@@ -531,10 +538,9 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
                 remote_tunnel_ip=static_tunnel['tunnel_ip'],
                 advertised_interfaces=advertised_interfaces,
                 )
+
+
             print(config.result)
-
-
-
 
 
         elif headend_vendor != "Cisco":
@@ -544,6 +550,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
                 path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/fortigate/{ task.host.groups[0] }",
                 advertised_interfaces=advertised_interfaces,
             )
+
 
         commands = [x.strip() for x in config.result.splitlines() if len(x) != 0]
         r = task.run(

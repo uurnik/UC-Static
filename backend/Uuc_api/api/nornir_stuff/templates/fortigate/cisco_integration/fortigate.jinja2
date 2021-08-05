@@ -30,10 +30,14 @@ next
 end
 
 
+{% set tunnel = 20 %}
+
 config firewall policy
-edit 1
-set name "port2_to_vti"
-set srcintf "port2"
+{% for advertised_interface in advertised_interfaces %}
+{% set tunnel = tunnel + loop.index %}
+edit {{ tunnel }}
+set name "{{ advertised_interface }}_to_vti"
+set srcintf "{{ advertised_interface }}"
 set dstintf "HQ_CISCO_VTI"
 set srcaddr "all"
 set dstaddr "all"
@@ -41,16 +45,18 @@ set action accept
 set schedule "always"
 set service "ALL"
 next
-edit 2
-set name "vti_to_port2"
+{% set tunnel = tunnel + loop.index + 1 %}
+edit {{ tunnel }}
+set name "vti_to_{{ advertised_interface }}"
 set srcintf "HQ_CISCO_VTI"
-set dstintf "port2"
+set dstintf "{{ advertised_interface }}"
 set srcaddr "all"
 set dstaddr "all"
 set action accept
 set schedule "always"
 set service "ALL"
 next
+{% endfor %}
 end
 
 
@@ -62,12 +68,18 @@ edit {{ remote_tunnel_ip }}
 set remote-as 65414
 next
 end
+
+{% set entry_index = 20 %}
 config network
-edit 1
-set prefix {{ host.data['routes'][0] }}
-next
+{% for route in host.data['routes'] %}
+{% set entry_index = entry_index + loop.index %}
+edit {{ entry_index }}
+set prefix {{ route }}
+next 
+{% endfor %}
 end
 end
+
 
 
 

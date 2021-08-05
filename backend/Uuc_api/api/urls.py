@@ -1,5 +1,6 @@
 from django.urls import path
 from api.views import (
+    summary,
     add_Host,
     get_inventory,
     configure,
@@ -43,4 +44,6 @@ urlpatterns = [
     path("snmp/", snmp_poll),
     path("change-keys-ipsec/", swipe_ipsec_keys),
     path("logging/<str:pk>/", set_logging),
+    path("summary", summary),
+
 ]

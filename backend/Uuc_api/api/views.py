@@ -1,4 +1,5 @@
 from time import sleep
+from scrapli.driver.core import cisco_iosxe
 import yaml
 import os
 import asyncio
@@ -882,23 +883,25 @@ def get_cdp_info(request):
                 if other == 0:
                     sum_of_devices += 1
                     if "S" in neighbor["capability"]:
-                        nodes.append(
-                            {
-                                "id": sum_of_devices,
-                                "image": "switch-50.png",
-                                "label": neighbor["neighbor"],
-                                "shape": "image",
-                            }
-                        )
+                        pass
+                        # nodes.append(
+                        #     {
+                        #         "id": sum_of_devices,
+                        #         "image": "switch-50.png",
+                        #         "label": neighbor["neighbor"],
+                        #         "shape": "image",
+                        #     }
+                        # )
                     else:
-                        nodes.append(
-                            {
-                                "id": sum_of_devices,
-                                "label": neighbor["neighbor"],
-                                "shape": "circle",
-                                "color": "grey",
-                            }
-                        )
+                        pass
+                        # nodes.append(
+                        #     {
+                        #         "id": sum_of_devices,
+                        #         "label": neighbor["neighbor"],
+                        #         "shape": "circle",
+                        #         "color": "grey",
+                        #     }
+                        # )
 
     # only Get Tunnel414 neighbors
     add_uurnik_node = 0
@@ -983,13 +986,14 @@ def get_cdp_info(request):
                     pass
                 final_edges.append({"from": new_edge["from"], "to": sum_of_devices})
             elif edge["type"] == "underlay":
-                final_edges.append(
-                    {
-                        "from": new_edge["from"],
-                        "to": new_edge["to"],
-                        "dashes": True,
-                    }
-                )
+                pass
+                # final_edges.append(
+                #     {
+                #         "from": new_edge["from"],
+                #         "to": new_edge["to"],
+                #         "dashes": True,
+                #     }
+                # )
 
     data = {"nodes": nodes, "edges": final_edges}
 
@@ -1457,6 +1461,8 @@ def copp(request):
     """
     nr = inventory()
 
+    nr = nr.filter(F(vendor="Cisco"))
+
     if nr.inventory.defaults.data["access_type"] is not None:
         pass
     else:
@@ -1492,6 +1498,11 @@ def copp(request):
         dbHost = Hosts.objects.get(pk=nr.inventory.hosts[host].name)
         dbHost.copp_bw = 500                # TODO fix this
         dbHost.save()
+
+
+    nr = inventory()
+    nr = nr.filter(F(vendor="Cisco"))
+
 
     results = nr.run(task=configure_copp)
     dbDefaults.is_copp_configured = True
@@ -1531,17 +1542,18 @@ def device_hardening(request):
     if dns != None:
         nr.run(task=resolve_host, dns=dns)
     #####################################
+    cisco_only = nr.filter(F(vendor="Cisco"))
 
-    results = nr.run(task=device_harderning)
+    results = cisco_only.run(task=device_harderning)
     dbDefaults = Defaults.objects.get(pk=1)
     dbDefaults.is_device_hardening_configured = True
     dbDefaults.save()
 
     data = []
-    for host in nr.inventory.hosts.keys():
+    for host in cisco_only.inventory.hosts.keys():
         data.append(
             {
-                "name": nr.inventory.hosts[host].name,
+                "name": cisco_only.inventory.hosts[host].name,
                 "changed": results[host].changed,
                 "failed": results[host].failed,
             }
@@ -1711,3 +1723,24 @@ def set_logging(request, pk):
     }
 
     return JsonResponse(response)
+
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def summary(request):
+    """
+    function to test the ssh connectivity of the hosts
+    """
+    nr = inventory()
+    data = {}
+
+    managed_inv = nr.filter(F(is_configured=True))
+    data['managed'] = len(managed_inv.inventory.hosts.keys())
+
+    unmanaged = nr.filter(F(is_configured=False))
+    data['unmanaged'] = len(unmanaged.inventory.hosts.keys())
+
+    data['total'] = len(nr.inventory.hosts.keys())
+
+    return JsonResponse(data)

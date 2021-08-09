@@ -289,7 +289,7 @@ export default {
   methods: {
     DeployementStatus() {
       this.$getAPI.get("access-type/").then((response) => {
-        this.$store.state.copp = response.data.copp_configured;
+        this.$store.state.copp = response.data.copp;
         this.$store.state.devicehardening = response.data.device_hardening;
         this.stats[1].status = this.$store.state.copp;
         this.stats[2].status = this.$store.state.devicehardening;

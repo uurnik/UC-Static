@@ -105,11 +105,8 @@ export default {
         },
         xaxis: {
           type: "datetime",
-          range: XAXISRANGE,
         },
-        yaxis: {
-          max: 100,
-        },
+
         legend: {
           show: false,
         },
@@ -135,7 +132,7 @@ export default {
           data: data,
         },
       ]);
-    }, 1000);
+    }, 3000);
 
     // every 60 seconds, we reset the data to prevent memory leaks
     //   setInterval(function () {

@@ -108,7 +108,7 @@ export default {
   data() {
     return {
       configurationtasks: [
-        "Enabling Connection Monitroing Capablities",
+        "Enabling Connection Monitoring Capablities",
         "Securing Against Unauthorized Web Access",
         "Preventing Unsolicited Boot Processes/Lookups",
         "Disabling Legacy WAN Features",

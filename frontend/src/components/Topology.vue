@@ -49,6 +49,41 @@
       </div>
       <v-divider class="my-2 mx-2"></v-divider>
     </v-col>
+      <v-row justify="center">
+    <!-- <v-btn
+      color="primary"
+      dark
+      @click.stop="dialog = true"
+    >
+      Open Dialog
+    </v-btn> -->
+
+    <v-dialog
+      v-model="dialog"
+      max-width="290"
+    >
+      <v-card>
+        <v-btn @click="Ping()">
+          Ping
+        </v-btn>
+        <v-card-text v-if="pingresult" >
+          {{ pingresult }}
+        </v-card-text>
+ 
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            color="green darken-1"
+            text
+            @click="dialog = false"
+          >
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-row>
     <v-fab-transition>
       <v-container class="my-4 display-4">
         <network
@@ -63,6 +98,7 @@
           "
           ref="network"
           class="network"
+          @select-node="netWorkEvent()"
           :nodes="nodes"
           :edges="edges"
           :options="options"
@@ -83,6 +119,9 @@ export default {
   },
   data() {
     return {
+      dialog: false,
+      devicetoping: null,
+      pingresult: null,
       networkEvents: "",
       showtopology: false,
       network: null,
@@ -100,6 +139,25 @@ export default {
     };
   },
   methods: {
+    Ping() {
+      this.$getAPI
+        .get("testconn?name=" + this.devicetoping)
+        .then((response) => {
+          this.pingresult = response.data.result;
+          console.log(this.pingresult)
+        });
+    },
+    netWorkEvent() {
+      let nodeid = this.$refs.network.getSelection().nodes[0];
+      for (let i = 0; i < this.nodes.length; i++) {
+        if (this.nodes[i].id == nodeid) {
+          this.devicetoping = this.nodes[i].label;
+          this.dialog = true;
+          break;
+        }
+      }
+    },
+
     setPollInterval(index) {
       for (let i = 0; i < this.timers.length; i++) {
         this.timers[i].selected = false;
@@ -112,26 +170,18 @@ export default {
       }, this.timers[index].value);
     },
     getNeighbors() {
-      this.$getAPI
-        .get("neighbors/", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("UserToken")}`,
-          },
-        })
-        .then((response) => {
-          for (var i = 0; i < response.data.result.nodes.length; i++) {
-            if ("image" in response.data.result.nodes[i]) {
-              let image = response.data.result.nodes[i].image;
-              response.data.result.nodes[
-                i
-              ].image = require(`@/assets/${image}`);
-            }
+      this.$getAPI.get("neighbors/").then((response) => {
+        for (var i = 0; i < response.data.result.nodes.length; i++) {
+          if ("image" in response.data.result.nodes[i]) {
+            let image = response.data.result.nodes[i].image;
+            response.data.result.nodes[i].image = require(`@/assets/${image}`);
           }
+        }
 
-          this.nodes = response.data.result.nodes;
-          this.edges = response.data.result.edges;
-          this.showtopology = true;
-        });
+        this.nodes = response.data.result.nodes;
+        this.edges = response.data.result.edges;
+        this.showtopology = true;
+      });
     },
   },
   created() {
@@ -141,7 +191,7 @@ export default {
       for (let i = 0; i < this.timers.length; i++) {
         if (this.timers[i].value == interval) {
           this.timers[i].selected = true;
-          break
+          break;
         }
       }
     } else {

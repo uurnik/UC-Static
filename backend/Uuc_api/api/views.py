@@ -36,7 +36,7 @@ from api.serializers import (
 
 from .helpers.get_tunnel_pool_list import add_tunnel_pool
 from .helpers.distribute_tunnel_ip import update_defaults_nhs
-from .helpers.misc import wildcard_conversion, get_challenge_pass
+from .helpers.misc import wildcard_conversion, get_challenge_pass , check_conn
 from .helpers.inventory_builder import Myinventory, get_inventory_data, inventory
 from .helpers.misc import (
     do_ping,
@@ -854,19 +854,21 @@ def get_cdp_info(request):
     for k, v in enumerate(devices, 1):
         ip = nr.inventory.hosts[hosts[v]].hostname
         site_name = nr.inventory.hosts[hosts[v]].name
-        # tunnel_ip = nr.inventory.hosts[hosts[v]].data['tunnel_ip']
+
+        vendor = nr.inventory.hosts[hosts[v]].data['vendor']
 
         if nr.inventory.hosts[hosts[v]].groups[0] == "HUB":
             group = "HUB"
         elif nr.inventory.hosts[hosts[v]].groups[0] == "SPOKE":
             group = "SPOKE"
 
+
         nodes.append(
             {
                 "id": k,
                 "label": v,
-                "shape": "circularImage",
-                "image": "router-100.png",
+                "shape": "image",
+                "image": f"{vendor.lower()}.png",
                 "group": group,
                 "title": f"<p><b> Site Name:  {site_name} </b> <br>IP:{ip}</p>",
             }
@@ -1587,23 +1589,31 @@ def snmp_poll(request):
         name = request.query_params.get("name")
         device = nr.filter(F(name=name))
         for host in device.inventory.hosts.keys():
-            hosts.append(
-            {
-                "name": nr.inventory.hosts[host].name,
-                "IP": nr.inventory.hosts[host].hostname,
-                "int_index": nr.inventory.hosts[host].data["interface_index"],
-            }
-        )
-    else:
-        for host in nr.inventory.hosts.keys():
-            # if nr.inventory.hosts[host].data['is_configured'] == True:
-            hosts.append(
+            try:
+                hosts.append(
                 {
                     "name": nr.inventory.hosts[host].name,
                     "IP": nr.inventory.hosts[host].hostname,
                     "int_index": nr.inventory.hosts[host].data["interface_index"],
+                    "wan_int": nr.inventory.hosts[host].data["wan_int"],
                 }
             )
+            except:
+                pass
+    else:
+        for host in nr.inventory.hosts.keys():
+            try:
+                hosts.append(
+                    {
+                        "name": nr.inventory.hosts[host].name,
+                        "IP": nr.inventory.hosts[host].hostname,
+                        "int_index": nr.inventory.hosts[host].data["interface_index"],
+                        "wan_int": nr.inventory.hosts[host].data["wan_int"],
+
+                    }
+                )
+            except:
+                pass
 
     output = asyncio.run(do_poll(hosts, community_str ,avg=avg))
 
@@ -1745,5 +1755,26 @@ def summary(request):
     data['unmanaged'] = len(unmanaged.inventory.hosts.keys())
 
     data['total'] = len(nr.inventory.hosts.keys())
+
+    return JsonResponse(data)
+
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def ping_test(request):
+    """
+    function to test the ssh connectivity of the hosts
+    """
+    data={}
+    dev_name = request.query_params.get("name")
+    nr = inventory()
+    device = nr.filter(F(dev_name=dev_name))
+
+    result = device.run(task=check_conn)
+
+    for host in device.inventory.hosts.keys():
+        data['result'] = result[host][1].result
+
 
     return JsonResponse(data)

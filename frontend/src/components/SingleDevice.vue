@@ -26,7 +26,7 @@
           <v-card-text class="pb-0 ma-0"
             ><v-col class="d-flex justify-space-between pb-1 pa-0 ml-4 ma-0"
               ><strong>WAN IP Address</strong
-              ><span>{{ device.ip }}</span></v-col
+              ><span>{{ wan_ip }}</span></v-col
             >
           </v-card-text>
           <v-card-text class="pb-0 ma-0"
@@ -42,7 +42,7 @@
           </v-card-text>
           <v-card-text class="pb-0 ma-0"
             ><v-col class="d-flex justify-space-between pb-1 pa-0 ml-4 ma-0"
-              ><strong>Vendor</strong><span>{{ device.vendor }}</span>
+              ><strong>Vendor</strong><span>{{ vendor }}</span>
             </v-col></v-card-text
           >
           <v-card-text class="pb-0 ma-0"
@@ -53,7 +53,7 @@
           </v-card-text>
           <v-card-text class="pb-0 ma-0"
             ><v-col class="d-flex justify-space-between pb-1 pa-0 ml-4 ma-0"
-              ><strong>OS Version</strong><span>{{ device.os_version }}</span>
+              ><strong>OS Version</strong><span>{{ osversion }}</span>
             </v-col></v-card-text
           >
           <v-card-text class="pb-0 ma-0">
@@ -212,7 +212,10 @@ export default {
       cpuusage: [],
       serialNo:"",
       polltimer: null,
+      vendor:"",
+      wan_ip:"",
       loading: true,
+      osversion:'',
       headers: [
         {
           text: "Name",
@@ -242,7 +245,9 @@ export default {
         this.serialNo = response.data[0].result.chassisid
         this.fqdn = response.data[0].result.fqdn
         this.ramsize = response.data[0].result.totalramsize
-
+        this.osversion = response.data[0].result.sysDescr
+        this.vendor = response.data[0].result.vendor
+        this.wan_ip = response.data[0].result.wan_ip
 
         this.loading = false
       });

@@ -21,6 +21,7 @@ from api.views import (
     snmp_poll,
     swipe_ipsec_keys,
     set_logging,
+    ping_test
 )
 
 urlpatterns = [
@@ -45,5 +46,7 @@ urlpatterns = [
     path("change-keys-ipsec/", swipe_ipsec_keys),
     path("logging/<str:pk>/", set_logging),
     path("summary", summary),
+    path("testconn", ping_test),
+
 
 ]

@@ -20,6 +20,7 @@ from bs4 import BeautifulSoup
 import pysnmp.hlapi.asyncio as snmp
 import pysnmp.hlapi as snmp_sync
 from scrapli.driver.core import IOSXEDriver
+from .interface_table_snmp import interface_poll
 
 ############# Custom filters ###################
 def wildcard_conversion(subnet):
@@ -401,6 +402,7 @@ def get_interface_index(host, community_str, int_name):
 
 
 async def snmp_get(host, community_str):
+    
     oids = [
         {
             "field": "ciscoMemoryPoolUsed-processor",
@@ -413,17 +415,21 @@ async def snmp_get(host, community_str):
         {"field": "cpmCPUTotal5minRev", "OID": "1.3.6.1.4.1.9.9.109.1.1.1.1.8.1"},
         {"field": "cpmCPUTotalminRev", "OID": "1.3.6.1.4.1.9.9.109.1.1.1.1.7.1"},
         {"field": "sysUpTime", "OID": "1.3.6.1.2.1.1.3.0"},
-        {"field": "TunnelCounter_in", "OID": "1.3.6.1.2.1.2.2.1.16"},
-        {"field": "TunnelCounter_out", "OID": "1.3.6.1.2.1.2.2.1.10"},
+        {"field": "WANCounter_in", "OID": "1.3.6.1.2.1.2.2.1.16"},
+        {"field": "WANCounter_out", "OID": "1.3.6.1.2.1.2.2.1.10"},
+        {"field": "fqdn","OID":"1.3.6.1.2.1.1.5.0"},
+        {"field": "chassisid","OID":"1.3.6.1.4.1.9.3.6.3.0"}
     ]
 
     result = {}
     snmp_engine = snmp.SnmpEngine()
     host["int_index"] = "1"
+
+
     try:
         for oid in oids:
-            if "TunnelCounter" in oid["field"]:
-                oid["OID"] = oid["OID"] + "." + host["int_index"]
+            if "WANCounter" in oid["field"]:
+                oid["OID"] = oid["OID"] + "." + str(host["int_index"])
 
             response = await snmp.getCmd(
                 snmp_engine,
@@ -437,11 +443,11 @@ async def snmp_get(host, community_str):
 
             ramusage=""
             for varBind in varBinds:
-
                 output = {oid["field"]: [x.prettyPrint() for x in varBind][1]}
                 if "No Such Instance" in output[oid["field"]]:
                     result.update({oid["field"]: []})
-
+                
+                
                 elif oid["field"] == "sysUpTime":
                     output[oid["field"]] = str(
                         datetime.timedelta(seconds=int(output["sysUpTime"]) / 100)
@@ -451,10 +457,20 @@ async def snmp_get(host, community_str):
                     result.update(output)
         
 
-
+       
+        
         totalram = int(result['ciscoMemoryPoolUsed-processor']) + int(result['ciscoMemoryPoolFree-processor'])
+
+        totalramsize = str(int(totalram / 1000000)) + "MB"
+
         ramusage = float(int(result['ciscoMemoryPoolUsed-processor'])) / float(totalram) *100
-        result['ramusage'] = str("%.2f" % round(ramusage,2))
+        result['cpmCPUTotal5minRev'] = int(result['cpmCPUTotal5minRev'])
+        result['cpmCPUTotalminRev'] = int(result['cpmCPUTotalminRev'])
+        result['ramusage'] = float("%.2f" % round(ramusage,2))
+        result['totalramsize'] = totalramsize
+
+        result['interfaces'] = interface_poll(community_str ,host["IP"])
+        print(result)
 
         data = {"name": host["name"], "result": result} 
     except:
@@ -463,7 +479,7 @@ async def snmp_get(host, community_str):
     return data
 
 
-async def do_poll(hosts, community_str):
+async def do_poll(hosts, community_str,avg=None):
     """
     function for running snmp_get function Asynchronously against hosts
     """
@@ -472,6 +488,18 @@ async def do_poll(hosts, community_str):
     results = await asyncio.gather(*coroutines)
     for result in results:
         data.append(result)
+    
+
+    if avg:
+        topdevices = {}
+        try:
+            topdevices["topramusage"] = sorted(data, key=lambda k: k['result']['ramusage'] , reverse=True)[:5]
+            topdevices['topcpuusage'] = sorted(data, key=lambda k: k['result']['cpmCPUTotal5minRev'] , reverse=True)[:5]
+        except:
+            topdevices= {"topramusage":[] ,"topcpuusage":[] }
+            
+        data = topdevices
+
 
     return data
 

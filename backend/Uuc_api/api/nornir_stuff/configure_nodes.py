@@ -539,10 +539,6 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
                 advertised_interfaces=advertised_interfaces,
                 )
 
-
-            print(config.result)
-
-
         elif headend_vendor != "Cisco":
             config = task.run(
                 task=text.template_file,
@@ -556,7 +552,6 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
         r = task.run(
             task=scrape_config_commands, name="forigate config", commands=commands
         )
-        print(r.result)
         task.host.close_connection("scrapli")
 
         try:
@@ -779,8 +774,9 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
             task.run(task=send_tcl)
             os.remove(f"{task.host.name}.tcl")
 
+
         # get snmp interface index (1.3.6.1.2.1.2.2.1.2.x)
-        interface_index = get_interface_index(task.host.hostname, "public", "Tunnel414")
+        interface_index = get_interface_index(task.host.hostname, "uurnik123", task.host.data['wan_int'])
         task.host.data["interface_index"] = interface_index
 
         # Update dns server

@@ -144,10 +144,7 @@ router bgp 65{{ host.tunnel_int }}
     {% for static_site in static_sites %}
     network {{ static_site.tunnel_network }} mask 255.255.255.252
     {% endfor %}
-
-
     network 172.27.0.0 mask 255.255.0.0
-
     {% endif %}
 
   {% for custom_route in host.data['custom_routes'] %}

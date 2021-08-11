@@ -1579,6 +1579,9 @@ def snmp_poll(request):
 
     hosts = []
     community_str = "public"
+    avg=None
+    if request.query_params.get("avg"):
+        avg = True
 
     if request.query_params.get("name"):
         name = request.query_params.get("name")
@@ -1602,7 +1605,7 @@ def snmp_poll(request):
                 }
             )
 
-    output = asyncio.run(do_poll(hosts, community_str))
+    output = asyncio.run(do_poll(hosts, community_str ,avg=avg))
 
     return JsonResponse(output, safe=False)
 

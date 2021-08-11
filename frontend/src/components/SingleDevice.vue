@@ -9,7 +9,7 @@
           <v-card-text class="pb-0 ma-0"
             ><v-col class="d-flex justify-space-between pa-0 pb-1 ml-4 ma-0"
               ><strong>Hostname</strong>
-              <span>{{ device.dev_name }}</span></v-col
+              <span>{{ fqdn }}</span></v-col
             ></v-card-text
           >
           <v-card-text class="pb-0 ma-0">
@@ -48,7 +48,7 @@
           <v-card-text class="pb-0 ma-0"
             ><v-col class="d-flex justify-space-between pb-1 pa-0 ml-4 ma-0"
               ><strong>Serial Number</strong
-              ><span>{{ device.serial_no }}</span></v-col
+              ><span>{{ serialNo }}</span></v-col
             >
           </v-card-text>
           <v-card-text class="pb-0 ma-0"
@@ -59,7 +59,7 @@
           <v-card-text class="pb-0 ma-0">
             <v-col class="d-flex justify-space-between pb-1 pa-0 ml-4 ma-0"
               ><strong>RAM Size</strong
-              ><span>{{ device.ram_size }}</span></v-col
+              ><span>{{ ramsize }}</span></v-col
             >
           </v-card-text>
           <v-card-text class="pb-0 ma-0">
@@ -120,25 +120,19 @@
             :items-per-page="10"
             fixed-header
           >
-            <template v-slot:[`item.proto`]="{ item }">
-              <v-icon v-if="item.proto == 'up'" class="pl-4" color="green"
+            <template v-slot:[`item.adminstatus`]="{ item }">
+              <v-icon v-if="item.adminstatus == 1" class="pl-4" color="green"
                 >mdi-check-circle</v-icon
               >
-              <v-icon v-if="item.proto == 'down'" class="pl-4" color="red"
+              <v-icon v-if="item.adminstatus !=1" class="pl-4" color="red"
                 >mdi-close-circle</v-icon
               ></template
             >
             <template v-slot:[`item.status`]="{ item }">
-              <v-icon v-if="item.status == 'up'" class="pl-4" color="green"
+              <v-icon v-if="item.status == 1" class="pl-4" color="green"
                 >mdi-check-circle</v-icon
               >
-              <v-chip
-                v-if="item.status == 'administratively down'"
-                class="pl-4"
-                color="orange"
-                >{{ item.status }}</v-chip
-              >
-              <v-icon v-if="item.status == 'down'" class="pl-4" color="red"
+              <v-icon v-if="item.status !=1" class="pl-4" color="red"
                 >mdi-close-circle</v-icon
               >
             </template>
@@ -216,6 +210,7 @@ export default {
       uptime: "",
       ramusage: [],
       cpuusage: [],
+      serialNo:"",
       polltimer: null,
       loading: true,
       headers: [
@@ -223,14 +218,15 @@ export default {
           text: "Name",
           align: "start",
           sortable: false,
-          value: "intf",
+          value: "name",
         },
         { text: "IP Address", value: "ipaddr" },
-        { text: "Admin Status", value: "status" },
-        { text: "Protocol Status", value: "proto" },
+        { text: "Admin Status", value: "adminstatus" },
+        { text: "Oper Status", value: "status" },
       ],
       interfaces: [],
       device: {},
+      fqdn:"",
     };
   },
   beforeDestroy() {
@@ -242,6 +238,13 @@ export default {
         this.ramusage = [response.data[0].result.ramusage];
         this.cpuusage = [response.data[0].result.cpmCPUTotal5minRev];
         this.uptime = response.data[0].result.sysUpTime;
+        this.interfaces = response.data[0].result.interfaces
+        this.serialNo = response.data[0].result.chassisid
+        this.fqdn = response.data[0].result.fqdn
+        this.ramsize = response.data[0].result.totalramsize
+
+
+        this.loading = false
       });
     },
   },
@@ -249,16 +252,14 @@ export default {
     clearInterval(this.polltimer);
   },
   mounted() {
+    this.loading = true
     this.$getAPI.get("hosts?name=" + this.name).then((response) => {
       this.device = response.data;
-      this.snmppoll();
+      this.snmppoll()
       this.polltimer = setInterval(() => {
         this.snmppoll();
-      }, 15000);
-    });
-    this.$getAPI.get(`interfaces/${this.name}/`).then((response) => {
-      this.interfaces = response.data;
-      this.loading = false;
+      }, 15000)
+        
     });
   },
 };

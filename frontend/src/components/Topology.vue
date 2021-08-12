@@ -49,41 +49,41 @@
       </div>
       <v-divider class="my-2 mx-2"></v-divider>
     </v-col>
-      <v-row justify="center">
-    <!-- <v-btn
-      color="primary"
-      dark
-      @click.stop="dialog = true"
-    >
-      Open Dialog
-    </v-btn> -->
-
-    <v-dialog
-      v-model="dialog"
-      max-width="290"
-    >
-      <v-card>
-        <v-btn @click="Ping()">
-          Ping
-        </v-btn>
-        <v-card-text v-if="pingresult" >
-          {{ pingresult }}
-        </v-card-text>
- 
-        <v-card-actions>
-          <v-spacer></v-spacer>
-
-          <v-btn
-            color="green darken-1"
-            text
-            @click="dialog = false"
+    <v-row justify="center">
+      <v-dialog v-model="dialog" max-width="450" @click:outside="pingresult = '';dest = '' " >
+        <v-card>
+          <v-card-title
+            class="font-weight-medium pa-4 text-h6 pageheading--text mx-auto"
           >
-            Close
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
+            Connectivity Test
+          </v-card-title>
+          <v-text-field
+            class="pl-5 pr-5 ma-3 pageheading--text"
+            v-model="dest"
+            label="Destination IP Address"
+          ></v-text-field>
+          <v-card-text
+            class="font-weight-light text-subtitle-2"
+            v-if="pingresult"
+          >
+            {{ pingresult }}
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-progress-circular
+            v-if="pingloader"
+            class="mr-3"
+              indeterminate
+              color="pageheading"
+            ></v-progress-circular>
+            <v-btn class="pageheading white--text" @click="Ping()">
+              Ping
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
     <v-fab-transition>
       <v-container class="my-4 display-4">
         <network
@@ -124,7 +124,9 @@ export default {
       pingresult: null,
       networkEvents: "",
       showtopology: false,
+      dest: "",
       network: null,
+      pingloader: false,
       options: Options,
       timers: [
         { title: "15s", id: 1, value: 15000, selected: false },
@@ -140,11 +142,12 @@ export default {
   },
   methods: {
     Ping() {
+      this.pingloader = true
       this.$getAPI
-        .get("testconn?name=" + this.devicetoping)
+        .get("testconn?name=" + this.devicetoping + "&dest=" + this.dest)
         .then((response) => {
+          this.pingloader = false
           this.pingresult = response.data.result;
-          console.log(this.pingresult)
         });
     },
     netWorkEvent() {

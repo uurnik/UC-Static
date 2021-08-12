@@ -1768,13 +1768,14 @@ def ping_test(request):
     """
     data={}
     dev_name = request.query_params.get("name")
+    dest = request.query_params.get("dest")
     nr = inventory()
     device = nr.filter(F(dev_name=dev_name))
 
-    result = device.run(task=check_conn)
+    result = device.run(task=check_conn , dest=dest)
 
     for host in device.inventory.hosts.keys():
-        data['result'] = result[host][1].result
+        data['result'] = result[host][2].result
 
 
     return JsonResponse(data)

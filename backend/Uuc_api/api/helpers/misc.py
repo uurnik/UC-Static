@@ -20,6 +20,8 @@ from bs4 import BeautifulSoup
 import pysnmp.hlapi.asyncio as snmp
 import pysnmp.hlapi as snmp_sync
 from scrapli.driver.core import IOSXEDriver
+from nornir_scrapli.tasks import send_command as scrape_send
+from nornir_scrapli.tasks import get_prompt
 from .interface_table_snmp import interface_poll
 
 ############# Custom filters ###################
@@ -405,6 +407,10 @@ async def snmp_get(host, community_str):
     
     oids = [
         {
+            "field": "sysDescr",
+            "OID": "1.3.6.1.2.1.1.1.0",
+        },
+        {
             "field": "ciscoMemoryPoolUsed-processor",
             "OID": "1.3.6.1.4.1.9.9.48.1.1.1.5.1",
         },
@@ -453,6 +459,13 @@ async def snmp_get(host, community_str):
                         datetime.timedelta(seconds=int(output["sysUpTime"]) / 100)
                     ).split(".")[0]
                     result.update(output)
+
+                elif oid['field'] == "sysDescr":
+                    if "Cisco" in output['sysDescr']:
+                        result['vendor'] = "Cisco"
+
+                    output[oid['field']] = " ".join(output['sysDescr'].split(",")[1:3])
+                    result.update(output)
                 else:
                     result.update(output)
         
@@ -470,7 +483,17 @@ async def snmp_get(host, community_str):
         result['totalramsize'] = totalramsize
 
         result['interfaces'] = interface_poll(community_str ,host["IP"])
-        print(result)
+        
+        try:
+            for interface in result['interfaces']:
+                if interface['name'] == host['wan_int']:
+                    result['wan_ip'] = interface['ipaddr']
+                    break
+                else:
+                    continue
+        except:
+            pass
+
 
         data = {"name": host["name"], "result": result} 
     except:
@@ -552,3 +575,16 @@ def resolve_host(task, dns: str):
         dbHost.save()
     except:
         pass
+
+
+def check_conn(task , dest):
+    task.run(task=get_prompt)
+    if task.host.data['vendor'] == "Cisco":
+        command = f"ping {dest}"
+    else:
+        command = f"execute ping {dest}"
+    
+    print(command)
+    r = task.run(
+            task=scrape_send, command=command
+        ).result

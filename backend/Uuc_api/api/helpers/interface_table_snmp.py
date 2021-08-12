@@ -11,7 +11,7 @@ def build_interface_table(params) -> list:
             errorIndex,
             varBinds) in nextCmd(SnmpEngine(), 
                                 CommunityData(params['pass']),
-                                UdpTransportTarget((params['host'], 161)),
+                                UdpTransportTarget((params['host'], 161), timeout=1),
                                 ContextData(),                                                           
                                 ObjectType(ObjectIdentity(params['OID'])),
                                 lexicographicMode=False):

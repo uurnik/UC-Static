@@ -70,6 +70,9 @@
           </v-card-text>
 
           <v-card-actions>
+            <v-card-text @click="GoToDevice()" class="pageheading--text" style="cursor: pointer;" >
+              Device Details
+            </v-card-text>
             <v-spacer></v-spacer>
             <v-progress-circular
             v-if="pingloader"
@@ -141,6 +144,18 @@ export default {
     };
   },
   methods: {
+    GoToDevice() {
+      let name = ""
+      for (let i = 0; i < this.nodes.length; i++) {
+
+        if (this.nodes[i].label == this.devicetoping) {
+          name = this.nodes[i].name
+          break
+        }
+      }
+      this.$router.push("/host/" + name);
+
+    },
     Ping() {
       this.pingloader = true
       this.$getAPI

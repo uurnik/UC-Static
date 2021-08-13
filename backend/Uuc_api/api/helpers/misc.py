@@ -580,11 +580,24 @@ def resolve_host(task, dns: str):
 def check_conn(task , dest):
     task.run(task=get_prompt)
     if task.host.data['vendor'] == "Cisco":
-        command = f"ping {dest}"
-    else:
-        command = f"execute ping {dest}"
-    
-    print(command)
-    r = task.run(
+        command = f"ping {dest} source loopback0"
+        r = task.run(
             task=scrape_send, command=command
         ).result
+    else:
+        loop_back_ip = task.host.data['loop_back'].split()[0]
+
+        command = f"execute ping {dest}"
+        task.run(
+            task=scrape_send,
+            name="Set Ping Options",
+            command=f"execute ping-options source {loop_back_ip}"
+        )
+
+        r = task.run(
+            task=scrape_send,
+            command=command
+        ).result
+    
+    return r
+

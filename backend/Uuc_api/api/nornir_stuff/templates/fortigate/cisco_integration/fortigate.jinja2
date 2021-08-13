@@ -26,12 +26,17 @@ set remote-ip {{ remote_tunnel_ip }} 255.255.255.252
 set allowaccess ping https ssh
 set type tunnel
 set interface {{ host.data["wan_int"] }}
-next 
+next
+edit "uurnikloopback"
+set vdom "root"
+set ip {{ host.data["loop_back"] }}
+set allowaccess ping https snmp
+set type loopback
+set role lan
+set snmp-index 7
 end
 
-
 {% set tunnel = 20 %}
-
 config firewall policy
 {% for advertised_interface in advertised_interfaces %}
 {% set tunnel = tunnel + loop.index %}
@@ -66,6 +71,12 @@ set router-id {{ tunnel_ip }}
 config neighbor
 edit {{ remote_tunnel_ip }}
 set remote-as 65414
+next
+end
+
+config network
+edit 19
+set prefix {{ host.data["loop_back"] }}
 next
 end
 

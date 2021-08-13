@@ -866,6 +866,7 @@ def get_cdp_info(request):
         nodes.append(
             {
                 "id": k,
+                "name":nr.inventory.hosts[hosts[v]].name,
                 "label": v,
                 "shape": "image",
                 "image": f"{vendor.lower()}.png",
@@ -1775,7 +1776,7 @@ def ping_test(request):
     result = device.run(task=check_conn , dest=dest)
 
     for host in device.inventory.hosts.keys():
-        data['result'] = result[host][2].result
+        data['result'] = result[host][0].result
 
 
     return JsonResponse(data)

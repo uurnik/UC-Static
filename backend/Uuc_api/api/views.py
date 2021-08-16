@@ -23,28 +23,23 @@ from rest_framework.decorators import (
 from rest_framework import status
 from django.http import HttpResponse, JsonResponse
 from django.db import transaction, IntegrityError
-from .users.utils import IsSuperUser
 
 
-from api.models import Hosts, Defaults, TunnelPool, CacheTable, Account, Routes ,StaticTunnelNet
+from api.models import Hosts, Defaults, TunnelPool, CacheTable, Routes ,StaticTunnelNet
 
 from api.serializers import (
     HostsSerializer,
-    DefaultsSerializer,
 )
 
 
 from .helpers.get_tunnel_pool_list import add_tunnel_pool
 from .helpers.distribute_tunnel_ip import update_defaults_nhs
-from .helpers.misc import wildcard_conversion, get_challenge_pass , check_conn
+from .helpers.misc import wildcard_conversion, get_challenge_pass
 from .helpers.inventory_builder import Myinventory, get_inventory_data, inventory
 from .helpers.misc import (
-    do_ping,
-    test_ssh_conn,
     create_response,
     convert_to_cidr,
     CoppBWCalculator,
-    do_poll,
     resolve_host,
 )
 from .nornir_stuff.validations.validate_configs import validate
@@ -52,7 +47,6 @@ from .nornir_stuff.configure_nodes import (
     send_tcl,
     remove_hosts,
     conf_dmvpn,
-    fetch_cdp_data,
     change_on_spoke,
     remove_hub_from_spoke,
     conf_ip_sla,
@@ -61,8 +55,6 @@ from .nornir_stuff.configure_nodes import (
     fetch_interface_info,
     configure_copp,
     device_harderning,
-    fortigate_neighbors,
-    juniper_neighbors,
     change_ipsec_keys,
     configure_logging,
     get_routing_table_cisco,
@@ -71,7 +63,6 @@ from .nornir_stuff.configure_nodes import (
 from nornir.core.filter import F
 from nornir.plugins.functions.text import print_result
 from nornir.plugins.tasks import text, networking
-from nornir.core.deserializer.inventory import Inventory
 from nornir import InitNornir
 from nornir_scrapli.tasks import send_command as scrape_send
 from nornir_scrapli.tasks import send_configs as scrape_config
@@ -357,22 +348,6 @@ def get_facts(request):
 
     return JsonResponse(response, safe=False)
 
-
-############################## Temporary ###############################
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def get_inventory(request):
-    """
-    temporary function to get nornir inventory, for debug and testing purpose
-    endpoint -> /api/inventory/
-    """
-    nr = inventory()
-    a_inventory = Inventory.serialize(nr.inventory).dict()
-    return JsonResponse({"inventory": a_inventory})
-
-
-###########################################################################
 
 
 @api_view(["POST"])
@@ -698,21 +673,7 @@ def add_remove_spoke(request, pk):
         ##############################################################
 
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def reachability(request):
-    """
-    function to check the reachability of the hosts
-    """
-    nr = inventory()
 
-    # query dns and update inventory
-    dns = Defaults.objects.get(pk=1).dns
-    if dns != None:
-        nr.run(task=resolve_host, dns=dns)
-    #####################################
-
-    return JsonResponse(do_ping(nr), safe=False)
 
 
 @api_view(["DELETE"])
@@ -769,238 +730,6 @@ def tear_down(request):
 
     return JsonResponse(data, safe=False)
 
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def get_cdp_info(request):
-    """
-    Function to get CDP information from all the Hosts in the Database
-    Data is then structured to feed the Viz-js library to create Network Topology on front-end
-    """
-    nr = inventory()
-
-    # query dns and update inventory
-    dns = Defaults.objects.get(pk=1).dns
-    if dns != None:
-        nr.run(task=resolve_host, dns=dns)
-    #####################################
-    # result = nr.run(task=juniper_neighbors)
-    # print_result(result)
-    # for fortigate devices
-    # result = nr.run(task=fortigate_neighbors)
-    # devices=[]
-    # for host in nr.inventory.hosts.keys():
-    #     nr.inventory.hosts[host].name
-    #     if result[host].failed == False:
-    #         devices.append({"name":nr.inventory.hosts[host].name,"neighbors":result[host][0].result})
-
-    # nodes=[]
-    # for k,v in enumerate(devices, 1):
-    #     ip = nr.inventory.hosts[v['name']].hostname
-    #     site_name = nr.inventory.hosts[v['name']].name
-    #     # tunnel_ip = nr.inventory.hosts[hosts[v]].data['tunnel_ip']
-
-    #     if nr.inventory.hosts[v["name"]].groups[0] == 'HUB':
-    #         group= 'HUB'
-    #     elif nr.inventory.hosts[v["name"]].groups[0] == 'SPOKE':
-    #         group='SPOKE'
-
-    #     nodes.append({"id": k , "label": v['name'] ,'shape':'circle',
-    #                     'smooth': {'type': 'curvedCW','roundness': 0}, 'font':{ 'color':'white' },
-    #                     'group': group ,"title": f"<p><b> Site Name:  {site_name} </b> <br>IP:{ip}</p>"})
-
-    # edges=[]
-    # for node in nodes:
-    #     if node['group'] =='HUB':
-    #         neighbors = result[node['label']][0].result
-    #         for neighbor in neighbors:
-    #             spoke = nr.filter(F(hostname__contains=neighbor))
-    #             neighbor_name=list(spoke.inventory.hosts.keys())[0]
-    #             for spoke_node in nodes:
-    #                 if spoke_node['label'] == neighbor_name:
-    #                     edges.append({'from':node['id'],'to':spoke_node['id']})
-
-    # return JsonResponse({'result':{'nodes':nodes , "edges":edges}})
-
-    # Get CDP data from Hosts
-    result = nr.run(task=fetch_cdp_data)
-    cdp_dict = {}
-    hosts = {}
-    for host in nr.inventory.hosts.keys():
-        hosts.update({nr.inventory.hosts[host].data["dev_name"]: host})
-        if result[host].failed == True:
-              cdp_dict[nr.inventory.hosts[host].data["dev_name"]] = {
-                "wan_ip": nr.inventory.hosts[host].hostname,
-                "tunnel_ip": nr.inventory.hosts[host].data["tunnel_ip"],
-                "cdp": [],
-            }
-        else:
-            cdp_dict[nr.inventory.hosts[host].data["dev_name"]] = {
-                "wan_ip": nr.inventory.hosts[host].hostname,
-                "tunnel_ip": nr.inventory.hosts[host].data["tunnel_ip"],
-                "cdp": result[host][1].scrapli_response.textfsm_parse_output(),
-            }
-
-    nodes = []
-    edges = []
-
-    devices = [k for k in cdp_dict]
-
-    sum_of_devices = 0
-    for k, v in enumerate(devices, 1):
-        sum_of_devices += 1
-
-    # Create Nodes List
-    for k, v in enumerate(devices, 1):
-        ip = nr.inventory.hosts[hosts[v]].hostname
-        site_name = nr.inventory.hosts[hosts[v]].name
-
-        vendor = nr.inventory.hosts[hosts[v]].data['vendor']
-
-        if nr.inventory.hosts[hosts[v]].groups[0] == "HUB":
-            group = "HUB"
-        elif nr.inventory.hosts[hosts[v]].groups[0] == "SPOKE":
-            group = "SPOKE"
-
-
-        nodes.append(
-            {
-                "id": k,
-                "name":nr.inventory.hosts[hosts[v]].name,
-                "label": v,
-                "shape": "image",
-                "image": f"{vendor.lower()}.png",
-                "group": group,
-                "title": f"<p><b> Site Name:  {site_name} </b> <br>IP:{ip}</p>",
-            }
-        )
-
-        for neighbor in cdp_dict[v]["cdp"]:
-            other = 0
-            neighbor["neighbor"] = neighbor["neighbor"].split(".")[0]
-            if neighbor["local_interface"] != "Tunnel414":
-                for node in nodes:
-                    if neighbor["neighbor"] == node["label"].split(".")[0]:
-                        other += 1
-
-                if other == 0:
-                    sum_of_devices += 1
-                    if "S" in neighbor["capability"]:
-                        pass
-                        # nodes.append(
-                        #     {
-                        #         "id": sum_of_devices,
-                        #         "image": "switch-50.png",
-                        #         "label": neighbor["neighbor"],
-                        #         "shape": "image",
-                        #     }
-                        # )
-                    else:
-                        pass
-                        # nodes.append(
-                        #     {
-                        #         "id": sum_of_devices,
-                        #         "label": neighbor["neighbor"],
-                        #         "shape": "circle",
-                        #         "color": "grey",
-                        #     }
-                        # )
-
-    # only Get Tunnel414 neighbors
-    add_uurnik_node = 0
-    for k in cdp_dict:
-        if len(cdp_dict[k]["cdp"]) == 0:
-            edges.append(
-                    {
-                        "device": k,
-                        "neighbor": '',
-                        "type": "overlay",
-                    }
-                )
-        for neighbor in cdp_dict[k]["cdp"]:
-            if neighbor["local_interface"] == "Tunnel414":
-                # add_uurnik_node += 1
-                edges.append(
-                    {
-                        "device": k,
-                        "neighbor": neighbor["neighbor"].split(".")[0],
-                        "type": "overlay",
-                    }
-                )
-            else:
-                edges.append(
-                    {
-                        "device": k,
-                        "neighbor": neighbor["neighbor"].split(".")[0],
-                        "type": "underlay",
-                    }
-                )
-    for edge in edges:
-        device = edge['device']
-        if len([n for n in edges if n['device'] == device and n['type'] == "overlay" ]) == 0 :
-            
-            edges.append(
-                    {
-                        "device": device,
-                        "neighbor": '',
-                        "type": "overlay",
-                    }
-                )
-
-
-    if Defaults.objects.get(pk=1).access_type != None:
-        sum_of_devices += 1
-        nodes.append(
-            {
-                "id": sum_of_devices,
-                "label": "",
-                "size": 40,
-                "shape": "circularImage",
-                "image": "UKS_ICON_COLOR1-01.jpg",
-                "color": {
-                    "border": "white",
-                    "hover": {"border": "white", "background": "white"},
-                },
-            }
-        )
-
-    new_edge = {}
-    final_edges = []
-    for edge in edges:
-        if (
-            nr.inventory.hosts[hosts[edge["device"]]].groups[0] == "HUB"
-            or nr.inventory.hosts[hosts[edge["device"]]].groups[0] == "SPOKE"
-        ):
-           
-            for node in nodes:
-                if edge["device"] == node["label"]:
-                    new_edge["from"] = node["id"]
-                    if edge["neighbor"] == '':
-                    # if edge['type'] == "overlay":
-                        final_edges.append({"from": new_edge["from"], "to": sum_of_devices ,"color":"red","width":1.7})
-                        continue
-                    for node in nodes:
-                        if edge["neighbor"] == node["label"].split(".")[0]:
-                            new_edge["to"] = node["id"]
-
-            if edge["type"] == "overlay":
-                if edge["neighbor"] == '':
-                    # final_edges.append({"from": new_edge["from"], "to": sum_of_devices ,"color":"red","width":1.7})
-                    pass
-                final_edges.append({"from": new_edge["from"], "to": sum_of_devices})
-            elif edge["type"] == "underlay":
-                pass
-                # final_edges.append(
-                #     {
-                #         "from": new_edge["from"],
-                #         "to": new_edge["to"],
-                #         "dashes": True,
-                #     }
-                # )
-
-    data = {"nodes": nodes, "edges": final_edges}
-
-    return JsonResponse({"result": data})
 
 
 @api_view(["POST", "DELETE"])
@@ -1245,36 +974,6 @@ def add_remove_hub(request, pk):
         return JsonResponse(data)
 
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def check_alive(request):
-    """
-    function to test the ssh connectivity of the hosts
-    """
-    nr = inventory()
-
-    dns = Defaults.objects.get(pk=1).dns
-
-    if request.query_params.get("name"):
-        name = request.query_params.get("name")
-        device = nr.filter(F(name=name))
-        device.run(task=resolve_host, dns=dns)
-        result = device.run(task=test_ssh_conn)
-        data = {"name": name, "alive": result[name][0].result}
-    else:
-        # query dns and update inventory
-        if dns != None:
-            nr.run(task=resolve_host, dns=dns)
-        #####################################
-        result = nr.run(task=test_ssh_conn)
-        data = []
-        for h in nr.inventory.hosts.keys():
-            data.append(
-                {"name": nr.inventory.hosts[h].name, "alive": result[h][0].result}
-            )
-
-    return JsonResponse(data, safe=False)
-
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -1402,32 +1101,6 @@ def gather_routes(request):
 
         return JsonResponse(request.data, safe=False)
 
-
-
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def get_deployed_access_type(request):
-    """
-    View for getting deployed access type
-    """
-    dbDefaults = Defaults.objects.get(pk=1)
-    access_type_number = dbDefaults.access_type
-    device_hardening = dbDefaults.is_device_hardening_configured
-    copp_configured = dbDefaults.is_copp_configured
-
-    if access_type_number == 1:
-        access_type = "Private WAN only"
-    elif access_type_number == 2:
-        access_type = "Private WAN + Direct Internet Access"
-    elif access_type_number == 3:
-        access_type = "Private WAN + Direct Internet Access + Addons"
-    else:
-        access_type = None
-    
-
-
-    return JsonResponse({"access_type": access_type,"copp":copp_configured,"device_hardening":device_hardening})
 
 
 @api_view(["GET"])
@@ -1565,63 +1238,6 @@ def device_hardening(request):
     return JsonResponse(data, safe=False)
 
 
-####################### Incomplete ###################
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def snmp_poll(request):
-    """
-    View for SNMP polling
-    """
-    nr = inventory()
-
-    # query dns and update inventory
-    dns = Defaults.objects.get(pk=1).dns
-    if dns != None:
-        nr.run(task=resolve_host, dns=dns)
-    #####################################
-
-    hosts = []
-    community_str = "public"
-    avg=None
-    if request.query_params.get("avg"):
-        avg = True
-
-    if request.query_params.get("name"):
-        name = request.query_params.get("name")
-        device = nr.filter(F(name=name))
-        for host in device.inventory.hosts.keys():
-            try:
-                hosts.append(
-                {
-                    "name": nr.inventory.hosts[host].name,
-                    "IP": nr.inventory.hosts[host].hostname,
-                    "int_index": nr.inventory.hosts[host].data["interface_index"],
-                    "wan_int": nr.inventory.hosts[host].data["wan_int"],
-                }
-            )
-            except:
-                pass
-    else:
-        for host in nr.inventory.hosts.keys():
-            try:
-                hosts.append(
-                    {
-                        "name": nr.inventory.hosts[host].name,
-                        "IP": nr.inventory.hosts[host].hostname,
-                        "int_index": nr.inventory.hosts[host].data["interface_index"],
-                        "wan_int": nr.inventory.hosts[host].data["wan_int"],
-
-                    }
-                )
-            except:
-                pass
-
-    output = asyncio.run(do_poll(hosts, community_str ,avg=avg))
-
-    return JsonResponse(output, safe=False)
-
-
-###########################################################################################
 
 
 @api_view(["PUT"])
@@ -1737,46 +1353,3 @@ def set_logging(request, pk):
     }
 
     return JsonResponse(response)
-
-
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def summary(request):
-    """
-    function to test the ssh connectivity of the hosts
-    """
-    nr = inventory()
-    data = {}
-
-    managed_inv = nr.filter(F(is_configured=True))
-    data['managed'] = len(managed_inv.inventory.hosts.keys())
-
-    unmanaged = nr.filter(F(is_configured=False))
-    data['unmanaged'] = len(unmanaged.inventory.hosts.keys())
-
-    data['total'] = len(nr.inventory.hosts.keys())
-
-    return JsonResponse(data)
-
-
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def ping_test(request):
-    """
-    function to test the ssh connectivity of the hosts
-    """
-    data={}
-    dev_name = request.query_params.get("name")
-    dest = request.query_params.get("dest")
-    nr = inventory()
-    device = nr.filter(F(dev_name=dev_name))
-
-    result = device.run(task=check_conn , dest=dest)
-
-    for host in device.inventory.hosts.keys():
-        data['result'] = result[host][0].result
-
-
-    return JsonResponse(data)

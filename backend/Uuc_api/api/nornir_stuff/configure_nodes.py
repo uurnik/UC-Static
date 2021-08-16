@@ -1182,27 +1182,6 @@ def fetch_interface_info(task):
         return interfaces
 
 
-def fortigate_neighbors(task):
-    task.run(task=get_prompt)
-
-    r = task.run(
-        task=scrape_send, command="get vpn ipsec tunnel details | grep remote-gateway"
-    ).result
-
-    neighbors = [
-        tunnel.split()[1].split(":")[0] for tunnel in r.splitlines() if len(tunnel) != 0
-    ]
-    neighbors.remove("#")
-    return neighbors
-
-
-def juniper_neighbors(task):
-    r = task.run(
-        task=scrape_send, command="show security ike security-associations | grep IKE"
-    ).result
-
-    neighbors = [nei.split()[5] for nei in r.splitlines() if len(nei) != 0]
-    return neighbors
 
 
 def change_ipsec_keys(task, new_key):

@@ -1,0 +1,3 @@
+COMMUNITY_STR="uurnik123"
+
+

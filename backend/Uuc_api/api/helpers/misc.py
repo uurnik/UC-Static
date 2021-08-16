@@ -54,47 +54,6 @@ def custom_filters():
         "convert_to_cidr": convert_to_cidr,
     }
 
-
-########################################################
-
-
-def do_ping(nr):
-    """function to check reachability of the hosts"""
-    status = []
-    for device_name in nr.inventory.hosts.keys():
-        host = nr.inventory.hosts[device_name].hostname
-        name = nr.inventory.hosts[device_name].name
-
-        response = subprocess.Popen(
-            ["timeout", "6", "ping", "-c", "2", host], stdout=subprocess.PIPE
-        )
-        response.wait()
-        if response.returncode != 0:
-            reach = False
-            status.append({"name": name, "reach": reach})
-        else:
-            reach = True
-            status.append({"name": name, "reach": reach})
-
-    return status
-
-
-def test_ssh_conn(task):
-    """
-    function to test the ssh connectivity
-    """
-    task.host.platform = "generic"
-    alive = False
-    try:
-        _connection = task.host.get_connection("scrapli", task.nornir.config)
-        alive = True
-        task.host.close_connection("scrapli")
-        return alive
-    except:
-        alive = False
-        return alive
-
-
 def create_response(nr, result):
     data = []
     for host in nr.inventory.hosts.keys():
@@ -577,27 +536,4 @@ def resolve_host(task, dns: str):
         pass
 
 
-def check_conn(task , dest):
-    task.run(task=get_prompt)
-    if task.host.data['vendor'] == "Cisco":
-        command = f"ping {dest} source loopback0"
-        r = task.run(
-            task=scrape_send, command=command
-        ).result
-    else:
-        loop_back_ip = task.host.data['loop_back'].split()[0]
-
-        command = f"execute ping {dest}"
-        task.run(
-            task=scrape_send,
-            name="Set Ping Options",
-            command=f"execute ping-options source {loop_back_ip}"
-        )
-
-        r = task.run(
-            task=scrape_send,
-            command=command
-        ).result
-    
-    return r
 

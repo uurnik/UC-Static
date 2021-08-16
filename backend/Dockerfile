@@ -3,7 +3,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 WORKDIR /code
 COPY requirements.txt /code/
-RUN apt update && apt install dnsutils netcat traceroute -y 
+RUN apt update && apt install dnsutils netcat iputils-ping traceroute -y 
 
 RUN set -eux && \
     export DEBIAN_FRONTEND=noninteractive && \

@@ -1,6 +1,8 @@
 <template>
   <div>
+    
     <v-col>
+      <img src="frontend/src/assets/cisco.png" alt="">
       <div
         class="
           font-weight-light
@@ -159,7 +161,7 @@ export default {
     Ping() {
       this.pingloader = true
       this.$getAPI
-        .get("testconn?name=" + this.devicetoping + "&dest=" + this.dest)
+        .get("monitoring/testconn/?name=" + this.devicetoping + "&dest=" + this.dest)
         .then((response) => {
           this.pingloader = false
           this.pingresult = response.data.result;
@@ -188,7 +190,7 @@ export default {
       }, this.timers[index].value);
     },
     getNeighbors() {
-      this.$getAPI.get("neighbors/").then((response) => {
+      this.$getAPI.get("monitoring/topology/get_neighbors").then((response) => {
         for (var i = 0; i < response.data.result.nodes.length; i++) {
           if ("image" in response.data.result.nodes[i]) {
             let image = response.data.result.nodes[i].image;
@@ -226,3 +228,47 @@ export default {
   },
 };
 </script>
+
+<style >
+
+#tooltip-hr {
+  margin-top:7px;
+  margin-bottom: 5px;
+  color:#B0BEC5;
+  height:0px;
+  border-color: #B0BEC5;
+  border: solid;
+  border-width: thin 0 0 0;
+
+}
+
+div.tooltip-element {
+  color: rgba(0, 0, 0, 0.6);
+    padding: 0;
+    line-height: 2rem;
+}
+
+div.tooltip-content {
+  margin: 0;
+  padding: 0;
+  display:flex;
+  flex-direction: column;
+  color:#f58319;
+  font-family: "Roboto", sans-serif !important;
+  text-align: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+div.vis-tooltip {
+  background-color: #ffffff;
+  /* border: #42A5F5 solid 2px; */
+  border: none;
+  width:27em;
+  height: 150px;
+  color: rgba(0, 0, 0, 0.87);
+  text-decoration: none;
+  
+}
+
+</style>

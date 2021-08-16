@@ -272,13 +272,13 @@ export default {
   methods: {
     snmp_poll() {
 
-      this.$getAPI.get("snmp?avg=true").then((response) => {
+      this.$getAPI.get("monitoring/snmp?avg=true").then((response) => {
         this.topcpudevices = response.data['topcpuusage']
         this.topmemorydevices = response.data['topramusage']
 
     })},
     getsummary() {
-      this.$getAPI.get("summary").then((response) => {
+      this.$getAPI.get("/monitoring/summary").then((response) => {
         this.total = response.data.total;
         this.series.push(response.data.managed);
         this.series.push(response.data.unmanaged);

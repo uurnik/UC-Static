@@ -258,7 +258,7 @@ export default {
       menuitems: [
         { title: "Device Protection", id: "1" },
         { title: "Secure Access Control", id: "2" },
-        { title: "Change IPsec Keys", id: "3" },
+        { title: "Change Security Keys", id: "3" },
       ],
       headers: [
         { text: "Site Name", align: "start", sortable: false, value: "name" },
@@ -288,7 +288,7 @@ export default {
   },
   methods: {
     DeployementStatus() {
-      this.$getAPI.get("access-type/").then((response) => {
+      this.$getAPI.get("monitoring/summary/get_access_type").then((response) => {
         this.$store.state.copp = response.data.copp;
         this.$store.state.devicehardening = response.data.device_hardening;
         this.stats[1].status = this.$store.state.copp;

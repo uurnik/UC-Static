@@ -226,6 +226,15 @@ export default {
         { text: "IP Address", value: "ipaddr" },
         { text: "Admin Status", value: "adminstatus" },
         { text: "Oper Status", value: "status" },
+        { text: "In (MB) ", value: "In" },
+        { text: "Out (MB)", value: "Out" },
+        { text: "InErrors", value: "InErrors" },
+        { text: "OutErrors", value: "OutErrors" },
+        { text: "PhyAddress", value: "mac" },
+
+
+
+
       ],
       interfaces: [],
       device: {},
@@ -237,7 +246,7 @@ export default {
   },
   methods: {
     snmppoll() {
-      this.$getAPI.get("snmp?name=" + this.name).then((response) => {
+      this.$getAPI.get("monitoring/snmp?name=" + this.name).then((response) => {
         this.ramusage = [response.data[0].result.ramusage];
         this.cpuusage = [response.data[0].result.cpmCPUTotal5minRev];
         this.uptime = response.data[0].result.sysUpTime;

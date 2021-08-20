@@ -1,8 +1,6 @@
 <template>
   <div>
-    
     <v-col>
-      <img src="frontend/src/assets/cisco.png" alt="">
       <div
         class="
           font-weight-light
@@ -52,7 +50,15 @@
       <v-divider class="my-2 mx-2"></v-divider>
     </v-col>
     <v-row justify="center">
-      <v-dialog v-model="dialog" max-width="450" @click:outside="pingresult = '';dest = '' " >
+      <v-dialog
+        v-model="dialog"
+        max-width="450"
+        @click:outside="
+          pingresult = '';
+          dest = '';
+          showalert = false;
+        "
+      >
         <v-card>
           <v-card-title
             class="font-weight-medium pa-4 text-h6 pageheading--text mx-auto"
@@ -64,21 +70,36 @@
             v-model="dest"
             label="Destination IP Address"
           ></v-text-field>
-          <v-card-text
-            class="font-weight-light text-subtitle-2"
-            v-if="pingresult"
+          <v-card-text align="center"
+            class=" pa-0 ma-0 font-weight-light text-subtitle-2"
+
           >
-            {{ pingresult }}
+            <v-alert
+              transition="scale-transition"
+              :value="showalert"
+              dense
+              max-width="80%"
+              text
+              max-height="40px"
+              class="mt-3"
+              :type="alert.type"
+              ><strong>{{ alert.text }}</strong>
+            </v-alert>
+
           </v-card-text>
 
           <v-card-actions>
-            <v-card-text @click="GoToDevice()" class="pageheading--text" style="cursor: pointer;" >
+            <v-card-text
+              @click="GoToDevice()"
+              class="pageheading--text"
+              style="cursor: pointer"
+            >
               Device Details
             </v-card-text>
             <v-spacer></v-spacer>
             <v-progress-circular
-            v-if="pingloader"
-            class="mr-3"
+              v-if="pingloader"
+              class="mr-3"
               indeterminate
               color="pageheading"
             ></v-progress-circular>
@@ -124,9 +145,14 @@ export default {
   },
   data() {
     return {
+      showalert:false,
+      alert :{
+        'type':'',
+        'text':''
+      },
       dialog: false,
       devicetoping: null,
-      pingresult: null,
+      pingresult: '',
       networkEvents: "",
       showtopology: false,
       dest: "",
@@ -147,24 +173,35 @@ export default {
   },
   methods: {
     GoToDevice() {
-      let name = ""
+      let name = "";
       for (let i = 0; i < this.nodes.length; i++) {
-
         if (this.nodes[i].label == this.devicetoping) {
-          name = this.nodes[i].name
-          break
+          name = this.nodes[i].name;
+          break;
         }
       }
       this.$router.push("/host/" + name);
-
     },
     Ping() {
-      this.pingloader = true
+      this.pingloader = true;
       this.$getAPI
-        .get("monitoring/testconn/?name=" + this.devicetoping + "&dest=" + this.dest)
+        .get(
+          "monitoring/testconn/?name=" +
+            this.devicetoping +
+            "&dest=" +
+            this.dest
+        )
         .then((response) => {
-          this.pingloader = false
+          this.showalert = true
+          this.pingloader = false;
           this.pingresult = response.data.result;
+          if (this.pingresult == true) {
+            this.alert.type = 'success'
+            this.alert.text = 'Connectivity Successfull'
+          } else {
+            this.alert.type = 'error'
+            this.alert.text = 'Connectivity Failed'
+          }
         });
     },
     netWorkEvent() {
@@ -230,30 +267,28 @@ export default {
 </script>
 
 <style >
-
 #tooltip-hr {
-  margin-top:7px;
+  margin-top: 7px;
   margin-bottom: 5px;
-  color:#B0BEC5;
-  height:0px;
-  border-color: #B0BEC5;
+  color: #b0bec5;
+  height: 0px;
+  border-color: #b0bec5;
   border: solid;
   border-width: thin 0 0 0;
-
 }
 
 div.tooltip-element {
   color: rgba(0, 0, 0, 0.6);
-    padding: 0;
-    line-height: 2rem;
+  padding: 0;
+  line-height: 2rem;
 }
 
 div.tooltip-content {
   margin: 0;
   padding: 0;
-  display:flex;
+  display: flex;
   flex-direction: column;
-  color:#f58319;
+  color: #f58319;
   font-family: "Roboto", sans-serif !important;
   text-align: center;
   justify-content: center;
@@ -264,11 +299,9 @@ div.vis-tooltip {
   background-color: #ffffff;
   /* border: #42A5F5 solid 2px; */
   border: none;
-  width:27em;
+  width: 27em;
   height: 150px;
   color: rgba(0, 0, 0, 0.87);
   text-decoration: none;
-  
 }
-
 </style>

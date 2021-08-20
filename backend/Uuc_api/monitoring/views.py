@@ -121,7 +121,6 @@ class AppOverview(viewsets.ViewSet):
 class SNMPView(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
-
     def list(self ,request):
         nr = inventory()
 
@@ -144,8 +143,9 @@ class SNMPView(viewsets.ViewSet):
                     hosts.append(
                     {
                         "name": nr.inventory.hosts[host].name,
+                        "vendor":nr.inventory.hosts[host].data['vendor'].lower(),
                         "IP": nr.inventory.hosts[host].hostname,
-                        "int_index": nr.inventory.hosts[host].data["interface_index"],
+                        # "int_index": nr.inventory.hosts[host].data["interface_index"],
                         "wan_int": nr.inventory.hosts[host].data["wan_int"],
                     }
                 )
@@ -157,8 +157,9 @@ class SNMPView(viewsets.ViewSet):
                     hosts.append(
                         {
                             "name": nr.inventory.hosts[host].name,
+                            "vendor":nr.inventory.hosts[host].data['vendor'].lower(),
                             "IP": nr.inventory.hosts[host].hostname,
-                            "int_index": nr.inventory.hosts[host].data["interface_index"],
+                            # "int_index": nr.inventory.hosts[host].data["interface_index"],
                             "wan_int": nr.inventory.hosts[host].data["wan_int"],
 
                         }

@@ -2,15 +2,16 @@ import datetime
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import subprocess
+from concurrent.futures import ProcessPoolExecutor
 from nornir_scrapli.tasks import send_command as scrape_send
 from nornir_scrapli.tasks import get_prompt
 import pysnmp.hlapi.asyncio as snmp
 import pysnmp.hlapi as snmp_sync
-from .constants import COMMUNITY_STR
+from .constants import COMMUNITY_STR ,CISCO_OIDS ,FORTINET_OIDS
 from api.models import Defaults
-from api.helpers.misc import resolve_host
+from api.helpers.misc import ForigateParser, resolve_host
 from api.helpers.inventory_builder import inventory
-from netaddr import EUI
+from threading import Lock
 
 def test_ssh_conn(task):
     """
@@ -58,6 +59,12 @@ def check_conn(task , dest):
         r = task.run(
             task=scrape_send, command=command
         ).result
+
+        if "!!" in r:
+            return True
+        else:
+            return False
+
     else:
         loop_back_ip = task.host.data['loop_back'].split()[0]
 
@@ -67,13 +74,16 @@ def check_conn(task , dest):
             name="Set Ping Options",
             command=f"execute ping-options source {loop_back_ip}"
         )
-
         r = task.run(
             task=scrape_send,
             command=command
         ).result
-    
-    return r
+
+        if int(r[0].split()[0]) < 2:
+            return False
+
+        else:
+            return True
 
 
 
@@ -84,50 +94,84 @@ class SNMPManager():
     def __init__(self):
         self.community_str = COMMUNITY_STR
         self.host_ip = None
+        self.oid_set = None
+
+    def get_oid_set(self,vendor):
+        if vendor == 'cisco':
+            return CISCO_OIDS
+        elif vendor == 'fortinet':
+            return FORTINET_OIDS
+        # elif self.vendor == 'juniper':
+        #     return JUNIPER_OIDS
+
+    def threaded_poll_sys(self ,oid):
+        result = {}
+        # host["int_index"] = "1"
+        # try:
+        ramusage=""
+        if "WANCounter" in oid["field"]:
+            oid["OID"] = oid["OID"] + "." + "1"     #TODO get WAN interface index
+
+        errorIndication, errorStatus, errorIndex, varBinds = next(
+           snmp_sync.getCmd(snmp_sync.SnmpEngine(),
+           snmp_sync.CommunityData(self.community_str, mpModel=0),
+           snmp_sync.UdpTransportTarget((self.host_ip, 161)),
+           snmp_sync.ContextData(),
+           snmp_sync.ObjectType(snmp_sync.ObjectIdentity(oid['OID'])))
+        )
+
+        ramusage=""
+        for varBind in varBinds:
+            output = {oid["field"]: [x.prettyPrint() for x in varBind][1]}
+            if "No Such Instance" in output[oid["field"]]:
+                result.update({oid["field"]: []})
+
+
+            elif oid["field"] == "sysUpTime":
+                output[oid["field"]] = str(
+                    datetime.timedelta(seconds=int(output["sysUpTime"]) / 100)
+                ).split(".")[0]
+                result.update(output)
+
+            elif oid['field'] == "sysDescr":
+                if 'Cisco' in output['sysDescr']:
+                    output['vendor'] = 'Cisco'
+                    output[oid['field']] = " ".join(output['sysDescr'].split(",")[1:3])
+                elif 'FortiGate' in output['sysDescr']:
+                    output['vendor'] = "Fortinet"
+                    output['sysDescr'] = output[oid['field']]
+                result.update(output)
+            else:
+                result.update(output)
+
+        return result
+
 
 
     def get_interfaces(self ,params):
         results = []
         data={}
-        try:
-            for (errorIndication,
-                errorStatus,
-                errorIndex,
-                varBinds) in snmp_sync.nextCmd(snmp_sync.SnmpEngine(), 
-                                    snmp_sync.CommunityData(self.community_str),
-                                    snmp_sync.UdpTransportTarget((self.host_ip, 161), timeout=1),
-                                    snmp_sync.ContextData(),                                                           
-                                    snmp_sync.ObjectType(snmp_sync.ObjectIdentity(params['OID'])),
-                                    lexicographicMode=False):
-                
-                for varBind in varBinds:
-                    output = [x.prettyPrint() for x in varBind][1]
-                    results.append(output)
-            data = {params['field']:results}
-        except:
-            pass
+        for (errorIndication,
+            errorStatus,
+            errorIndex,
+            varBinds) in snmp_sync.nextCmd(snmp_sync.SnmpEngine(),
+                                snmp_sync.CommunityData(self.community_str),
+                                snmp_sync.UdpTransportTarget((self.host_ip, 161), timeout=1),
+                                snmp_sync.ContextData(),
+                                snmp_sync.ObjectType(snmp_sync.ObjectIdentity(params['OID'])),
+                                lexicographicMode=False):
+            for varBind in varBinds:
+                output = [x.prettyPrint() for x in varBind][1]
+                results.append(output)
+        data = {params['field']:results}
 
         return data
 
 
-    def build_interface_table(self):
+    def build_interface_table(self ,oids):
         results = []
-        oids= [
-                {"field":"ifDescr","OID":"1.3.6.1.2.1.2.2.1.2"},
-                {"field":"ifIndex","OID":"1.3.6.1.2.1.2.2.1.1"},
-                {"field":"ifOperStatus","OID":"1.3.6.1.2.1.2.2.1.8"},
-                {"field":"ipAdEntIfIndex","OID":"1.3.6.1.2.1.4.20.1.2"},
-                {"field":"ipAdEntAddr","OID":"1.3.6.1.2.1.4.20.1.1"},
-                {"field":"ifAdminStatus","OID":"1.3.6.1.2.1.2.2.1.7"},
-                {"field":"ifOutOctets","OID":"1.3.6.1.2.1.2.2.1.16"},
-                {"field":"ifInOctets","OID":"1.3.6.1.2.1.2.2.1.10"},
-                {"field":"ifInErrors","OID":"1.3.6.1.2.1.2.2.1.14"},
-                {"field":"ifOutErrors","OID":"1.3.6.1.2.1.2.2.1.20"},
-                {"field":"ifPhysAddress","OID":"1.3.6.1.2.1.2.2.1.6"},
 
-        ]
-
-        with ThreadPoolExecutor(max_workers=8) as executor:
+        with ThreadPoolExecutor(max_workers=10) as executor:
             execute=executor.map(self.get_interfaces ,oids)
             data = list(execute)
             index_desc = list(zip(
@@ -136,7 +180,7 @@ class SNMPManager():
                                 data[6]["ifOutOctets"] , data[7]['ifInOctets'],
                                 data[8]["ifInErrors"] , data[9]['ifOutErrors'],
                                 data[10]["ifPhysAddress"]
-                                
+
                                 )
                             )
             index_ip =  list(zip(data[3]["ipAdEntIfIndex"] , data[4]["ipAdEntAddr"]))
@@ -153,7 +197,7 @@ class SNMPManager():
                 for addressed_int in index_ip:
                     if interface[2] == addressed_int[0]:
                         interface_result["ipaddr"] = addressed_int[1]
-                
+
 
                 if not interface_result.get("ipaddr"):
                     interface_result['ipaddr'] = "unassigned"
@@ -162,125 +206,84 @@ class SNMPManager():
 
             return results
 
-    async def snmp_get(self ,host):
+
+
+    def snmp_get(self ,host):
         self.host_ip = host["IP"]
-    
-        oids = [
-            {
-                "field": "sysDescr",
-                "OID": "1.3.6.1.2.1.1.1.0",
-            },
-            {
-                "field": "ciscoMemoryPoolUsed-processor",
-                "OID": "1.3.6.1.4.1.9.9.48.1.1.1.5.1",
-            },
-            {
-                "field": "ciscoMemoryPoolFree-processor",
-                "OID": "1.3.6.1.4.1.9.9.48.1.1.1.6.1",
-            },
-            {"field": "cpmCPUTotal5minRev", "OID": "1.3.6.1.4.1.9.9.109.1.1.1.1.8.1"},
-            {"field": "cpmCPUTotalminRev", "OID": "1.3.6.1.4.1.9.9.109.1.1.1.1.7.1"},
-            {"field": "sysUpTime", "OID": "1.3.6.1.2.1.1.3.0"},
-            {"field": "WANCounter_in", "OID": "1.3.6.1.2.1.2.2.1.16"},
-            {"field": "WANCounter_out", "OID": "1.3.6.1.2.1.2.2.1.10"},
-            {"field": "fqdn","OID":"1.3.6.1.2.1.1.5.0"},
-            {"field": "chassisid","OID":"1.3.6.1.4.1.9.3.6.3.0"}
-        ]
+        self.vendor = host['vendor']
 
+        oids = self.get_oid_set(host['vendor'])['sys_oids']
         result = {}
-        # host["int_index"] = "1"
-
 
         try:
-            for oid in oids:
-                if "WANCounter" in oid["field"]:
-                    oid["OID"] = oid["OID"] + "." + "1"     #TODO get WAN interface index
 
-                response = await snmp.getCmd(
-                    snmp.SnmpEngine(),
-                    snmp.CommunityData(self.community_str),
-                    snmp.UdpTransportTarget((host["IP"], 161), timeout=1),
-                    snmp.ContextData(),
-                    snmp.ObjectType(snmp.ObjectIdentity(oid["OID"])),
-                )
-                _errorIndication, _errorStatus, _errorIndex, varBinds = response
+            with ThreadPoolExecutor(max_workers=10) as executor:
+                execute = executor.map(self.threaded_poll_sys ,oids)
+                response = list(execute)
 
-                ramusage=""
-                for varBind in varBinds:
-                    output = {oid["field"]: [x.prettyPrint() for x in varBind][1]}
-                    if "No Such Instance" in output[oid["field"]]:
-                        result.update({oid["field"]: []})
-                    
-                    
-                    elif oid["field"] == "sysUpTime":
-                        output[oid["field"]] = str(
-                            datetime.timedelta(seconds=int(output["sysUpTime"]) / 100)
-                        ).split(".")[0]
-                        result.update(output)
 
-                    elif oid['field'] == "sysDescr":
-                        if "Cisco" in output['sysDescr']:
-                            result['vendor'] = "Cisco"
+                result['vendor'] = response[0]['vendor']
+                result['fqdn'] = response[5]['fqdn']
+                result['uptime'] = response[4]['sysUpTime']
+                result['chassisid'] = response[6]['chassisid']
+                result['sysDescr'] = response[0]['sysDescr']
 
-                        output[oid['field']] = " ".join(output['sysDescr'].split(",")[1:3])
-                        result.update(output)
-                    else:
-                        result.update(output)
-        
-            
-            totalram = int(result['ciscoMemoryPoolUsed-processor']) + int(result['ciscoMemoryPoolFree-processor'])
+                if result['vendor'] == "Cisco":
+                    divider = 1000000
+                    totalram = int(response[1]['ciscoMemoryPoolUsed-processor']) + int(response[2]['ciscoMemoryPoolFree-processor'])
+                    ramusage = float(int(response[1]['ciscoMemoryPoolUsed-processor'])) / float(totalram) *100
+                elif result['vendor'] == "Fortinet":
+                    divider = 1000
+                    totalram = int(response[2]['totalmemory'])
+                    ramusage = int(response[1]['usedmemory'])
 
-            totalramsize = str(int(totalram / 1000000)) + "MB"
 
-            ramusage = float(int(result['ciscoMemoryPoolUsed-processor'])) / float(totalram) *100
-            result['cpmCPUTotal5minRev'] = int(result['cpmCPUTotal5minRev'])
-            result['cpmCPUTotalminRev'] = int(result['cpmCPUTotalminRev'])
-            result['ramusage'] = float("%.2f" % round(ramusage,2))
-            result['totalramsize'] = totalramsize
 
-            result['interfaces'] = self.build_interface_table()
-            
-            try:
+                result['cpuusage'] = int(response[3]['cpuusage'])
+                totalramsize = str(int(totalram / divider)) + "MB"
+                result['ramusage'] = float("%.2f" % round(ramusage,2))
+                result['totalramsize'] = totalramsize
+
+
+
+                result.update({"interfaces":self.build_interface_table(self.get_oid_set(host['vendor'])['interface_oids'])})
                 for interface in result['interfaces']:
                     if interface['name'] == host['wan_int']:
                         result['wan_ip'] = interface['ipaddr']
                         break
                     else:
                         continue
-            except:
-                pass
 
-
-            data = {"name": host["name"], "result": result} 
+            data = {"name": host["name"], "result": result}
         except:
-            data = {"name": host["name"], "result": []}
+            data = {"name": host["name"], "result": {'ramusage':0,'cpuusage':0}}
 
         return data
 
 
 
-    async def do_poll(self ,hosts, avg=None):
-        data = []
-        coroutines = [self.snmp_get(host) for host in hosts]
-        results = await asyncio.gather(*coroutines)
-        for result in results:
-            data.append(result)
+    def do_poll(self ,hosts, avg=None):
+        data=[]
+        with ProcessPoolExecutor(max_workers=4) as executor:
+            execute = executor.map(self.snmp_get ,hosts)
+            data = list(execute)
+            print(data)
 
         if avg:
             topdevices = {}
             try:
                 topdevices["topramusage"] = sorted(data, key=lambda k: k['result']['ramusage'] , reverse=True)[:5]
-                topdevices['topcpuusage'] = sorted(data, key=lambda k: k['result']['cpmCPUTotal5minRev'] , reverse=True)[:5]
+                topdevices['topcpuusage'] = sorted(data, key=lambda k: k['result']['cpuusage'] , reverse=True)[:5]
             except:
                 topdevices= {"topramusage":[] ,"topcpuusage":[] }
-                
+
             data = topdevices
 
         return data
 
 
     def get_data(self , hosts , avg=None):
-        output = asyncio.run(self.do_poll(hosts ,avg=avg))
+        output = self.do_poll(hosts ,avg=avg)
         return output
 
 
@@ -392,8 +395,8 @@ class TopologyBuilder():
                     "title": f"<div class='tooltip-content'><div class='tooltip-element'><h2 style='color:#42A5F5;' >{site_name}<h2> \
                             <hr id='tooltip-hr'></div><div class='tooltip-element'><h3><strong style='margin-right:20px;'>Vendor </strong>   {vendor}</h3> \
                             <h3><strong style='margin-right:20px;'>WAN Interface </strong>   {wan_interface}</h3> \
-                            <h3><strong style='margin-right:20px;'>LoopBack </strong>   {loop_back}</h3></div></div>" 
-                            
+                            <h3><strong style='margin-right:20px;'>LoopBack </strong>   {loop_back}</h3></div></div>"
+
                 }
             )
 
@@ -443,7 +446,7 @@ class TopologyBuilder():
         for edge in edges:
             device = edge['device']
             if len([n for n in edges if n['device'] == device and n['type'] == "overlay" ]) == 0 :
-                
+
                 edges.append(
                         {
                             "device": device,
@@ -476,7 +479,7 @@ class TopologyBuilder():
                 nr.inventory.hosts[hosts[edge["device"]]].groups[0] == "HUB"
                 or nr.inventory.hosts[hosts[edge["device"]]].groups[0] == "SPOKE"
             ):
-            
+
                 for node in nodes:
                     if edge["device"] == node["label"]:
                         new_edge["from"] = node["id"]

@@ -77,6 +77,7 @@
           class="d-flex flex-row justify-center elevation-0 mr-5"
         >
           <apexchart
+            ref="cpuradial"
             type="radialBar"
             height="180px"
             width="180px"
@@ -84,6 +85,7 @@
             :series="cpuusage"
           ></apexchart>
           <apexchart
+            ref="ramradial"
             type="radialBar"
             height="180px"
             width="180px"
@@ -204,6 +206,7 @@ export default {
         },
       },
       cpuchart: radialCPUoptions,
+      ramsize:'',
       memorychart: radialMemoryoptions,
       wanchart: WANChartOptions,
       interfaceout: "",
@@ -241,6 +244,35 @@ export default {
       fqdn:"",
     };
   },
+  watch: {
+    ramusage: function() {
+      if (this.ramusage[0] <= 50 ) {
+        this.memorychart.chartOptions.colors = ["#42A5F5"]
+        this.$refs.ramradial.updateOptions(this.memorychart.chartOptions)
+      } else if (this.ramusage[0] >= 80) {
+        this.memorychart.chartOptions.colors = ["#FF3D00"]
+        this.$refs.ramradial.updateOptions(this.memorychart.chartOptions)
+      } 
+      else  {
+        this.memorychart.chartOptions.colors = ["#FFB300"]
+        this.$refs.ramradial.updateOptions(this.memorychart.chartOptions);
+      }
+    },
+    cpuusage: function() {
+      if (this.cpuusage[0] <= 50 ) {
+        this.cpuchart.chartOptions.colors = ["#42A5F5"]
+        this.$refs.cpuradial.updateOptions(this.cpuchart.chartOptions)
+      } else if (this.cpuusage[0] >= 80) {
+        this.cpuchart.chartOptions.colors = ["#FF3D00"]
+        this.$refs.cpuradial.updateOptions(this.cpuchart.chartOptions)
+      } 
+      else  {
+        this.cpuchart.chartOptions.colors = ["#FFB300"]
+        this.$refs.cpuradial.updateOptions(this.cpuchart.chartOptions);
+      }
+       
+    }
+  },
   beforeDestroy() {
     this.interval = false;
   },
@@ -248,8 +280,8 @@ export default {
     snmppoll() {
       this.$getAPI.get("monitoring/snmp?name=" + this.name).then((response) => {
         this.ramusage = [response.data[0].result.ramusage];
-        this.cpuusage = [response.data[0].result.cpmCPUTotal5minRev];
-        this.uptime = response.data[0].result.sysUpTime;
+        this.cpuusage = [response.data[0].result.cpuusage];
+        this.uptime = response.data[0].result.uptime;
         this.interfaces = response.data[0].result.interfaces
         this.serialNo = response.data[0].result.chassisid
         this.fqdn = response.data[0].result.fqdn

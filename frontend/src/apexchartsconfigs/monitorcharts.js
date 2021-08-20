@@ -11,6 +11,10 @@ const radialCPUoptions = {
       },
     },
     colors: ["#42A5F5"],
+    // fill:{
+    //   type: 'solid',
+    //   colors: ['#EF5350']
+    // },
     chart: {
       height: 200,
       type: "radialBar",
@@ -52,6 +56,9 @@ const radialMemoryoptions = {
   }
 }
 
+
+
+
 const WANChartOptions = {
   chartOptions: {
     stroke: {
@@ -81,4 +88,5 @@ const WANChartOptions = {
 
 
 
-export { radialCPUoptions, radialMemoryoptions, WANChartOptions }
+export { radialCPUoptions, radialMemoryoptions,
+         WANChartOptions }

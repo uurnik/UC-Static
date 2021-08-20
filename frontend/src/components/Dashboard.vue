@@ -119,12 +119,12 @@
                   <div class="d-flex">
                     <v-progress-linear
                       class="mt-1"
-                      :value="item.result.cpmCPUTotal5minRev"
-                      color="success"
+                      :value="item.result.cpuusage"
+                      :color="GetColor(item.result.cpuusage)"
                       height="12px"
                     >
                     </v-progress-linear>
-                    <span class="ml-3">{{ item.result.cpmCPUTotal5minRev }}%</span>
+                    <span class="ml-3">{{ item.result.cpuusage }}%</span>
                   </div>
                 </td>
               </tr>
@@ -153,7 +153,7 @@
                     <v-progress-linear
                       class="mt-1"
                       :value="item.result.ramusage"
-                      color="success"
+                      :color="GetColor(item.result.ramusage)"
                       height="12px"
                     >
                     </v-progress-linear>
@@ -271,7 +271,6 @@ export default {
   },
   methods: {
     snmp_poll() {
-
       this.$getAPI.get("monitoring/snmp?avg=true").then((response) => {
         this.topcpudevices = response.data['topcpuusage']
         this.topmemorydevices = response.data['topramusage']
@@ -291,6 +290,18 @@ export default {
       });
     },
 
+    GetColor(value) {
+      let color
+       if (value <= 50 ) {
+        color = "#42A5F5"
+      } else if (value >= 80) {
+        color = "#FF3D00"
+      } 
+      else  {
+        color = "#FFB300"
+      }
+      return color
+    },
     formatText(group) {
       if (group == true) {
         return (group = "Managed");

@@ -1,17 +1,18 @@
 import datetime
-import asyncio
+import multiprocessing
 from concurrent.futures import ThreadPoolExecutor
 import subprocess
 from concurrent.futures import ProcessPoolExecutor
 from nornir_scrapli.tasks import send_command as scrape_send
 from nornir_scrapli.tasks import get_prompt
 import pysnmp.hlapi.asyncio as snmp
+from pysnmp.entity.rfc3413.oneliner import cmdgen
 import pysnmp.hlapi as snmp_sync
 from .constants import COMMUNITY_STR ,CISCO_OIDS ,FORTINET_OIDS
 from api.models import Defaults
-from api.helpers.misc import ForigateParser, resolve_host
+from api.helpers.misc import  resolve_host
 from api.helpers.inventory_builder import inventory
-from threading import Lock
+# from threading import Lock
 
 def test_ssh_conn(task):
     """
@@ -101,52 +102,49 @@ class SNMPManager():
             return CISCO_OIDS
         elif vendor == 'fortinet':
             return FORTINET_OIDS
-        # elif self.vendor == 'juniper':
-        #     return JUNIPER_OIDS
 
-    def threaded_poll_sys(self ,oid):
+
+    def sync_poll_sys(self ,oids):
+        oid_list = [x['OID'] for x in oids]
         result = {}
         # host["int_index"] = "1"
         # try:
         ramusage=""
-        if "WANCounter" in oid["field"]:
-            oid["OID"] = oid["OID"] + "." + "1"     #TODO get WAN interface index
-
-        errorIndication, errorStatus, errorIndex, varBinds = next(
-           snmp_sync.getCmd(snmp_sync.SnmpEngine(),
-           snmp_sync.CommunityData(self.community_str, mpModel=0),
-           snmp_sync.UdpTransportTarget((self.host_ip, 161)),
-           snmp_sync.ContextData(),
-           snmp_sync.ObjectType(snmp_sync.ObjectIdentity(oid['OID'])))
+        # if "WANCounter" in oids["field"]:
+        #     oid["OID"] = oid["OID"] + "." + "1"     #TODO get WAN interface index
+        Cn=0
+        Cr=5
+        errorIndication, errorStatus, errorIndex, \
+            varBindTable = cmdgen.CommandGenerator().bulkCmd(
+            cmdgen.CommunityData(self.community_str),
+            cmdgen.UdpTransportTarget((self.host_ip, 161)),
+            Cn, Cr,
+            *oid_list
         )
-
-        ramusage=""
-        for varBind in varBinds:
-            output = {oid["field"]: [x.prettyPrint() for x in varBind][1]}
-            if "No Such Instance" in output[oid["field"]]:
-                result.update({oid["field"]: []})
-
-
-            elif oid["field"] == "sysUpTime":
-                output[oid["field"]] = str(
-                    datetime.timedelta(seconds=int(output["sysUpTime"]) / 100)
+        result = {}
+        
+        for var,oid in zip(varBindTable[0],oids):
+            output = {}
+            o,val = var
+            if oid["field"] == "sysUpTime":
+                output['uptime'] = str(
+                    datetime.timedelta(seconds=int(val) / 100)
                 ).split(".")[0]
                 result.update(output)
 
             elif oid['field'] == "sysDescr":
-                if 'Cisco' in output['sysDescr']:
+                if 'Cisco' in str(val):
                     output['vendor'] = 'Cisco'
-                    output[oid['field']] = " ".join(output['sysDescr'].split(",")[1:3])
-                elif 'FortiGate' in output['sysDescr']:
+                    output['sysDescr'] = " ".join(str(val).split(",")[1:3])
+                elif 'FortiGate' in str(val):
                     output['vendor'] = "Fortinet"
-                    output['sysDescr'] = output[oid['field']]
+                    output['sysDescr'] = str(val)
                 result.update(output)
             else:
-                result.update(output)
-
+                result.update({oid['field']:str(val)})
+        
         return result
-
-
+       
 
     def get_interfaces(self ,params):
         results = []
@@ -216,47 +214,44 @@ class SNMPManager():
         result = {}
 
         try:
+            response = self.sync_poll_sys(oids)
 
-            with ThreadPoolExecutor(max_workers=10) as executor:
-                execute = executor.map(self.threaded_poll_sys ,oids)
-                response = list(execute)
+            result['vendor'] = response['vendor']
+            result['fqdn'] = response['fqdn']
+            result['uptime'] = response['uptime']
+            result['chassisid'] = response['chassisid']
+            result['sysDescr'] = response['sysDescr']
 
-
-                result['vendor'] = response[0]['vendor']
-                result['fqdn'] = response[5]['fqdn']
-                result['uptime'] = response[4]['sysUpTime']
-                result['chassisid'] = response[6]['chassisid']
-                result['sysDescr'] = response[0]['sysDescr']
-
-                if result['vendor'] == "Cisco":
-                    divider = 1000000
-                    totalram = int(response[1]['ciscoMemoryPoolUsed-processor']) + int(response[2]['ciscoMemoryPoolFree-processor'])
-                    ramusage = float(int(response[1]['ciscoMemoryPoolUsed-processor'])) / float(totalram) *100
-                elif result['vendor'] == "Fortinet":
-                    divider = 1000
-                    totalram = int(response[2]['totalmemory'])
-                    ramusage = int(response[1]['usedmemory'])
+            if result['vendor'] == "Cisco":
+                divider = 1000000
+                totalram = int(response['ciscoMemoryPoolUsed-processor']) + int(response['ciscoMemoryPoolFree-processor'])
+                ramusage = float(int(response['ciscoMemoryPoolUsed-processor'])) / float(totalram) *100
+            elif result['vendor'] == "Fortinet":
+                divider = 1000
+                totalram = int(response['totalmemory'])
+                ramusage = int(response['usedmemory'])
 
 
 
-                result['cpuusage'] = int(response[3]['cpuusage'])
-                totalramsize = str(int(totalram / divider)) + "MB"
-                result['ramusage'] = float("%.2f" % round(ramusage,2))
-                result['totalramsize'] = totalramsize
+            result['cpuusage'] = int(response['cpuusage'])
+            totalramsize = str(int(totalram / divider)) + "MB"
+            result['ramusage'] = float("%.2f" % round(ramusage,2))
+            result['totalramsize'] = totalramsize
 
 
 
-                result.update({"interfaces":self.build_interface_table(self.get_oid_set(host['vendor'])['interface_oids'])})
-                for interface in result['interfaces']:
-                    if interface['name'] == host['wan_int']:
-                        result['wan_ip'] = interface['ipaddr']
-                        break
-                    else:
-                        continue
+            result.update({"interfaces":self.build_interface_table(self.get_oid_set(host['vendor'])['interface_oids'])})
+            for interface in result['interfaces']:
+                if interface['name'] == host['wan_int']:
+                    result['wan_ip'] = interface['ipaddr']
+                    break
+                else:
+                    continue
 
             data = {"name": host["name"], "result": result}
         except:
             data = {"name": host["name"], "result": {'ramusage':0,'cpuusage':0}}
+
 
         return data
 
@@ -264,10 +259,9 @@ class SNMPManager():
 
     def do_poll(self ,hosts, avg=None):
         data=[]
-        with ProcessPoolExecutor(max_workers=4) as executor:
+        with ProcessPoolExecutor(max_workers=multiprocessing.cpu_count()) as executor:
             execute = executor.map(self.snmp_get ,hosts)
             data = list(execute)
-            print(data)
 
         if avg:
             topdevices = {}

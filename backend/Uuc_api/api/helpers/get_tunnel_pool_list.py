@@ -27,7 +27,7 @@ def add_static_tunnel_pool():
 
         parentpool = str(parentpool)
         if i == 1:
-            vendor = "fortigate"
+            vendor = "fortinet"
         elif i == 2:
             vendor = "juniper"
         elif i == 3:

@@ -110,6 +110,10 @@ class Hosts(models.Model):
     def __str__(self):
         return self.name
 
+    def return_hosts(self ,old_key,new_key):
+        pass
+
+
 
 class Routes(models.Model):
     route = models.ForeignKey(Hosts, related_name="routes", on_delete=models.CASCADE)
@@ -138,6 +142,12 @@ class Defaults(models.Model):
     is_copp_configured = models.BooleanField(default=False)
     hubs_fqds = models.TextField(max_length=300, blank=True)
     dns = models.GenericIPAddressField(null=True)
+
+
+    headend_vendor = models.CharField(max_length=128 , blank=True)
+    vendor_list = models.CharField(max_length=256 , blank=True)
+    multivendor = models.BooleanField(default=False)
+
 
 
 class TunnelPool(models.Model):

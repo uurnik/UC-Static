@@ -1,39 +1,30 @@
 from time import sleep
-from scrapli.driver.core import cisco_iosxe
+# from scrapli.driver.core import cisco_iosxe
 import yaml
 import os
-import asyncio
-from netaddr import IPNetwork, IPAddress
-from ipaddress import IPv4Interface, ip_network, ip_address, ip_interface
-from ttp import ttp
-import dns.update as dnsupdate
-import dns.query as dnsquery
-import dns.resolver as dnsresolver
-import socket
+# from netaddr import IPNetwork, IPAddress
+# from ipaddress import IPv4Interface, ip_network, ip_address, ip_interface
+# from ttp import ttp
+# import dns.update as dnsupdate
+# import dns.query as dnsquery
+# import dns.resolver as dnsresolver
+from .helpers.pre_checks.pre_config import dns_conn_check
 
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from rest_framework.parsers import JSONParser, BaseParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import (
     api_view,
     permission_classes,
-    authentication_classes,
-    renderer_classes,
+
 )
 from rest_framework import status
-from django.http import HttpResponse, JsonResponse
-from django.db import transaction, IntegrityError
+from django.http import  JsonResponse
 
-
-from api.models import Hosts, Defaults, TunnelPool, CacheTable, Routes ,StaticTunnelNet
-
+from api.models import Hosts, Defaults, Routes ,StaticTunnelNet
 from api.serializers import (
     HostsSerializer,
+    DefaultsSerializer,
 )
-
-
-from .helpers.get_tunnel_pool_list import add_tunnel_pool
-from .helpers.distribute_tunnel_ip import update_defaults_nhs
 from .helpers.misc import wildcard_conversion, get_challenge_pass
 from .helpers.inventory_builder import Myinventory, get_inventory_data, inventory
 from .helpers.misc import (
@@ -42,6 +33,9 @@ from .helpers.misc import (
     CoppBWCalculator,
     resolve_host,
 )
+from .helpers.pre_checks.pre_config import PreConfig
+
+
 from .nornir_stuff.validations.validate_configs import validate
 from .nornir_stuff.configure_nodes import (
     send_tcl,
@@ -71,66 +65,15 @@ from nornir_scrapli.tasks import send_configs as scrape_config
 @api_view(["POST", "GET"])
 @permission_classes([IsAuthenticated])
 def add_Host(request):
-    """
-    function to add Hosts in the Hosts table, it will assign the tunnel IP to the host being added,
-    first looking for tunnel IP in the CacheTable, if not found,
-    An unused IP will assigned from the TunnelPool Table,
-    if host being added is a HUB then its NBMA and tunnel IP will also be added to Defaults Table
-    """
+    
     if request.method == "POST":
         serializer = HostsSerializer(data=request.data)
         if serializer.is_valid():
-            have_ip = False
-            # checking if tunnel ip for the host exists in the cache table , if found that ip is assigned as tunnel ip
-            # Checked on the bases of the WAN ip of the host
-            for cached_ip in CacheTable.objects.all():
-                if cached_ip.device_ip == serializer.validated_data["ip"]:
-                    serializer.validated_data["tunnel_ip"] = cached_ip.ip
-                    cached_ip.save()
-                    try:
-                        serializer.save()
-                    except IntegrityError:
-                        return JsonResponse(
-                            {"detail": "Host with this IP/name already exists"},
-                            status=status.HTTP_403_FORBIDDEN,
-                        )
+            return serializer.save()
+        else:
+            return Response(serializer.errors ,status=status.HTTP_400_BAD_REQUEST)
 
-                    update_defaults_nhs(cached_ip.ip, serializer)
-                    have_ip = True
-                    break
-                else:
-                    continue
-            ##########################################################################################################
 
-            # Assign tunnel IP from TunnelPool if iIP not found in Cache Table, Assigned IP is the marked as used
-            if have_ip is False:
-                tunnel_ip = TunnelPool.objects.filter(is_used=False)[0]
-                serializer.validated_data["tunnel_ip"] = tunnel_ip.ip
-                tunnel_ip.is_used = True
-                insert_cache = CacheTable(
-                    ip=tunnel_ip.ip,
-                    in_use=True,
-                    device_ip=serializer.validated_data["ip"],
-                )
-                insert_cache.save()
-                tunnel_ip.save()
-                try:
-                    serializer.save()
-                except IntegrityError:
-                    return JsonResponse(
-                        {"detail": "Host with this IP/name already exists"},
-                        status=status.HTTP_403_FORBIDDEN,
-                    )
-                update_defaults_nhs(tunnel_ip.ip, serializer)
-                have_ip = True
-            else:
-                pass
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-            #######################################################################################################
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # Return all the Host data to the user
     if request.method == "GET":
         if request.query_params.get("name"):
             name = request.query_params.get("name")
@@ -354,7 +297,7 @@ def get_facts(request):
 @permission_classes([IsAuthenticated])
 def configure(request, option):
     """
-    function to configure the network with dmvpn, the 'option'( int-> 1,2 or 3) argument will be passed to the
+    view to configure the network with dmvpn, the 'option'( int-> 1,2 or 3) argument will be passed to the
     configuration function to configure the access type of the network as demanded by the user.
     """
     other_services = "n"
@@ -368,69 +311,18 @@ def configure(request, option):
         other_services = "y"
 
     dns = request.data["dns"]
-    ######################## Check DNS connectivity ######################
-    dns_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    dns_socket.settimeout(5)
-    result_of_check = dns_socket.connect_ex((dns, 53))
-    if result_of_check == 0:
-        pass
-    else:
-        return JsonResponse(
-            {"error": "No connectivity to DNS"}, status=status.HTTP_408_REQUEST_TIMEOUT
-        )
+    dns_conn = dns_conn_check(dns)
+    if dns_conn == False:
+        return JsonResponse({'error':'no connectivity to dns'}, status=status.HTTP_408_REQUEST_TIMEOUT)
 
+    headend_vendor,static_sites=PreConfig().assign_static_tunnels()
     nr = inventory()
-    headend= nr.filter(F(vendor="Cisco") & F(groups__contains="HUB"))
-    fortigate= nr.filter(~F(vendor="Cisco"))
-    headend_device = list(headend.inventory.hosts.keys())[0]
-    headend_vendor = headend.inventory.hosts[headend_device].data['vendor']
-
-
-    static_sites=[]
-    if headend_vendor == "Cisco" and len(list(fortigate.inventory.hosts.keys())) > 0:
-        tunnel_id=414   
-        for device in fortigate.inventory.hosts.keys():
-            dbHost = Hosts.objects.get(name=fortigate.inventory.hosts[device].name)
-            static_tunnel = StaticTunnelNet.objects.filter(vendor="fortigate" , used=False)[0]
-            dbHost.static_tunnel_network = static_tunnel.network
-            static_tunnel.used=True
-            static_tunnel.save()
-            dbHost.save()
-
-            tunnel_id += 1
-            
-            remote_tunnel_ip = static_tunnel.network.split(".")[3]
-            remote_temp = static_tunnel.network.split(".")[:3]
-            remote_temp.append(str(int(remote_tunnel_ip) + 2))
-            remote_tunnel_ip = ".".join(remote_temp)
-
-
-
-            network_tunnel = static_tunnel.network.split(".")[3]
-            temp = static_tunnel.network.split(".")[:3]
-            temp.append(str(int(network_tunnel) + 1))
-            tunnel_ip = ".".join(temp)
-
-
-            
-
-            static_sites.append({
-                "site_name":fortigate.inventory.hosts[device].name,
-                "tunnel_network":static_tunnel.network,
-                "site_public_ip":fortigate.inventory.hosts[device].hostname,
-                "tunnel_id":tunnel_id,
-                "tunnel_ip":tunnel_ip,
-                "remote_tunnel_ip":remote_tunnel_ip
-            })
-
-
-    nr = inventory()
-
 
 
     # result_2 = nr.run(task=get_challenge_pass)
     result_1 = nr.run(
-        task=conf_dmvpn, nr=nr, dia=DIA, other_services=other_services, dns=dns , headend_vendor=headend_vendor,static_sites=static_sites
+        task=conf_dmvpn, nr=nr, dia=DIA, other_services=other_services, dns=dns,
+        headend_vendor=headend_vendor,static_sites=static_sites
     )
 
     # Save Host's WAN interface, WAN subnet, Next Hop and mark host as configured and update dns server
@@ -443,13 +335,6 @@ def configure(request, option):
             )
         spoke_networks_all = result_1[i][0].result
 
-        if result_1[nr.inventory.hosts[i].name].failed == False:
-            db.is_configured = True
-            try:
-                db.snmp_int_index = nr.inventory.hosts[i].data["interface_index"]
-            except:
-                pass
-            db.save()
 
     dbDefaults = Defaults.objects.get(pk=1)
     dbDefaults.dns = dns
@@ -470,7 +355,6 @@ def configure(request, option):
             }
         )
 
-
         dbHost = Hosts.objects.get(name=nr.inventory.hosts[host].name)
         try:
             dbHost.crypto = validation_result[host][0].result["crypto"]
@@ -487,9 +371,9 @@ def configure(request, option):
             pass
         dbHost.save()
 
-    #####################################################################################
-
     return JsonResponse(data, safe=False)
+
+
 
 
 @api_view(["POST", "DELETE"])
@@ -1103,29 +987,6 @@ def gather_routes(request):
 
 
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def get_interfaces(request, name):
-    """
-    View for getting interface information
-    """
-    nr = inventory()
-
-    # query dns and update inventory
-    dns = Defaults.objects.get(pk=1).dns
-    if dns != None:
-        nr.run(task=resolve_host, dns=dns)
-    #####################################
-
-    data = []
-    device = nr.filter(F(name=name))
-    if len(list(device.inventory.hosts.keys())) != 0:
-        result = device.run(task=fetch_interface_info)
-        host = list(device.inventory.hosts.keys())[0]
-        data = result[host][0].result
-
-    return JsonResponse(data, safe=False)
-
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -1246,71 +1107,7 @@ def swipe_ipsec_keys(request):
     """
     View For Changing IPsec Keys
     """
-    nr = inventory()
-
-    # query dns and update inventory
-    dns = Defaults.objects.get(pk=1).dns
-    if dns != None:
-        nr.run(task=resolve_host, dns=dns)
-    #####################################
-
-    new_key = request.data["new_key"]
-    # check if old key matches the key in Db
-    if nr.inventory.defaults.data["ipsec_key"] != request.data["old_key"]:
-        return JsonResponse(
-            {"error": "Invalid Key"}, status=status.HTTP_406_NOT_ACCEPTABLE
-        )
-    # Key must be of 8-16 characters
-    if len(new_key) < 8 or len(new_key) > 16:
-        return JsonResponse(
-            {"error": "Key must be of 8-16 characters"},
-            status=status.HTTP_406_NOT_ACCEPTABLE,
-        )
-    # check if key contains a digit,a special character and one capital letter
-    if (
-        any(x.isupper() for x in new_key)
-        and any(x.islower() for x in new_key)
-        and any(x.isdigit() for x in new_key)
-        and any(x.isalnum() for x in new_key)
-    ):
-        import string
-
-        invalidChars = set(string.punctuation.replace("_", ""))
-        if any(char in invalidChars for char in new_key):
-            pass
-        else:
-            return JsonResponse(
-                {
-                    "error": "Must include 1 upper case letter,a digit and a special character"
-                },
-                status=status.HTTP_406_NOT_ACCEPTABLE,
-            )
-    else:
-        return JsonResponse(
-            {
-                "error": "Must include 1 upper case letter,a digit and a special character"
-            },
-            status=status.HTTP_406_NOT_ACCEPTABLE,
-        )
-
-    result = nr.run(task=change_ipsec_keys, new_key=new_key)
-
-    # Save new key in DB
-    dbDefaults = Defaults.objects.get(pk=1)
-    dbDefaults.ipsec_key = request.data["new_key"]
-    dbDefaults.save()
-
-    data = []
-    for host in nr.inventory.hosts.keys():
-        data.append(
-            {
-                "name": nr.inventory.hosts[host].name,
-                "changed": result[host].changed,
-                "failed": result[host].failed,
-            }
-        )
-
-    return JsonResponse(data, safe=False)
+    return DefaultsSerializer.change_ipsec_key(request.data)
 
 
 @api_view(["POST"])

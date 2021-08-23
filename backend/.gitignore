@@ -17,3 +17,4 @@ scrapli.log
 nornir.log
 .env
 ssh_key.pub
+ssh_keys

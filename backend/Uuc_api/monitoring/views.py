@@ -10,6 +10,7 @@ from .utils import check_conn , SNMPManager
 from api.models import Defaults
 from .utils import test_ssh_conn , do_ping ,TopologyBuilder
 from nornir.core.deserializer.inventory import Inventory
+from api.nornir_stuff.configure_nodes import fetch_interface_info
 
 
 
@@ -124,12 +125,6 @@ class SNMPView(viewsets.ViewSet):
     def list(self ,request):
         nr = inventory()
 
-        # query dns and update inventory
-        dns = Defaults.objects.get(pk=1).dns
-        if dns != None:
-            nr.run(task=resolve_host, dns=dns)
-        #####################################
-
         hosts = []
         avg=None
         if request.query_params.get("avg"):
@@ -145,7 +140,6 @@ class SNMPView(viewsets.ViewSet):
                         "name": nr.inventory.hosts[host].name,
                         "vendor":nr.inventory.hosts[host].data['vendor'].lower(),
                         "IP": nr.inventory.hosts[host].hostname,
-                        # "int_index": nr.inventory.hosts[host].data["interface_index"],
                         "wan_int": nr.inventory.hosts[host].data["wan_int"],
                     }
                 )
@@ -159,20 +153,15 @@ class SNMPView(viewsets.ViewSet):
                             "name": nr.inventory.hosts[host].name,
                             "vendor":nr.inventory.hosts[host].data['vendor'].lower(),
                             "IP": nr.inventory.hosts[host].hostname,
-                            # "int_index": nr.inventory.hosts[host].data["interface_index"],
                             "wan_int": nr.inventory.hosts[host].data["wan_int"],
-
                         }
                     )
                 except:
                     pass
 
-
         output = SNMPManager().get_data(hosts ,avg=avg)
 
         return Response(output)
-
-
 
 
 
@@ -185,3 +174,36 @@ class TopologyView(viewsets.ViewSet):
     def get_neighbors(self , request):
         data = TopologyBuilder().build_topology()
         return Response(data)
+
+
+
+class Interfaces(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def list(self , request):
+        data = []
+        nr=inventory()
+
+        try:
+            name = request.query_params.get("name")
+            device = nr.filter(F(name=name))
+            result = device.run(task=fetch_interface_info)
+            host = list(device.inventory.hosts.keys())[0]
+            data = result[host][0].result
+        except:
+            pass
+        
+        return Response(data)
+
+
+
+
+
+#     data = []
+#     device = nr.filter(F(name=name))
+#     if len(list(device.inventory.hosts.keys())) != 0:
+#         result = device.run(task=fetch_interface_info)
+#         host = list(device.inventory.hosts.keys())[0]
+#         data = result[host][0].result
+
+#     return JsonResponse(data, safe=False)

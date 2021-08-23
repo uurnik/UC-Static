@@ -93,7 +93,7 @@ def send_tcl(task):
         task=text.template_file,
         name="Pasrse tcl schedule template",
         template="kro_schedule.jinja2",
-        path=f"api/nornir_stuff/templates/cisco/{task.host.groups[0]}",
+        path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco/{task.host.groups[0]}",
     )
 
     # Push the config to schedule the TCL script
@@ -496,16 +496,11 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
             f"{os.getcwd()}/Uuc_api/api/backup_configs/{task.host.name}.cfg", "w"
         ) as file:
             file.write(get_config)
-
-
-        
-        print(connect_routes)
         
         interface_parser = ForigateParser(connect_routes).get_parsed(
             template="interface_attr"
         )
 
-        print(interface_parser)
         advertised_interfaces = []
         for interface in interface_parser[0][0]:
             ip = interface.get("ip")
@@ -516,8 +511,6 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
                     if f"{interface_network} {mask}" == route:
                         advertised_interfaces.append(interface["port"])
         task.host.data["advertised_int"] = advertised_interfaces
-
-        print(advertised_interfaces)
 
 
         if headend_vendor =="Cisco":
@@ -547,7 +540,6 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
                 advertised_interfaces=advertised_interfaces,
             )
 
-
         commands = [x.strip() for x in config.result.splitlines() if len(x) != 0]
         r = task.run(
             task=scrape_config_commands, name="forigate config", commands=commands
@@ -566,8 +558,6 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
     ################################## Cisco Configuration Starts #####################################
     if task.host.platform == "ios":
         # Get running configuration of the Host & save it the backup_configs directory
-        # task.run(task=facts)
-
         get_configs = task.run(
             task=scrape_send,
             name="Backup configurations",
@@ -773,11 +763,6 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
                 f.write(tcl_script)
             task.run(task=send_tcl)
             os.remove(f"{task.host.name}.tcl")
-
-
-        # get snmp interface index (1.3.6.1.2.1.2.2.1.2.x)
-        interface_index = get_interface_index(task.host.hostname, "uurnik123", task.host.data['wan_int'])
-        task.host.data["interface_index"] = interface_index
 
         # Update dns server
         try:

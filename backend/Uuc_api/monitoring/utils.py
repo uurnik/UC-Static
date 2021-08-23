@@ -107,11 +107,8 @@ class SNMPManager():
     def sync_poll_sys(self ,oids):
         oid_list = [x['OID'] for x in oids]
         result = {}
-        # host["int_index"] = "1"
-        # try:
+
         ramusage=""
-        # if "WANCounter" in oids["field"]:
-        #     oid["OID"] = oid["OID"] + "." + "1"     #TODO get WAN interface index
         Cn=0
         Cr=5
         errorIndication, errorStatus, errorIndex, \
@@ -149,19 +146,22 @@ class SNMPManager():
     def get_interfaces(self ,params):
         results = []
         data={}
-        for (errorIndication,
-            errorStatus,
-            errorIndex,
-            varBinds) in snmp_sync.nextCmd(snmp_sync.SnmpEngine(),
-                                snmp_sync.CommunityData(self.community_str),
-                                snmp_sync.UdpTransportTarget((self.host_ip, 161), timeout=1),
-                                snmp_sync.ContextData(),
-                                snmp_sync.ObjectType(snmp_sync.ObjectIdentity(params['OID'])),
-                                lexicographicMode=False):
-            for varBind in varBinds:
-                output = [x.prettyPrint() for x in varBind][1]
-                results.append(output)
-        data = {params['field']:results}
+        try:
+            for (errorIndication,
+                errorStatus,
+                errorIndex,
+                varBinds) in snmp_sync.nextCmd(snmp_sync.SnmpEngine(),
+                                    snmp_sync.CommunityData(self.community_str),
+                                    snmp_sync.UdpTransportTarget((self.host_ip, 161), timeout=1),
+                                    snmp_sync.ContextData(),
+                                    snmp_sync.ObjectType(snmp_sync.ObjectIdentity(params['OID'])),
+                                    lexicographicMode=False):
+                for varBind in varBinds:
+                    output = [x.prettyPrint() for x in varBind][1]
+                    results.append(output)
+            data = {params['field']:results}
+        except:
+            data = {params['field']:[]}
 
         return data
 
@@ -210,10 +210,11 @@ class SNMPManager():
         self.host_ip = host["IP"]
         self.vendor = host['vendor']
 
-        oids = self.get_oid_set(host['vendor'])['sys_oids']
+        
         result = {}
 
         try:
+            oids = self.get_oid_set(host['vendor'])['sys_oids']
             response = self.sync_poll_sys(oids)
 
             result['vendor'] = response['vendor']
@@ -292,11 +293,7 @@ class TopologyBuilder():
 
     def build_topology(self):
         nr = inventory()
-        # query dns and update inventory
-        dns = Defaults.objects.get(pk=1).dns
-        if dns != None:
-            nr.run(task=resolve_host, dns=dns)
-        #####################################
+
         # result = nr.run(task=juniper_neighbors)
         # print_result(result)
         # for fortigate devices

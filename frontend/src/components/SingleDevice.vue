@@ -8,8 +8,7 @@
         <v-card flat>
           <v-card-text class="pb-0 ma-0"
             ><v-col class="d-flex justify-space-between pa-0 pb-1 ml-4 ma-0"
-              ><strong>Hostname</strong>
-              <span>{{ fqdn }}</span></v-col
+              ><strong>Hostname</strong> <span>{{ fqdn }}</span></v-col
             ></v-card-text
           >
           <v-card-text class="pb-0 ma-0">
@@ -25,8 +24,7 @@
           >
           <v-card-text class="pb-0 ma-0"
             ><v-col class="d-flex justify-space-between pb-1 pa-0 ml-4 ma-0"
-              ><strong>WAN IP Address</strong
-              ><span>{{ wan_ip }}</span></v-col
+              ><strong>WAN IP Address</strong><span>{{ wan_ip }}</span></v-col
             >
           </v-card-text>
           <v-card-text class="pb-0 ma-0"
@@ -47,8 +45,7 @@
           >
           <v-card-text class="pb-0 ma-0"
             ><v-col class="d-flex justify-space-between pb-1 pa-0 ml-4 ma-0"
-              ><strong>Serial Number</strong
-              ><span>{{ serialNo }}</span></v-col
+              ><strong>Serial Number</strong><span>{{ serialNo }}</span></v-col
             >
           </v-card-text>
           <v-card-text class="pb-0 ma-0"
@@ -58,8 +55,7 @@
           >
           <v-card-text class="pb-0 ma-0">
             <v-col class="d-flex justify-space-between pb-1 pa-0 ml-4 ma-0"
-              ><strong>RAM Size</strong
-              ><span>{{ ramsize }}</span></v-col
+              ><strong>RAM Size</strong><span>{{ ramsize }}</span></v-col
             >
           </v-card-text>
           <v-card-text class="pb-0 ma-0">
@@ -107,8 +103,39 @@
         </v-card>
       </v-flex>
     </div>
+    <v-flex class="mx-auto" row mt-5 lg12 md12 justify-space-between>
+      <v-card width="40%" class="elevation-0 mr-4 ml-4">
+        <v-card-title class="grey lighten-3">CPU Utilization</v-card-title>
 
-    <v-flex class="mt-12 mx-auto" lg10 md10 justify-center align-self-center>
+        <div v-if="cpuusage[0] || cpuusage[0] == 0" class="d-flex">
+          <v-progress-linear
+            class="mt-5 ml-1 mr-9"
+            :value="cpuusage"
+            :color="GetColor(cpuusage[0])"
+            height="8px"
+          >
+          </v-progress-linear>
+          <span  class="mr-2 mt-2 ml-9"
+            >{{ cpuusage[0] }}%</span>
+        </div>
+      </v-card>
+      <v-spacer></v-spacer>
+      <v-card width="40%" class="elevation-0 mr-4 ml-4">
+        <v-card-title class="grey lighten-3">Memory Utilization</v-card-title>
+        <div v-if="ramusage[0] ||  ramusage[0] == 0" class="d-flex">
+          <v-progress-linear
+            class="mt-5 ml-1 mr-9"
+            :value="ramusage[0]"
+            :color="GetColor(ramusage[0])"
+            height="8px"
+          >
+          </v-progress-linear>
+          <span class="mr-2 mt-2 ml-9">{{ ramusage[0] }}%</span>
+        </div>
+      </v-card>
+    </v-flex>
+
+    <v-flex class="mt-12 mr-4 ml-4 mx-auto" lg12 md12 justify-center align-self-center>
       <v-card flat>
         <v-card-title align-center>
           <h2 class="mx-auto my-5 font-weight-light pageheading--text">
@@ -117,6 +144,7 @@
         </v-card-title>
         <v-skeleton-loader :loading="loading" type="table">
           <v-data-table
+            id="interfaces"
             :headers="headers"
             :items="interfaces"
             :items-per-page="10"
@@ -126,7 +154,7 @@
               <v-icon v-if="item.adminstatus == 1" class="pl-4" color="green"
                 >mdi-check-circle</v-icon
               >
-              <v-icon v-if="item.adminstatus !=1" class="pl-4" color="red"
+              <v-icon v-if="item.adminstatus != 1" class="pl-4" color="red"
                 >mdi-close-circle</v-icon
               ></template
             >
@@ -134,7 +162,7 @@
               <v-icon v-if="item.status == 1" class="pl-4" color="green"
                 >mdi-check-circle</v-icon
               >
-              <v-icon v-if="item.status !=1" class="pl-4" color="red"
+              <v-icon v-if="item.status != 1" class="pl-4" color="red"
                 >mdi-close-circle</v-icon
               >
             </template>
@@ -158,7 +186,7 @@ export default {
     return {
       interval: true,
       show: false,
-      series:[],
+      series: [],
       chartOptions: {
         chart: {
           id: "realtime",
@@ -206,19 +234,19 @@ export default {
         },
       },
       cpuchart: radialCPUoptions,
-      ramsize:'',
+      ramsize: "",
       memorychart: radialMemoryoptions,
       wanchart: WANChartOptions,
       interfaceout: "",
       uptime: "",
       ramusage: [],
       cpuusage: [],
-      serialNo:"",
+      serialNo: "",
       polltimer: null,
-      vendor:"",
-      wan_ip:"",
+      vendor: "",
+      wan_ip: "",
       loading: true,
-      osversion:'',
+      osversion: "",
       headers: [
         {
           text: "Name",
@@ -234,63 +262,67 @@ export default {
         { text: "InErrors", value: "InErrors" },
         { text: "OutErrors", value: "OutErrors" },
         { text: "PhyAddress", value: "mac" },
-
-
-
-
       ],
       interfaces: [],
       device: {},
-      fqdn:"",
+      fqdn: "",
     };
   },
   watch: {
-    ramusage: function() {
-      if (this.ramusage[0] <= 50 ) {
-        this.memorychart.chartOptions.colors = ["#42A5F5"]
-        this.$refs.ramradial.updateOptions(this.memorychart.chartOptions)
+    ramusage: function () {
+      if (this.ramusage[0] <= 50) {
+        this.memorychart.chartOptions.colors = ["#42A5F5"];
+        this.$refs.ramradial.updateOptions(this.memorychart.chartOptions);
       } else if (this.ramusage[0] >= 80) {
-        this.memorychart.chartOptions.colors = ["#FF3D00"]
-        this.$refs.ramradial.updateOptions(this.memorychart.chartOptions)
-      } 
-      else  {
-        this.memorychart.chartOptions.colors = ["#FFB300"]
+        this.memorychart.chartOptions.colors = ["#FF3D00"];
+        this.$refs.ramradial.updateOptions(this.memorychart.chartOptions);
+      } else {
+        this.memorychart.chartOptions.colors = ["#FFB300"];
         this.$refs.ramradial.updateOptions(this.memorychart.chartOptions);
       }
     },
-    cpuusage: function() {
-      if (this.cpuusage[0] <= 50 ) {
-        this.cpuchart.chartOptions.colors = ["#42A5F5"]
-        this.$refs.cpuradial.updateOptions(this.cpuchart.chartOptions)
+    cpuusage: function () {
+      if (this.cpuusage[0] <= 50) {
+        this.cpuchart.chartOptions.colors = ["#42A5F5"];
+        this.$refs.cpuradial.updateOptions(this.cpuchart.chartOptions);
       } else if (this.cpuusage[0] >= 80) {
-        this.cpuchart.chartOptions.colors = ["#FF3D00"]
-        this.$refs.cpuradial.updateOptions(this.cpuchart.chartOptions)
-      } 
-      else  {
-        this.cpuchart.chartOptions.colors = ["#FFB300"]
+        this.cpuchart.chartOptions.colors = ["#FF3D00"];
+        this.$refs.cpuradial.updateOptions(this.cpuchart.chartOptions);
+      } else {
+        this.cpuchart.chartOptions.colors = ["#FFB300"];
         this.$refs.cpuradial.updateOptions(this.cpuchart.chartOptions);
       }
-       
-    }
+    },
   },
   beforeDestroy() {
     this.interval = false;
   },
   methods: {
+    GetColor(value) {
+      let color;
+      if (value <= 50) {
+        color = "#42A5F5";
+      } else if (value >= 80) {
+        color = "#FF3D00";
+      } else {
+        color = "#FFB300";
+      }
+      return color;
+    },
     snmppoll() {
       this.$getAPI.get("monitoring/snmp?name=" + this.name).then((response) => {
         this.ramusage = [response.data[0].result.ramusage];
         this.cpuusage = [response.data[0].result.cpuusage];
         this.uptime = response.data[0].result.uptime;
-        this.interfaces = response.data[0].result.interfaces
-        this.serialNo = response.data[0].result.chassisid
-        this.fqdn = response.data[0].result.fqdn
-        this.ramsize = response.data[0].result.totalramsize
-        this.osversion = response.data[0].result.sysDescr
-        this.vendor = response.data[0].result.vendor
-        this.wan_ip = response.data[0].result.wan_ip
+        this.interfaces = response.data[0].result.interfaces;
+        this.serialNo = response.data[0].result.chassisid;
+        this.fqdn = response.data[0].result.fqdn;
+        this.ramsize = response.data[0].result.totalramsize;
+        this.osversion = response.data[0].result.sysDescr;
+        this.vendor = response.data[0].result.vendor;
+        this.wan_ip = response.data[0].result.wan_ip;
 
-        this.loading = false
+        this.loading = false;
       });
     },
   },
@@ -298,18 +330,23 @@ export default {
     clearInterval(this.polltimer);
   },
   mounted() {
-    this.loading = true
+    this.loading = true;
     this.$getAPI.get("hosts?name=" + this.name).then((response) => {
       this.device = response.data;
-      this.snmppoll()
+      this.snmppoll();
       this.polltimer = setInterval(() => {
         this.snmppoll();
-      }, 15000)
-        
+      }, 15000);
     });
   },
 };
 </script>
 
 <style>
+
+#interfaces th {
+  background-color:#EEEEEE;
+
+}
+
 </style>

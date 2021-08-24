@@ -291,6 +291,33 @@ class TopologyBuilder():
         task.host.close_connection("scrapli")
 
 
+    def fortigate_neighbors(task):
+        task.run(task=get_prompt)
+        if task.host.headend_vendor == "Cisco":
+            r = task.run(
+                    task=scrape_send, command="get vpn ipsec tunnel summary | grep  HQ_CISCO_VTI"
+                ).result
+            
+            alive = True
+            result = r.split()[3]
+            if '1/1' not in result:
+                alive = False
+            return {'tunnel_alive':alive}
+
+        else:
+            r = task.run(
+                task=scrape_send, command="get vpn ipsec tunnel details | grep remote-gateway"
+            ).result
+
+            neighbors = [
+                tunnel.split()[1].split(":")[0] for tunnel in r.splitlines() if len(tunnel) != 0
+            ]
+            neighbors.remove("#")
+        return neighbors
+
+
+
+
     def build_topology(self):
         nr = inventory()
 
@@ -494,26 +521,6 @@ class TopologyBuilder():
 
         return data
 
-
-
-
-
-
-
-
-
-def fortigate_neighbors(task):
-    task.run(task=get_prompt)
-
-    r = task.run(
-        task=scrape_send, command="get vpn ipsec tunnel details | grep remote-gateway"
-    ).result
-
-    neighbors = [
-        tunnel.split()[1].split(":")[0] for tunnel in r.splitlines() if len(tunnel) != 0
-    ]
-    neighbors.remove("#")
-    return neighbors
 
 
 def juniper_neighbors(task):

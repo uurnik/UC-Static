@@ -61,7 +61,7 @@ export default {
         { text: "Hostname", value: "dev_name" },
         { text: "Managed", value: "is_configured" },
         { text: "Group", value: "group" },
-        { text: "Vendor", value: "vendor" },
+        { text: "Manufacturer", value: "vendor" },
       ],
       allDevices: [],
     };

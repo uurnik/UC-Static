@@ -62,6 +62,8 @@ def get_inventory_data(Defaults, Hosts):
             "is_sla_configured": defaults_val.is_sla_configured,
             "is_device_hardening_configured": defaults_val.is_device_hardening_configured,
             "is_copp_configured": defaults_val.is_copp_configured,
+            "headend_vendor":defaults_val.headend_vendor,
+            "vendor_list":defaults_val.vendor_list,
         },
     }
 

@@ -18,8 +18,6 @@ def dns_conn_check(dns):
 
 
 
-
-
 class PreConfig():
 
     def __init__(self):

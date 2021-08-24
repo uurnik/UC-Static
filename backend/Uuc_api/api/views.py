@@ -347,6 +347,7 @@ def configure(request, option):
     )
 
     for host in nr.inventory.hosts.keys():
+
         data.append(
             {
                 "name": nr.inventory.hosts[host].name,
@@ -356,6 +357,8 @@ def configure(request, option):
         )
 
         dbHost = Hosts.objects.get(name=nr.inventory.hosts[host].name)
+        dbHost.is_configured = True
+
         try:
             dbHost.crypto = validation_result[host][0].result["crypto"]
             dbHost.tunnel_int = validation_result[host][0].result["tunnel_int"]
@@ -380,7 +383,7 @@ def configure(request, option):
 @permission_classes([IsAuthenticated])
 def add_remove_spoke(request, pk):
     """
-    function to add/remove a indivisual spoke
+    function to add/remove a spoke
     """
     try:
         db = Hosts.objects.get(name=pk)

@@ -110,9 +110,6 @@ class Hosts(models.Model):
     def __str__(self):
         return self.name
 
-    def return_hosts(self ,old_key,new_key):
-        pass
-
 
 
 class Routes(models.Model):

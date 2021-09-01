@@ -1,18 +1,19 @@
 export const Options = {
     edges: {
         physics: false,
-        width: 0.60,
+        width: 1,
         smooth: true,
-        color: "black"
+        color: {
+            color:"#42A5F5",
+            inherit: false,
+            highlight: "#42A5F5",
+            hover: '#42A5F5',
+            opacity:1.0
+        },
+        hoverWidth:0.9
     },
     nodes: {
-        // fixed:true,
     },
-    // animation: { // animation object, can also be Boolean
-    //     duration: 1000, // animation duration in milliseconds (Number)
-    //     easingFunction: "easeInOutQuad" // Animation easing function, available are:
-    // },
-
     width: "100%",
     height: "100%",
     physics: {

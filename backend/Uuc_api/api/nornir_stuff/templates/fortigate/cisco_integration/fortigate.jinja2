@@ -33,8 +33,9 @@ set ip {{ host.data["loop_back"] }}
 set allowaccess ping https snmp
 set type loopback
 set role lan
-set snmp-index 7
 end
+
+
 
 
 {% set tunnel = 20 %}
@@ -63,7 +64,29 @@ set schedule "always"
 set service "ALL"
 next
 {% endfor %}
+edit 18
+set name uurnikloopback_to_vti
+set srcintf "uurnikloopback"
+set dstintf "HQ_CISCO_VTI"
+set srcaddr "all"
+set dstaddr "all"
+set action accept
+set schedule "always"
+set service "ALL"
+next
+edit 19
+set name "vti_to_uurnikloopback"
+set srcintf "HQ_CISCO_VTI"
+set dstintf "uurnikloopback"
+set srcaddr "all"
+set dstaddr "all"
+set action accept
+set schedule "always"
+set service "ALL"
+next
 end
+
+
 
 
 config router bgp

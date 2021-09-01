@@ -1,6 +1,6 @@
 const radialCPUoptions = {
   chartOptions: {
-    labels: ["CPU"],
+    labels: ["Availability"],
     title: {
       align: "center",
       style: {
@@ -22,7 +22,7 @@ const radialCPUoptions = {
     plotOptions: {
       radialBar: {
         hollow: {
-          size: "78%",
+          size: "70%",
         },
       },
     },
@@ -31,7 +31,7 @@ const radialCPUoptions = {
 
 const radialMemoryoptions = {
   chartOptions: {
-    labels: ["Memory"],
+    labels: ["Packet Loss"],
     title: {
       align: "center",
       style: {
@@ -49,14 +49,12 @@ const radialMemoryoptions = {
     plotOptions: {
       radialBar: {
         hollow: {
-          size: "78%",
+          size: "70%",
         },
       },
     },
   }
 }
-
-
 
 
 const WANChartOptions = {

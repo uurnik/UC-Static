@@ -23,6 +23,7 @@
     <v-fab-transition>
       <v-skeleton-loader :loading="loading" type="table">
         <v-data-table
+          id="inventory"
           flat
           :headers="headers"
           :items="allDevices"
@@ -110,4 +111,10 @@ export default {
 .table-cursor tbody tr:hover {
   cursor: pointer;
 }
+
+#inventory thead.v-data-table-header {
+  background-color:#EEEEEE;
+}
+
+
 </style>

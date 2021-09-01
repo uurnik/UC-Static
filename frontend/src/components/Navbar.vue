@@ -7,6 +7,7 @@
         <span>Connect</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
+      <span class="mr-3" >{{ username }}</span>
       <v-menu flat offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-icon v-bind="attrs" v-on="on" class="back--text" left
@@ -61,10 +62,13 @@
 </template>
 
 <script>
+
+
 export default {
   data() {
     return {
       drawer: false,
+      username: localStorage.getItem('LoggedInUser')
     };
   },
   methods: {

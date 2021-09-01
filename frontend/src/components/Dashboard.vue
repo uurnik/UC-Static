@@ -172,6 +172,7 @@
     <v-fab-transition>
       <v-skeleton-loader :loading="loading" type="table">
         <v-data-table
+          id="sites"
           flat
           :headers="headers"
           :footer-props="{ showFirstLastPage: false }"
@@ -180,6 +181,14 @@
           class="table elevation-0 pl-4 pr-4 mx-3 ma-7 table-cursor"
           @click:row="GoToDevice"
         >
+        <template v-slot:[`item.alive`]="{ item }">
+            <v-icon  v-if="item.alive" class="pl-1" color="green"
+              >mdi-checkbox-blank-circle</v-icon
+            >
+            <v-icon align-content-center v-if="!item.alive" class="pl-1" color="red"
+              >mdi-checkbox-blank-circle</v-icon
+            >
+        </template>
           <template v-slot:[`item.is_configured`]="{ item }">
             <v-icon v-if="item.is_configured" class="pl-4" color="green"
               >mdi-check-circle</v-icon
@@ -215,6 +224,7 @@ export default {
         { text: "Site Name", align: "start", sortable: false, value: "name" },
         { text: "IP Address", value: "ip" },
         { text: "Hostname", value: "dev_name" },
+        { text: "Status", value: "alive" },
         { text: "Managed", value: "is_configured" },
         { text: "Group", value: "group" },
         { text: "Manufacturer", value: "vendor" },
@@ -261,15 +271,32 @@ export default {
       ],
       topmemorydevices: [],
       topcpudevices:[],
+      aliveness:[],
     };
+  },
+  beforeMount() {
+    this.GetUserData();
+    // this.CheckAlive();
   },
   mounted() {
     this.loading = true;
+    this.CheckAlive();
     this.getDevices();
     this.getsummary();
     this.snmp_poll();
   },
   methods: {
+    CheckAlive() {
+       this.$getAPI.get("monitoring/testconn/check_alive")
+       .then((response) => {
+         this.aliveness = response.data
+       })
+    },
+
+    GetUserData() {
+      this.$store.dispatch("commituserdata")
+    },
+
     snmp_poll() {
       this.$getAPI.get("monitoring/snmp?avg=true").then((response) => {
         this.topcpudevices = response.data['topcpuusage']
@@ -325,10 +352,21 @@ export default {
       this.$router.push("/host/" + name.name);
     },
     getDevices() {
-      this.$getAPI.get("hosts").then((response) => {
-        this.allDevices = response.data;
+      let promises = []
+      promises.push(this.$getAPI.get("hosts"))
+      promises.push(this.$getAPI.get("monitoring/testconn/check_alive"))
+
+      Promise.all(promises).then((r) => {
+        this.allDevices = r[0].data;
         this.loading = false;
-      });
+        for (var i=0; i < r[1].data.length ; i++) {
+           for (var k=0; k < this.allDevices.length ; k++) {
+             if (this.allDevices[k].name == r[1].data[i].name) {
+               this.allDevices[k].alive = r[1].data[i].alive
+             }
+           }
+        }
+      })
     },
     setPollInterval(index) {
       for (let i = 0; i < this.timers.length; i++) {
@@ -367,4 +405,14 @@ export default {
 };
 </script>
 <style>
+
+#sites th {
+  color: white;
+
+}
+
+#sites thead.v-data-table-header {
+  background-color:#42A5F5;
+}
+
 </style>

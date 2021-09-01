@@ -102,16 +102,17 @@ export default {
   },
   watch: {
     devices : function(value) {
-      console.log(value.length)
       if (value.length > 0 && this.currenttask[this.currenttask.length - 1] == "Verifying Deployement") {
           this.$store.state.toggleloader = false;
           this.$store.state.hidestatusbtn = false;
+          
       }
     },
     currenttask: function(value) {
       if (value[value.length -1] == "Verifying Deployement" && this.devices.length > 0 ) {
           this.$store.state.toggleloader = false;
           this.$store.state.hidestatusbtn = false;
+          this.$store.state.disablefinishbtn = false;
       }
     },
     "$store.state.toggleloader": async function (value) {

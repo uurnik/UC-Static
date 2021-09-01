@@ -8,8 +8,9 @@ export default new Vuetify({
     theme: {
         themes: {
             light: {
-                pageheading: colors.blue.lighten1,
+                pageheading: colors.blue.lighten1,    // #42A5F5
             },
         },
     },
 })
+

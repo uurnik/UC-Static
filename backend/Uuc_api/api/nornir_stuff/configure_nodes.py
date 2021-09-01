@@ -29,7 +29,6 @@ from ..helpers.misc import (
     convert_to_cidr,
     get_challenge_pass,
     low_usr_cmds,
-    get_interface_index,
     CoppBWCalculator,
     add_ddns_url,
     resolve_host,
@@ -539,7 +538,6 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
                 path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/fortigate/{ task.host.groups[0] }",
                 advertised_interfaces=advertised_interfaces,
             )
-
         commands = [x.strip() for x in config.result.splitlines() if len(x) != 0]
         r = task.run(
             task=scrape_config_commands, name="forigate config", commands=commands

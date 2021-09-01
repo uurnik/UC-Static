@@ -291,7 +291,7 @@ div.tooltip-content {
   color: #f58319;
   font-family: "Roboto", sans-serif !important;
   text-align: center;
-  justify-content: center;
+  justify-content: left;
   flex-wrap: wrap;
 }
 

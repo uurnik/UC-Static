@@ -71,6 +71,7 @@
             >
             <v-btn
               v-if="showcardaction"
+              :disabled="disablecardaction"
               class="pageheading white--text mb-2 mr-2"
               @click="$store.state.e1 += 1"
             >
@@ -175,6 +176,7 @@
         <v-fab-transition>
           <v-skeleton-loader :loading="loading" type="table">
             <v-data-table
+              id="devices"
               flat
               hide-default-footer
               :headers="headers"
@@ -247,6 +249,7 @@ export default {
       steptitle: "Discover Devices",
       cardaction: "Next",
       show: true,
+      disablecardaction: false,
       adddialog: false,
       dialog: false,
       notifications: false,
@@ -315,6 +318,13 @@ export default {
     },
   },
   watch: {
+    "$store.state.disablefinishbtn": function(value) {
+      if (value) {
+        this.disablecardaction = true
+      } else {
+        this.disablecardaction = false
+      }
+    },
     "$store.state.e1": function (value) {
       if (value == 1) {
         this.steptitle = "Discover Devices";
@@ -324,17 +334,26 @@ export default {
       } else if (value == 3) {
         this.steptitle = "Discover Networks";
       } else if (value == 4) {
+        this.$store.state.disablefinishbtn = true
         this.steptitle = "Deploy";
         this.cardaction = "Finish";
       } else if (value > 4) {
         this.dialog = false;
         this.$store.state.e1 = 1;
         this.cardaction = "Next";
+        this.DeployementStatus();
+        this.getDevices();
+        
       }
     },
   },
 };
 </script>
 
-<style scoped>
+<style>
+
+
+#devices thead.v-data-table-header {
+  background-color:#EEEEEE;
+}
 </style>

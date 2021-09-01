@@ -1,0 +1,27 @@
+set interfaces st0 unit 0 family inet address {{ tunnel_ip }}/30
+{% set loopback = host.data["loop_back"].split(' ') %}
+set interfaces lo0 unit 0 family inet address {{ loopback[0] }}/{{ loopback[0] | convert_to_cidr }}
+
+set security ike proposal IKE_PROP authentication-method pre-shared-keys
+set security ike proposal IKE_PROP dh-group group5
+set security ike proposal IKE_PROP authentication-algorithm sha1
+set security ike proposal IKE_PROP encryption-algorithm aes-128-cbc
+set security ike policy IKE_POL mode main
+set security ike policy IKE_POL proposals IKE_PROP
+set security ike policy IKE_POL pre-shared-key ascii-text uurnik123
+set security ike gateway IKE_GW ike-policy IKE_POL address {{ host.nhs_nbma[0] }}
+set security ike gateway IKE_GW external-interface {{ host.data["wan_int"] }}
+set security ipsec policy IPSEC_POL proposal-set standard 
+set security ipsec vpn HUB_VPN bind-interface st0.0 ike gateway IKE_GW ipsec-policy IPSEC_POL
+set security ipsec vpn HUB_VPN establish-tunnels immediately
+
+edit security policies 
+set from-zone trust to-zone VPN policy HUB_SPOKE2 match source-address any destination-address any application any
+set from-zone trust to-zone VPN policy HUB_SPOKE2 then permit
+set from-zone untrust to-zone trust policy SEC_POL match source-address any destination-address any application any
+set from-zone untrust to-zone trust policy SEC_POL then permit
+exit
+
+set routing-options autonomous-system 65415
+set protocols bgp group CISCO_VPN type external neighbor {{ remote_tunnel_ip }} hold-time 180 minimum-hold-time 180 export CISCO_VPN_BGP peer-as 65414
+

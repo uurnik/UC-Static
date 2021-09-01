@@ -11,7 +11,9 @@ export default new Vuex.Store({
             2: false,
             3: false,
         },
+        LoggedInUser:{},
         copp: false,
+        disablefinishbtn: false,
         devicehardening: false,
         notConfigured: true,
         accessType: null,
@@ -28,6 +30,11 @@ export default new Vuex.Store({
         e1:1,
     },
     mutations: {
+        updateuserdata(state ,{data}) {
+            state.LoggedInUser = data
+            localStorage.setItem('LoggedInUser', state.LoggedInUser.username)
+        },
+
         updateStorage(state, { access, refresh }) {
             state.accessToken = access
             state.refreshToken = refresh
@@ -60,6 +67,16 @@ export default new Vuex.Store({
         },
     },
     actions: {
+    commituserdata(context) {
+        return new Promise((resolve , reject) => {
+            getAPI.get('users/user_detail').then(response => {
+                context.commit('updateuserdata' ,{data:response.data})
+                resolve()
+            }).catch(err => {
+                reject(err)
+            })
+        })
+    },
     commitparams(context, params) {
         context.commit('updateaccessdns', {
             type: params.accesstype,

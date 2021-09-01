@@ -75,22 +75,22 @@
           <apexchart
             ref="cpuradial"
             type="radialBar"
-            height="180px"
-            width="180px"
+            height="200px"
+            width="200px"
             :options="cpuchart.chartOptions"
-            :series="cpuusage"
+            :series="[0]"
           ></apexchart>
           <apexchart
             ref="ramradial"
             type="radialBar"
-            height="180px"
-            width="180px"
+            height="200px"
+            width="200px"
             title="WAN Interface"
             :options="memorychart.chartOptions"
-            :series="ramusage"
+            :series="[0]"
           ></apexchart>
         </v-card>
-        <v-card class="mr-5 mx-auto mt-5 elevation-0">
+        <!-- <v-card class="mr-5 mx-auto mt-5 elevation-0">
           <v-flex class="mx-auto" md9 lg9>
             <apexchart
               ref="chart"
@@ -100,7 +100,7 @@
               :series="series"
             ></apexchart>
           </v-flex>
-        </v-card>
+        </v-card> -->
       </v-flex>
     </div>
     <v-flex class="mx-auto" row mt-5 lg12 md12 justify-space-between>

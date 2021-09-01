@@ -1,4 +1,6 @@
 import datetime
+import re
+
 import multiprocessing
 from concurrent.futures import ThreadPoolExecutor
 import subprocess
@@ -12,7 +14,6 @@ from .constants import COMMUNITY_STR ,CISCO_OIDS ,FORTINET_OIDS
 from api.models import Defaults
 from api.helpers.misc import  resolve_host
 from api.helpers.inventory_builder import inventory
-# from threading import Lock
 
 def test_ssh_conn(task):
     """
@@ -79,8 +80,9 @@ def check_conn(task , dest):
             task=scrape_send,
             command=command
         ).result
+        text = re.findall(r'\d\spackets\sreceived' , r)
 
-        if int(r[0].split()[0]) < 2:
+        if int(text[0].split()[0]) < 2:
             return False
 
         else:

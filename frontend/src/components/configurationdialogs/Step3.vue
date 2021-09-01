@@ -26,15 +26,15 @@
             v-model="postroutes[device.name][route]"
             :label="route"
           ></v-checkbox>
-            <v-chip
-              v-for="(addedroute, rindex) in chips[device.name]"
-              :key="rindex"
-              @click:close="deleteRoutes(addedroute, device.name)"
-              class="mb-4 ml-3 white--text"
-              close
-              color="pageheading"
-              >{{ addedroute }}</v-chip
-            >
+          <v-chip
+            v-for="(addedroute, rindex) in chips[device.name]"
+            :key="rindex"
+            @click:close="deleteRoutes(addedroute, device.name)"
+            class="mb-4 ml-3 white--text"
+            close
+            color="pageheading"
+            >{{ addedroute }}</v-chip
+          >
 
           <v-row align-self="left">
             <v-flex md5 lg3 xs6>
@@ -44,15 +44,27 @@
                 class="pageheading--text pa-0 pl-4 ml-2 mt-2"
                 height="18px"
                 v-model="customroute[device.name]"
-                label="Route"
-                placeholder="x.x.x.x/xx  x.x.x.x"
+                label="Network"
+                placeholder="x.x.x.x/xx"
               ></v-text-field>
             </v-flex>
+            <v-flex md5 lg3 xs6>
+              <v-text-field
+                dense
+                outlined
+                class="pageheading--text pa-0 pl-4 mt-2"
+                height="18px"
+                v-model="customnexthop[device.name]"
+                label="Nexthop"
+                placeholder="x.x.x.x"
+              ></v-text-field>
+            </v-flex>
+
             <v-btn
               color="pageheading white--text ml-2 mt-2"
               style="margin-top: 5px"
               meduim
-              @click="addCustomRoute(device.name, customroute[device.name])"
+              @click="addCustomRoute(device.name, customroute[device.name] , customnexthop[device.name])"
               >Add</v-btn
             >
           </v-row>
@@ -67,7 +79,7 @@
 
 <script>
 
-// import Vue from 'vue'
+
 export default {
   name: "Step3",
   data() {
@@ -75,6 +87,7 @@ export default {
       routes: null,
       postroutes: {},
       formatedroutes: [],
+      customnexthop: {},
       showroutes: false,
       finalroutes: [],
       customroute: {},
@@ -82,17 +95,17 @@ export default {
       chips: {},
     };
   },
-   destroyed() {
+  destroyed() {
     this.$store.state.toggleloader = false;
-    this.routes = null
+    this.routes = null;
   },
   methods: {
     getRoutes() {
-     this.$store.state.toggleloader = true;
+      this.$store.state.toggleloader = true;
       this.showbtn = false;
       this.$getAPI.get("routing/").then((response) => {
         this.routes = response.data;
-         this.$store.state.toggleloader = false;
+        this.$store.state.toggleloader = false;
         this.showroutes = true;
         for (const value of Object.values(response.data)) {
           this.chips[value.name] = [];
@@ -119,27 +132,30 @@ export default {
           custom: this.formatedroutes[device].custom,
         });
       }
-      this.$getAPI.post("routing/", this.finalroutes)
-      .then(() => {
-        this.finalroutes = []
-      })
-      this.$store.state.e1 += 1
+      this.$getAPI.post("routing/", this.finalroutes).then(() => {
+        this.finalroutes = [];
+      });
+      this.$store.state.e1 += 1;
     },
-    addCustomRoute(name, route) {
+
+    addCustomRoute(name, route,nexthop) {
       if (route !== "") {
-        this.postroutes[name].custom.push(route);
+        let r = `${route} ${nexthop}`
+        this.postroutes[name].custom.push(r);
         this.chips[name] = this.postroutes[name].custom
-        console.log(this.chips[name])
+        console.log(this.chips)
       }
       this.customroute[name] = "";
+      this.customnexthop[name] = "";
     },
+
     deleteRoutes(route, name) {
       this.chips[name].splice(this.chips[name].indexOf(route), 1);
-      this.chips = Object.assign({}, this.chips, { name: this.chips[name] })
+      this.chips = Object.assign({}, this.chips, { name: this.chips[name] });
+      console.log(this.chips)
       for (const key of Object.keys(this.postroutes)) {
         if (key == name) {
-          this.postroutes[key].custom = this.chips[name]
-
+          this.postroutes[key].custom = this.chips[name];
         }
       }
     },

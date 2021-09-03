@@ -50,4 +50,4 @@ def add_static_tunnel_pool():
             })
 
 
-        return staticnetworks
+    return staticnetworks

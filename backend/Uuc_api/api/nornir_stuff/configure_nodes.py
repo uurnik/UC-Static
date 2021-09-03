@@ -459,16 +459,40 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
 
         task.host.data["advertised_int"] = advertised_interfaces
 
+
+        template_name = "advpn.jinja2"
+        template_path = f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/juniper/{ task.host.groups[0] }"
+        tunnel_ip = ""
+        remote_tunnel_ip = ""
+
+        if headend_vendor =="Cisco":
+            for site in static_sites:
+                if site['site_name'] == task.host.name:
+                    static_tunnel = site
+                    break
+                else:
+                    continue
+            tunnel_ip = static_tunnel['remote_tunnel_ip']
+            remote_tunnel_ip = static_tunnel['tunnel_ip']
+
+
+            template_name = "juniper.jinja2"
+            template_path = f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/juniper/cisco_integration/"
+        
+
         config = task.run(
             task=text.template_file,
-            template="advpn.jinja2",
-            path=f"api/nornir_stuff/templates/juniper/{ task.host.groups[0] }",
+            template=template_name,
+            path=template_path,
             lan_interfaces=advertised_interfaces,
+            tunnel_ip=tunnel_ip,
+            remote_tunnel_ip=remote_tunnel_ip
         )
 
         commands = [x.strip() for x in config.result.splitlines() if len(x) != 0]
 
-        task.run(task=scrape_config, name="Push juniper configs", configs=commands)
+        r = task.run(task=scrape_config, name="Push juniper configs", configs=commands)
+        print(r.result)
         task.host.close_connection("scrapli")
 
     ################################# Fortigate Configuration Starts ####################################

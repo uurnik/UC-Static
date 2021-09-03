@@ -1,6 +1,5 @@
 import socket
-from api.helpers.inventory_builder import inventory
-from api.models import Defaults , Hosts , StaticTunnelNet
+from api.models import Defaults, Hosts, StaticTunnelNet
 
 
 def dns_conn_check(dns):

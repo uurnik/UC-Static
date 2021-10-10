@@ -10,11 +10,11 @@ Install docker-compose
 > `sudo apt install docker-compose`
 
 
-#### Environment 
+### Environment 
 
 Create `.env` file in the root of the project by refering to the `env.example` file
 
-##### Dev
+#### Dev
 Following ports needs to exposed:
 
 - 53/tcp        (dns)
@@ -27,7 +27,7 @@ Following ports needs to exposed:
 
 [Poetry]() is used to create/manage python virtual environment
 
-##### Production
+#### Production
 In production environment, nginx is used to proxy the reqeust to desired application
 
 - /nic -> 8080

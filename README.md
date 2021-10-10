@@ -9,6 +9,9 @@ if curl is not install, you can install using
 Install docker-compose
 > `sudo apt install docker-compose`
 
+### Clone the repo
+> `git clone https://github.com/uurnik/uurnikconnect.git`
+
 
 ## Environment 
 
@@ -33,7 +36,7 @@ Following ports needs to exposed:
 
 > **_NOTE_** In development environment `DEBUG` should be set to `True` which will turn on Django debuging along Scrapli & Nornir logs
 
-[Poetry]() is used to create/manage python virtual environment
+[Poetry](https://python-poetry.org/) is used to create/manage python virtual environment
 
 ### Production
 In production environment, nginx is used to proxy the reqeust to desired application

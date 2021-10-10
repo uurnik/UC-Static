@@ -1,6 +1,6 @@
-## Setup Instructions
+# Setup Instructions
 
-#### Install docker
+### Install docker
 > `curl -fsSL https://get.docker.com -o get-docker.sh`
 
 if curl is not install, you can install using 
@@ -10,11 +10,11 @@ Install docker-compose
 > `sudo apt install docker-compose`
 
 
-### Environment 
+## Environment 
 
 Create `.env` file in the root of the project by refering to the `env.example` file
 
-#### Dev
+### Dev
 Following ports needs to exposed:
 
 - 53/tcp        (dns)
@@ -27,7 +27,7 @@ Following ports needs to exposed:
 
 [Poetry]() is used to create/manage python virtual environment
 
-#### Production
+### Production
 In production environment, nginx is used to proxy the reqeust to desired application
 
 - /nic -> 8080
@@ -39,7 +39,7 @@ Following ports needs to exposed in production:
 - 80,443
 
 
-### Tools Used Network Automation
+## Tools Used Network Automation
 
 - [Scrapli](https://github.com/carlmontanari/scrapli)
 - [Netmiko](https://github.com/ktbyers/netmiko)
@@ -47,6 +47,6 @@ Following ports needs to exposed in production:
 - [TTP](https://ttp.readthedocs.io/en/latest/)
 
 
-### Frontend
+## Frontend
 Frontend of the uurnikconnect is build with Vuejs and Vuetify.
 For building topology diagram [viz js](https://visjs.github.io/vis-network/docs/network/) is used.

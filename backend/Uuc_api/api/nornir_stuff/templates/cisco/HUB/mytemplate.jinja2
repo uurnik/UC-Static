@@ -112,7 +112,11 @@ router bgp 65{{ host.tunnel_int }}
 
 {% if static_sites %}
 {% for static_site in static_sites %}
+{% if static_site.vendor == 'juniper' %}
+ neighbor {{ static_site.remote_tunnel_ip }} remote-as 65414
+{% else %}
  neighbor {{ static_site.remote_tunnel_ip }} remote-as 65415
+{% endif %}
  neighbor {{ static_site.remote_tunnel_ip }} update-source Tunne{{ static_site.tunnel_id }}
 {% endfor %}
 {% endif %}

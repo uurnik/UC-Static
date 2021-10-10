@@ -36,8 +36,6 @@ set role lan
 end
 
 
-
-
 {% set tunnel = 20 %}
 config firewall policy
 {% for advertised_interface in advertised_interfaces %}
@@ -87,14 +85,13 @@ next
 end
 
 
-
-
 config router bgp
 set as 65415
 set router-id {{ tunnel_ip }}
 config neighbor
 edit {{ remote_tunnel_ip }}
 set remote-as 65414
+set allowas-in-enable enable
 next
 end
 

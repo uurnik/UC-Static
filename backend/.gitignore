@@ -4,9 +4,8 @@ lib
 share
 .vscode
 **__pycache__**
-Uuc_api/nornir.log
-Uuc_api/scrapli.log
 Uuc_api/Uuc_api/__pycache__
+Uuc_api/Uuc_api/api/backup_configs/*.cfg
 Uuc_api/api/nornir_stuff/__pycache__
 Uuc_api/api/net_tools/__pycache__
 Uuc_api/db.sqlite3

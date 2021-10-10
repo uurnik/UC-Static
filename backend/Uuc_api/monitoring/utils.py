@@ -4,6 +4,7 @@ import re
 import multiprocessing
 from concurrent.futures import ThreadPoolExecutor
 import subprocess
+from netaddr import EUI , mac_unix
 from concurrent.futures import ProcessPoolExecutor
 from nornir_scrapli.tasks import send_command as scrape_send
 from nornir_scrapli.tasks import get_prompt
@@ -12,8 +13,8 @@ from pysnmp.entity.rfc3413.oneliner import cmdgen
 import pysnmp.hlapi as snmp_sync
 from .constants import COMMUNITY_STR ,CISCO_OIDS ,FORTINET_OIDS
 from api.models import Defaults
-from api.helpers.misc import  resolve_host
 from api.helpers.inventory_builder import inventory
+
 
 def test_ssh_conn(task):
     """
@@ -66,6 +67,20 @@ def check_conn(task , dest):
             return True
         else:
             return False
+
+    elif task.host.data['vendor'] == "Juniper":
+        command = f"ping {dest} count 5 source {task.host.data['loop_back'].split()[0]}"
+        r = task.run(
+            task=scrape_send,
+            command=command
+        ).result
+        text = re.findall(r'\d\spackets\sreceived' , r)
+
+        if int(text[0].split()[0]) < 2:
+            return False
+
+        else:
+            return True
 
     else:
         loop_back_ip = task.host.data['loop_back'].split()[0]
@@ -186,13 +201,21 @@ class SNMPManager():
             index_ip =  list(zip(data[3]["ipAdEntIfIndex"] , data[4]["ipAdEntAddr"]))
 
             for interface in index_desc:
+                
+                try:
+                    mac = EUI(interface[8][2:])
+                    mac.dialect = mac_unix
+                    mac = str(mac).upper()
+                except:
+                    mac = ""
+
                 interface_result= {
                         "name":interface[0],"status":interface[1] ,  "adminstatus":interface[3],
                         "Out":float("%.2f" % round(int(interface[4]) / 1000000 ,2)),
                         "In":float("%.2f" % round(int(interface[5]) / 1000000,2)) ,
                         "InErrors":interface[6],
                         "OutErrors":interface[7],
-                        "mac":interface[8][2:].upper(),
+                        "mac":mac,
                     }
                 for addressed_int in index_ip:
                     if interface[2] == addressed_int[0]:

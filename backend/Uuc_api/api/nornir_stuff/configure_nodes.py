@@ -492,7 +492,6 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
         commands = [x.strip() for x in config.result.splitlines() if len(x) != 0]
 
         r = task.run(task=scrape_config, name="Push juniper configs", configs=commands)
-        print(r.result)
         task.host.close_connection("scrapli")
 
     ################################# Fortigate Configuration Starts ####################################

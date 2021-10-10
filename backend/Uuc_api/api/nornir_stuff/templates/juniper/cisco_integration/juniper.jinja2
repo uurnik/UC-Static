@@ -15,19 +15,13 @@ set security ipsec policy IPSEC_POL proposal-set compatible
 set security ipsec vpn HUB_VPN bind-interface st0.0 ike gateway IKE_GW ipsec-policy IPSEC_POL
 set security ipsec vpn HUB_VPN establish-tunnels immediately
 
+set security zones security-zone trust interfaces st0 host-inbound-traffic system-services all 
 {% for interface in lan_interfaces %}
 set security zones security-zone trust interfaces {{ interface }} host-inbound-traffic system-services all
 {% endfor %}
 set security zones security-zone trust interfaces lo0 host-inbound-traffic system-services all  
 
-edit security policies 
-set from-zone trust to-zone VPN policy HUB_SPOKE2 match source-address any destination-address any application any
-set from-zone trust to-zone VPN policy HUB_SPOKE2 then permit
-set from-zone untrust to-zone trust policy SEC_POL match source-address any destination-address any application any
-set from-zone untrust to-zone trust policy SEC_POL then permit
-exit
-
-set routing-options autonomous-system 65415
+set routing-options autonomous-system 65414
 set policy-options policy-statement CISCO_VPN_BGP term 10 from interface lo0.0
 set policy-options policy-statement CISCO_VPN_BGP term 10 then accept 
 
@@ -39,6 +33,12 @@ set policy-options prefix-list uuc {{ prefix }}/{{ mask | convert_to_cidr }}
 set policy-options policy-statement CISCO_VPN_BGP term 11 from prefix-list uuc
 set policy-options policy-statement CISCO_VPN_BGP term 11 then accept 
 
-set protocols bgp group CISCO_VPN type external neighbor {{ remote_tunnel_ip }} hold-time 180 minimum-hold-time 180 export CISCO_VPN_BGP peer-as 65414
+set protocols bgp group CISCO_VPN type internal neighbor {{ remote_tunnel_ip }} hold-time 180 minimum-hold-time 180 export CISCO_VPN_BGP peer-as 65414
+
+
+set snmp description juniper-srx-{{ host.data['serial_no'] }}
+set snmp location uurnikconnect
+set snmp contact uurnik.com
+set snmp community uurnik123 authorization read-only
 
 commit

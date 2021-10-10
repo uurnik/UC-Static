@@ -71,6 +71,8 @@ class PreConfig():
                 temp.append(str(int(network_tunnel) + 1))
                 tunnel_ip = ".".join(temp)
 
+                vendor = dbHost.vendor.lower()
+
 
                 static_sites.append({
                     "site_name":device.name,
@@ -78,7 +80,8 @@ class PreConfig():
                     "site_public_ip":device.ip,
                     "tunnel_id":tunnel_id,
                     "tunnel_ip":tunnel_ip,
-                    "remote_tunnel_ip":remote_tunnel_ip
+                    "remote_tunnel_ip":remote_tunnel_ip,
+                    "vendor": vendor,
                 })
         
         return (self.headend_vendor , static_sites)

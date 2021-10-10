@@ -318,7 +318,6 @@ def configure(request, option):
     headend_vendor,static_sites=PreConfig().assign_static_tunnels()
     nr = inventory()
 
-
     # result_2 = nr.run(task=get_challenge_pass)
     result_1 = nr.run(
         task=conf_dmvpn, nr=nr, dia=DIA, other_services=other_services, dns=dns,
@@ -423,7 +422,7 @@ def add_remove_spoke(request, pk):
         else:
             pass
 
-        device = nr.filter(F(groups__contains="SPOKE") & F(name__contains=pk))
+        device = nr.filter(F(groups__contains="SPOKE") & F(name=pk))
         result_1 = device.run(
             task=conf_dmvpn,
             nr=device,

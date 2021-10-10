@@ -47,7 +47,7 @@ Following ports needs to exposed in production:
 - 80,443
 
 
-## Tools Used Network Automation
+## Tools Used for Network Automation
 
 - [Scrapli](https://github.com/carlmontanari/scrapli)
 - [Netmiko](https://github.com/ktbyers/netmiko)

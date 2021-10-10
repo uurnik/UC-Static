@@ -47,3 +47,6 @@ Following ports needs to exposed in production:
 - [TTP](https://ttp.readthedocs.io/en/latest/)
 
 
+### Frontend
+Frontend of the uurnikconnect is build with Vuejs and Vuetify.
+For building topology diagram [viz js](https://visjs.github.io/vis-network/docs/network/) is used.

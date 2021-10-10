@@ -14,6 +14,14 @@ Install docker-compose
 
 Create `.env` file in the root of the project by refering to the `env.example` file
 
+Build & Start
+(Dev)
+> docker-compose up
+
+(Production)
+> docker-compose up -f docker-compose-prod.yaml
+
+
 ### Dev
 Following ports needs to exposed:
 
@@ -23,7 +31,7 @@ Following ports needs to exposed:
 - 8080/tcp      (dnsupdater api)
 
 
-> **_NOTE_** In development environment `DEBUG` should be set to `True`
+> **_NOTE_** In development environment `DEBUG` should be set to `True` which will turn on Django debuging along Scrapli & Nornir logs
 
 [Poetry]() is used to create/manage python virtual environment
 

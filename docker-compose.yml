@@ -77,6 +77,7 @@ services:
       - VUE_APP_BACKEND=${VUE_APP_BACKEND}
     volumes:
       - "./frontend:/app"
+      - "/app/node_modules"
     ports:
       - "8081:3000"
     networks:

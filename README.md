@@ -17,6 +17,15 @@ Install docker-compose
 
 Create `.env` file in the root of the project by refering to the `env.example` file
 
+
+Change backend API IP in `/frontend/src/axios-api.js`
+
+```
+const getAPI = axios.create({
+    baseURL: "http://192.168.100.242:8001/api/"         // Change this
+})
+```
+
 Build & Start
 (Dev)
 > docker-compose up

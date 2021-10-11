@@ -1,7 +1,7 @@
 # Setup Instructions
 
 ### Install docker
-> `curl -fsSL https://get.docker.com -o get-docker.sh`
+> `sudo curl -fsSL https://get.docker.com -o get-docker.sh`
 
 if curl is not install, you can install using 
 > `sudo apt install curl`

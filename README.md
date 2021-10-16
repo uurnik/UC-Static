@@ -10,7 +10,7 @@ Install docker-compose
 > `sudo apt install docker-compose`
 
 ### Clone the repo
-> `git clone https://github.com/uurnik/uurnikconnect.git`
+> `git clone git@github.com:uurnik/uurnikconnect.git`
 
 
 ## Environment 

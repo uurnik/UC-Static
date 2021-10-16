@@ -31,7 +31,7 @@ Build & Start
 > docker-compose up
 
 (Production)
-> docker-compose up -f docker-compose-prod.yaml
+> docker-compose -f docker-compose-prod.yaml up 
 
 
 ### Dev

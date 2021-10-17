@@ -40,6 +40,9 @@ if settings.DEBUG:
     logger = logging.getLogger("scrapli")
 
 
+APP_PATH='/code/Uuc_api/'
+
+
 def netmiko_direct(task, cmd):
     """
     Manually create Netmiko connection, to handle prompts
@@ -92,7 +95,7 @@ def send_tcl(task):
         task=text.template_file,
         name="Pasrse tcl schedule template",
         template="kro_schedule.jinja2",
-        path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco/{task.host.groups[0]}",
+        path=f"{APP_PATH}api/nornir_stuff/templates/cisco/{task.host.groups[0]}",
     )
 
     # Push the config to schedule the TCL script
@@ -393,7 +396,7 @@ def device_harderning(task):
     config = task.run(
         task=text.template_file,
         template="hardening_cisco.jinja2",
-        path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco",
+        path=f"{APP_PATH}api/nornir_stuff/templates/cisco",
         interfaces=interfaces,
         logical_interfaces=logical_interfaces,
         reserve_mem=reserve_mem,
@@ -415,7 +418,7 @@ def configure_copp(task):
     config = task.run(
         task=text.template_file,
         template="copp_cisco_template.jinja2",
-        path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco",
+        path=f"{APP_PATH}api/nornir_stuff/templates/cisco",
         copp_bw=copp_bw,
     )
     commands = [x.strip() for x in config.result.splitlines() if len(x) != 0]
@@ -461,7 +464,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
 
 
         template_name = "advpn.jinja2"
-        template_path = f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/juniper/{ task.host.groups[0] }"
+        template_path = f"{APP_PATH}api/nornir_stuff/templates/juniper/{ task.host.groups[0] }"
         tunnel_ip = ""
         remote_tunnel_ip = ""
 
@@ -477,7 +480,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
 
 
             template_name = "juniper.jinja2"
-            template_path = f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/juniper/cisco_integration/"
+            template_path = f"{APP_PATH}api/nornir_stuff/templates/juniper/cisco_integration/"
         
 
         config = task.run(
@@ -515,7 +518,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
         ).result
         task.host.close_connection("scrapli")
         with open(
-            f"{os.getcwd()}/Uuc_api/api/backup_configs/{task.host.name}.cfg", "w"
+            f"{APP_PATH}api/backup_configs/{task.host.name}.cfg", "w"
         ) as file:
             file.write(get_config)
         
@@ -548,7 +551,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
                 task=text.template_file,
                 name="Foritage Static Tunnels",
                 template="fortigate.jinja2",
-                path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/fortigate/cisco_integration/",
+                path=f"{APP_PATH}api/nornir_stuff/templates/fortigate/cisco_integration/",
                 tunnel_ip=static_tunnel['remote_tunnel_ip'],
                 remote_tunnel_ip=static_tunnel['tunnel_ip'],
                 advertised_interfaces=advertised_interfaces,
@@ -558,7 +561,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
             config = task.run(
                 task=text.template_file,
                 template="advpn_main.jinja2",
-                path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/fortigate/{ task.host.groups[0] }",
+                path=f"{APP_PATH}api/nornir_stuff/templates/fortigate/{ task.host.groups[0] }",
                 advertised_interfaces=advertised_interfaces,
             )
         commands = [x.strip() for x in config.result.splitlines() if len(x) != 0]
@@ -586,7 +589,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
         )
 
         with open(
-            f"{os.getcwd()}/Uuc_api/api/backup_configs/{task.host.name}.cfg", "w"
+            f"{APP_PATH}api/backup_configs/{task.host.name}.cfg", "w"
         ) as file:
             file.write(get_configs.result)
 
@@ -595,7 +598,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
             task=text.template_file,
             name="Parse archive_en template",
             template="archive_en.jinja2",
-            path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco",
+            path=f"{APP_PATH}api/nornir_stuff/templates/cisco",
         )
         task.host["archive"] = parse_archive.result
 
@@ -682,7 +685,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
             task=text.template_file,
             name="Base Configuration",
             template="mytemplate.jinja2",
-            path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco/{task.host.groups[0]}",
+            path=f"{APP_PATH}api/nornir_stuff/templates/cisco/{task.host.groups[0]}",
             neighbors=spokes_tunnel,
             loop_backs=loop_backs,
             spoke_networks=spoke_networks,
@@ -734,7 +737,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
             ip_nat_parse_template = task.run(
                 task=text.template_file,
                 template="ip_nat_inside.jinja2",
-                path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco",
+                path=f"{APP_PATH}api/nornir_stuff/templates/cisco",
                 advertised_interfaces=advertised_interfaces,
             )
 
@@ -749,7 +752,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
                 vrf_parse_template = task.run(
                     task=text.template_file,
                     template="configure_vrf_LAN.jinja2",
-                    path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco/SPOKE",
+                    path=f"{APP_PATH}api/nornir_stuff/templates/cisco/SPOKE",
                     advertised_interfaces=advertised_interfaces,
                 )
 
@@ -762,7 +765,7 @@ def conf_dmvpn(task, nr, dia, other_services=None, dns=None,headend_vendor=None,
                     static_route_vrf_template = task.run(
                         task=text.template_file,
                         template="change_static_route.jinja2",
-                        path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/templates/cisco",
+                        path=f"{APP_PATH}api/nornir_stuff/templates/cisco",
                         routes_to_change=routes_to_change,
                     )
 
@@ -809,7 +812,7 @@ def remove_hosts(task):
             task=text.template_file,
             name="Parse Juniper Configuration removal",
             template="remove_config.jinja2",
-            path=f"api/nornir_stuff/templates/juniper/{task.host.groups[0]}",
+            path=f"{APP_PATH}api/nornir_stuff/templates/juniper/{task.host.groups[0]}",
         )
         config = [x.strip() for x in parse_template.result.splitlines() if len(x) != 0]
         task.run(task=scrape_config, name="Remove Configuration", configs=config)
@@ -820,7 +823,7 @@ def remove_hosts(task):
             task=text.template_file,
             name="Prarse Fortigate Configuration removal",
             template="remove_config.jinja2",
-            path=f"api/nornir_stuff/templates/fortigate/{task.host.groups[0]}",
+            path=f"{APP_PATH}api/nornir_stuff/templates/fortigate/{task.host.groups[0]}",
         )
         config = [x.strip() for x in parse_template.result.splitlines() if len(x) != 0]
         task.run(
@@ -873,7 +876,7 @@ def remove_hosts(task):
             task=text.template_file,
             name="Base Configuration",
             template="remove_config.jinja2",
-            path=f"api/nornir_stuff/templates/cisco",
+            path=f"{APP_PATH}api/nornir_stuff/templates/cisco",
             option=option,
             advertised_int=advertised_int,
             static_routes=static_routes,
@@ -896,7 +899,7 @@ def remove_hosts(task):
 
         # Check if COPP is configured ,if yes then remove COPP configuration
         if task.host.defaults.data["is_copp_configured"] == True:
-            with open("api/nornir_stuff/templates/cisco/remove_copp.txt") as file:
+            with open(f"{APP_PATH}api/nornir_stuff/templates/cisco/remove_copp.txt") as file:
                 file_data = file.read()
                 commands = [x for x in file_data.splitlines()]
                 task.run(task=scrape_config, configs=commands)
@@ -922,7 +925,7 @@ def change_on_spoke(task, option, hub_tunnel_ip, hub_nbma):
     r = task.run(
         task=text.template_file,
         template="add_hub.jinja2",
-        path=f"api/nornir_stuff/templates/cisco/{task.host.groups[0]}",
+        path=f"{APP_PATH}api/nornir_stuff/templates/cisco/{task.host.groups[0]}",
         hub_tunnel_ip=hub_tunnel_ip,
         hub_nbma=hub_nbma,
         option=option,
@@ -942,7 +945,7 @@ def remove_hub_from_spoke(task, option, hub_tunnel_ip, hub_nbma):
     r = task.run(
         task=text.template_file,
         template="remove_hub.jinja2",
-        path=f"api/nornir_stuff/templates/cisco/{task.host.groups[0]}",
+        path=f"{APP_PATH}api/nornir_stuff/templates/cisco/{task.host.groups[0]}",
         hub_tunnel_ip=hub_tunnel_ip,
         hub_nbma=hub_nbma,
         option=option,
@@ -992,7 +995,7 @@ def conf_ip_sla(task, track_ip):
     r = task.run(
         task=text.template_file,
         template="ip_sla.jinja2",
-        path=f"api/nornir_stuff/templates/cisco",
+        path=f"{APP_PATH}api/nornir_stuff/templates/cisco",
         track_ip=track_ip,
         ospf=ospf,
         ospf_proc_id=ospf_proc_id,
@@ -1225,7 +1228,7 @@ def configure_logging(task, logging_host, logging_level, facility):
         task=text.template_file,
         name="Configure Logging",
         template="logging.jinja2",
-        path=f"api/nornir_stuff/templates/cisco/",
+        path=f"{APP_PATH}api/nornir_stuff/templates/cisco/",
         logging_host=logging_host,
         logging_level=logging_level,
         facility=facility,

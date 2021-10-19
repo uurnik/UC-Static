@@ -3,6 +3,8 @@ from nornir.plugins.tasks import text
 from api.helpers.misc import ParseConfig
 import os
 
+APP_PATH='/code/Uuc_api/'
+
 def parse_validation_template(
     task, template, option, device_config, spoke_networks_all
 ):
@@ -91,7 +93,7 @@ def parse_validation_template(
             parse_template = task.run(
                 task=text.template_file,
                 template=f"{template}.jinja2",
-                path=f"{os.getcwd()}/Uuc_api/api/nornir_stuff/validations/",
+                path=f"{APP_PATH}/api/nornir_stuff/validations/",
                 option=option,
                 spoke_networks_all=spoke_networks_all,
             )

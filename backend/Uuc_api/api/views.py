@@ -1109,7 +1109,7 @@ def swipe_ipsec_keys(request):
     """
     View For Changing IPsec Keys
     """
-    return DefaultsSerializer.change_ipsec_key(request.data)
+    return DefaultsSerializer().change_ipsec_key(request.data)
 
 
 @api_view(["POST"])

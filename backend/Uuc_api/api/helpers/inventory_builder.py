@@ -97,6 +97,7 @@ def get_inventory_data(Defaults, Hosts):
                 "username": n.username,
                 "password": n.password,
                 "hostname": n.ip,
+                "port":n.port,
                 "connection_options": {
                     "scrapli": {
                         "platform": "generic",
@@ -146,6 +147,7 @@ def get_inventory_data(Defaults, Hosts):
                 "username": n.username,
                 "password": n.password,
                 "hostname": n.ip,
+                "port":n.port,
                 "groups": [n.group],
                 "platform": n.platform,
                 "data": {

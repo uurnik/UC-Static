@@ -15,6 +15,7 @@ class HostsSerializer(serializers.ModelSerializer):
     ip = serializers.IPAddressField(required=True)
     name = serializers.CharField(required=True)
     username = serializers.CharField(required=True)
+    port = serializers.IntegerField(required=False)
     password = serializers.CharField(
         style={"input_type": "password"}, write_only=True, required=True
     )
@@ -27,6 +28,7 @@ class HostsSerializer(serializers.ModelSerializer):
             "name",
             "username",
             "password",
+            "port",
             "platform",
             "group",
             "is_configured",

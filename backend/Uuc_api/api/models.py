@@ -62,6 +62,7 @@ class Hosts(models.Model):
     name = models.CharField(max_length=30, blank=False, primary_key=True)
     username = models.CharField(max_length=30)
     password = models.CharField(default=False, max_length=30)
+    port = models.IntegerField(default=22)
     platform = models.CharField(default="ios", max_length=20)
     group = models.CharField(max_length=6, default=False)
     is_configured = models.BooleanField(default=False)

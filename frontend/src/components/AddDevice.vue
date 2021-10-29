@@ -38,6 +38,10 @@
               v-model="device.password"
               label="Password"
             ></v-text-field>
+            <v-text-field
+              v-model="device.port"
+              label="SSH Port"
+            ></v-text-field>
             <v-select
               v-model="device.group"
               :items="groups"
@@ -113,7 +117,7 @@ export default {
     return {
       showerror: false,
       showsuccess: false,
-      device: {},
+      device: {port:22},
       groups: ["Central Site", "Branch Site"],
     };
   },
